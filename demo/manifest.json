@@ -1,0 +1,10 @@
+{
+  "name": "GSG Components",
+  "short_name": "GSG Components",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff",
+  "theme_color": "#673ab8",
+  "icons": []
+}
