@@ -7,7 +7,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "lib": "tsc --watch",
-    "loader": "preact build --src loader --dest loader-bundle --sw false --babelConfig config/.babelrc --template loader/template.html --config config/preact.config.js --no-prerender",
+    "loader": "preact build --src loader --dest loader-bundle --babelConfig config/.babelrc --template false --preload false --prerenderUrls false --inline-css false --config config/preact.loader.config.js --sw false --json false --no-prerender --no-esm",
     "demo": "preact watch --src demo --sw false --babelConfig config/.babelrc --template demo/template.html --config config/preact.config.js --no-prerender --host localhost"
   },
   "devDependencies": {
