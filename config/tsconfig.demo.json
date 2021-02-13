@@ -25,6 +25,6 @@
 		"jsx": "react",
 		"jsxFactory": "h"
 	},
-	"include": ["src/**/*", "app/**/*"],
+	"include": ["src/**/*", "demo/**/*"],
 	"exclude": ["node_modules", "lib", "**/*.test.ts", "**/*/__tests__"]
 }

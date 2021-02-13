@@ -46,7 +46,7 @@ const ColoredProduct = () => {
 
     return (
 		<div class="w-full relative" >
-			{images.filter(e=>e).map( (e, i) => (
+			{images.filter(e=>e).map( (e) => (
 				<img src={e} class="gsg-procuts-hot-tub" />
 			))}
 		</div>
