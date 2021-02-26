@@ -1,5 +1,5 @@
 import { AbstractWrapper } from 'asas-virtuais-ts'
-import { BaseQL } from 'asas-virtuais-ts/airtable'
+import { BaseQL } from 'asas-virtuais-ts-airtable'
 import { Attachment } from 'airtable'
 
 const url = "https://api.baseql.com/airtable/graphql/appCFa2rRU5MxMjuq";
