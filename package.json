@@ -7,23 +7,23 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "lib": "tsc --watch",
+    "loader": "preact build --src loader --dest loader-bundle --babelConfig config/.babelrc --template false --preload false --prerenderUrls false --inline-css false --config config/preact.loader.config.js --sw false --json false --no-prerender --no-esm",
     "demo": "preact watch --src demo --sw false --babelConfig config/.babelrc --template demo/template.html --config config/preact.config.js --no-prerender --host localhost"
   },
   "devDependencies": {
     "@types/airtable": "^0.8.1",
-    "asas-virtuais-ts": "4.0.0",
-    "asas-virtuais/airtable": "1.0.0",
     "autoprefixer": "^10.2.4",
     "postcss": "^8.2.6",
-    "preact": "^10.5.12",
-    "preact-cli": "^3.0.5",
     "react": "^17.0.1",
     "snowpack": "^3.0.11",
     "tailwindcss": "^2.0.3",
-    "typed-curry": "^1.0.7",
-    "typescript": "^4.0.5"
+    "typescript": "^4.0.5",
+    "preact-cli": "^3.0.5",
+    "pnp-webpack-plugin": "^1.6.4"
   },
   "dependencies": {
-    "pnp-webpack-plugin": "^1.6.4"
+    "preact": "^10.5.12",
+    "asas-virtuais-ts": "4.0.0",
+    "asas-virtuais-airtable": "1.0.0"
   }
 }

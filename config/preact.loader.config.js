@@ -3,7 +3,14 @@ import tailwindcss from 'tailwindcss'
 
 export default {
     webpack(config, env, helpers) {
+		delete config.entry.polyfills
 
+		const { plugin: cssExtractPlugin } = helpers.getPluginsByName(config, 'MiniCssExtractPlugin')[0];
+		cssExtractPlugin.options.moduleFilename = () => 'bundle.css'
+		cssExtractPlugin.options.filename = 'bundle.css'
+
+		config.output.filename = "bundle.js"
+  
         const postCssLoaders = helpers.getLoadersByName(config, "postcss-loader")
 
         postCssLoaders.forEach( ( { loader } ) => {
