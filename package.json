@@ -13,17 +13,18 @@
   "devDependencies": {
     "@types/airtable": "^0.8.1",
     "autoprefixer": "^10.2.4",
+    "pnp-webpack-plugin": "^1.6.4",
     "postcss": "^8.2.6",
+    "preact-cli": "^3.0.5",
     "react": "^17.0.1",
     "snowpack": "^3.0.11",
     "tailwindcss": "^2.0.3",
-    "typescript": "^4.0.5",
-    "preact-cli": "^3.0.5",
-    "pnp-webpack-plugin": "^1.6.4"
+    "typescript": "^4.0.5"
   },
   "dependencies": {
-    "preact": "^10.5.12",
+    "asas-virtuais-airtable": "1.0.0",
     "asas-virtuais-ts": "4.0.0",
-    "asas-virtuais-airtable": "1.0.0"
+    "preact": "^10.5.12",
+    "typed-curry": "^1.0.7"
   }
 }

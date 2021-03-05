@@ -120,14 +120,14 @@ const makeContext = ( _state: State, _setState: StateUpdater<State> ) => {
 	}
 
 	const getCompatibleColorsFor = (part: string): string[] => {
-		return getCompatibleCombinationsFor( part ).reduce<string[]>( (arr, c) => {
-		c.coloredParts.forEach((p) => {
-			if ( p?.name === part && p?.color?.name ) {
-				arr.push( p.color.name )
-			}
-		} )
+		return getCompatibleCombinationsFor( part )?.reduce<string[]>( (arr, c) => {
+			c.coloredParts.forEach((p) => {
+				if ( p?.name === part && p?.color?.name ) {
+					arr.push( p.color.name )
+				}
+			} )
 		return arr;
-		}, [] )
+		}, [] ) ?? []
 	}
 
 	const isCompatiblePartColor = (part: string, c: string): boolean => {
@@ -135,7 +135,7 @@ const makeContext = ( _state: State, _setState: StateUpdater<State> ) => {
 	}
 
 	const getSelectedCombination = () => {
-		return state.combinations.find( e => {
+		return state?.combinations?.find( e => {
 			if ( e.coloredParts.length > 0 ) {
 				for ( const coloredPart of e.coloredParts ) {
 					if ( ! state.selectedPartColors[coloredPart.name] || state.selectedPartColors[coloredPart.name] !== coloredPart?.color?.name ) {

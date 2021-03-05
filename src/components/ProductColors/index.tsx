@@ -1,4 +1,4 @@
-import preact, { FunctionalComponent, h } from 'preact'
+import preact, { Fragment, FunctionalComponent, h } from 'preact'
 import { useEffect } from 'preact/hooks'
 import { ColorCombination as Combination } from '../../models'
 import { ContextProvider, useActions, useOverState, useUtils } from './context'
@@ -154,7 +154,7 @@ const ColorSelector = () => {
 		return acc;
 	}, [] )
 	if ( combinedColors && combinedColors?.length > 0 ) {
-		const items = combinedColors.reduce<h.JSX.Element[]>((acc, e) => {
+		const items = combinedColors?.reduce<h.JSX.Element[]>((acc, e) => {
 			const color = colorsIndex?.[e]
 			if (color) {
 				acc.push(
@@ -177,7 +177,7 @@ const ColorSelector = () => {
 				);
 			}
 			return acc;
-		}, []);
+		}, []) ?? [];
 		lists.push(
 			<div>
 				<div>
@@ -197,7 +197,8 @@ const ColorSelector = () => {
 			</div>
 		);
 	}
-	return lists;
+	return  <Fragment>{lists}</Fragment>
+	;
 }
 
 const MainUI = () => {
@@ -207,7 +208,7 @@ const MainUI = () => {
 			<h3>Color Selector</h3>
 			<div style={{ display: "flex", justifyContent: "space-around" }} >
 				<ColoredProduct/>
-				{ColorSelector()}
+				<ColorSelector/>
 			</div>
 		</div>
 	)
@@ -229,7 +230,7 @@ export const ProductColors : FunctionalComponent<Props> = ( { product } ) => {
 		.then( combinations => {
 			console.log( combinations )
 			setCombinations( combinations )
-			setColorsIndexedByPart( combinations.reduce<Record<string, string[]>>( ( index, combination ) => {
+			setColorsIndexedByPart( combinations?.reduce<Record<string, string[]>>( ( index, combination ) => {
 				combination?.coloredParts?.forEach( p => {
 					if ( p.color ) {
 						let array = index[p.name] ?? [];
@@ -240,8 +241,8 @@ export const ProductColors : FunctionalComponent<Props> = ( { product } ) => {
 					}
 				} )
 				return index
-			}, {} ) )
-			setColorsIndex( combinations.reduce( (acc: Record<string, {
+			}, {} ) ?? {} )
+			setColorsIndex( combinations?.reduce( (acc: Record<string, {
 				name?: string
 				imgURL?: string
 			} >, e ) => {
@@ -255,13 +256,13 @@ export const ProductColors : FunctionalComponent<Props> = ( { product } ) => {
 				  });
 				}
 				return acc;
-			}, {} ) )
-			setCombinedColors( combinations.reduce( (acc: string[], c ) => {
+			}, {} ) ?? {} )
+			setCombinedColors( combinations?.reduce( (acc: string[], c ) => {
 				if ( c?.combinedColor?.name && ! acc.includes( c.combinedColor.name ) ) {
 					acc.push( c.combinedColor.name )
 				}
 				return acc;
-			}, [] ) )
+			}, [] ) ?? {} )
 		} )
 		.catch( setError )
 	}, [product] )

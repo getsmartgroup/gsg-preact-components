@@ -2,16 +2,17 @@ import { AbstractWrapper } from 'asas-virtuais-ts'
 import { BaseQL } from 'asas-virtuais-airtable'
 import { Attachment } from 'airtable'
 
-const url = "https://api.baseql.com/airtable/graphql/appCFa2rRU5MxMjuq";
+const url = "https://api.baseql.com/airtable/graphql/appMt27Uj2WHfsPP7";
 
 type ColorCombination = {
+	id : string
 	product               ?: string
-	shell                 ?: string
-	cabinet               ?: string
+	shell                 ?: { name : string }[]
+	cabinet               ?: { name : string }[]
 	combinationImage      ?: Attachment[]
 	shellImage            ?: Attachment[]
 	cabinetImage          ?: Attachment[]
-	combinationColor      ?: string
+	combinationColor      ?: { name : string }[]
 	combinationColorImage ?: Attachment[]
 	cabinetColorImage     ?: Attachment[]
 	shellColorImage       ?: Attachment[]
@@ -19,6 +20,11 @@ type ColorCombination = {
 
 export type Type = ColorCombination
 export class Wrapper extends AbstractWrapper<ColorCombination> {
+
+
+	getID() {
+		return this.data.id
+	}
 
 	constructor( combination : ColorCombination ) {
 		super( combination )
@@ -30,13 +36,13 @@ export class Wrapper extends AbstractWrapper<ColorCombination> {
 				image:
 				partImage?.[0]?.url,
 				color: {
-					name: combination[e as "shell" | "cabinet"],
+					name: combination[e as "shell" | "cabinet"]?.[0]?.name,
 					imgURL: colorImage?.[0]?.url
 				}
 			}
 		} )
 		this.combinedColor = this.combinedColor ? {
-			name: combination?.combinationColor,
+			name: combination?.combinationColor?.[0]?.name,
 			imgURL: combination?.combinationColorImage?.[0]?.url,
 		} : null
 	}
@@ -60,20 +66,35 @@ export class Wrapper extends AbstractWrapper<ColorCombination> {
 	}
 }
 
-export const getByProduct = async ( product : string ) : Promise<Wrapper[]> => ( await BaseQL.retrieve(
+export const getByProduct = async ( product : string ) : Promise<Wrapper[]> => ( BaseQL.retrieve(
 	url,
 	`
 	productColorCombinations( product : "${product}" ) {
-		product
-		shell
-		cabinet
+		id
+		shell {
+			name
+		}
+		cabinet {
+			name
+		}
 		combinationImage
 		shellImage
 		cabinetImage
-		combinationColor
+		combinationColor {
+			name
+		}
 		combinationColorImage
 		cabinetColorImage
 		shellColorImage
 	}
 	`
-) )?.data?.productColorCombinations?.map( ( e : ColorCombination ) => new Wrapper( e ) ) ?? []
+) as Promise<any> )
+.then (
+	e => {
+		console.log(e)
+		return e
+	}
+)
+.then(
+	e => e?.productColorCombinations?.map( ( e : ColorCombination ) => new Wrapper( e ) )
+)
