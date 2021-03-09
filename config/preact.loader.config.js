@@ -3,7 +3,6 @@ import tailwindcss from 'tailwindcss'
 
 export default {
     webpack(config, env, helpers) {
-		delete config.entry.polyfills
 
 		const { plugin: cssExtractPlugin } = helpers.getPluginsByName(config, 'MiniCssExtractPlugin')[0];
 		cssExtractPlugin.options.moduleFilename = () => 'bundle.css'
@@ -21,7 +20,7 @@ export default {
         config.resolve.alias = {
             "preact-cli-entrypoint": resolve(
                 process.cwd(),
-                "demo",
+                "loader",
                 "index"
             ),
             "react": "preact/compat",
