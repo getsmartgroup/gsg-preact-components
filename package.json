@@ -1,10 +1,14 @@
 {
-  "name": "gsg-components",
-  "version": "2.0.0",
+  "name": "gsg-preact-components",
+  "version": "1.0.0",
   "author": "Ícaro C. Capobianco",
   "license": "MIT",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getsmartgroup/gsg-preact-components.git"
+  },
   "scripts": {
     "watch": "tsc --watch",
     "build": "preact build --no-prerender --template src/index.ejs --no-sw --config config/preact.config.js",
