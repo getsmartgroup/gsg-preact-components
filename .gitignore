@@ -2,7 +2,8 @@ node_modules
 yarn.lock
 package-lock.json
 size-plugin.json
-build
+build/*
+!build/bundle.js
 yarn-error.log
 ./.vscode
 ./.vscode/
