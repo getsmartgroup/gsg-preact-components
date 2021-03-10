@@ -1,6 +1,6 @@
 {
   "name": "gsg-components",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Ícaro C. Capobianco",
   "license": "MIT",
   "main": "lib/index.js",
