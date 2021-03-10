@@ -1,6 +1,7 @@
 import preact, { Fragment, FunctionalComponent, h } from 'preact'
 import { useEffect } from 'preact/hooks'
 import { ColorCombination as Combination } from '../../models'
+import { Box } from '@chakra-ui/react'
 import { ContextProvider, useActions, useOverState, useUtils } from './context'
 
 type Props = {
@@ -45,11 +46,11 @@ const ColoredProduct = () => {
 	}
 
     return (
-		<div class="w-full relative" >
+		<Box w='full' position='relative'>
 			{images.filter(e=>e).map( (e) => (
 				<img src={e} class="gsg-procuts-hot-tub" />
 			))}
-		</div>
+		</Box>
 	);
 }
 
