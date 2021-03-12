@@ -41,7 +41,7 @@ export class Wrapper extends AbstractWrapper<ColorCombination> {
 				}
 			}
 		} )
-		this.combinedColor = this.combinedColor ? {
+		this.combinedColor = this.data.combinationColor?.[0]?.name ? {
 			name: combination?.combinationColor?.[0]?.name,
 			imgURL: combination?.combinationColorImage?.[0]?.url,
 		} : null
@@ -62,7 +62,7 @@ export class Wrapper extends AbstractWrapper<ColorCombination> {
 	} | null
 
 	get combinedImage () {
-		return ''
+		return this.data.combinationImage?.[0]?.url
 	}
 }
 

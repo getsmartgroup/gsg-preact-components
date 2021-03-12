@@ -30,7 +30,7 @@ const ColoredProduct = () => {
 	const selectedCombination = getSelectedCombination()
 
 	const images : string[] = selectedCombinedColor ?
-		[ combinations.find( e => e?.combinedColor === selectedCombinedColor )?.combinedImage as string ]
+		[ combinations.find( e => e?.combinedColor?.name === selectedCombinedColor )?.combinedImage as string ]
 	: (
 		selectedCombination?.combinedImage ? (
 			[ selectedCombination.combinedImage ] as string[]
@@ -229,7 +229,6 @@ export const ProductColors : FunctionalComponent<Props> = ( { product } ) => {
 	useEffect( () => {
 		Combination.getByProduct( product )
 		.then( combinations => {
-			console.log( combinations )
 			setCombinations( combinations )
 			setColorsIndexedByPart( combinations?.reduce<Record<string, string[]>>( ( index, combination ) => {
 				combination?.coloredParts?.forEach( p => {

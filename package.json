@@ -1,6 +1,6 @@
 {
   "name": "gsg-preact-components",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Ícaro C. Capobianco",
   "license": "MIT",
   "main": "lib/index.js",
@@ -12,7 +12,9 @@
   "scripts": {
     "watch": "tsc --watch",
     "build": "preact build --no-prerender --template src/index.ejs --no-sw --config config/preact.config.js",
-    "dev": "preact watch --template src/index.ejs --config config/preact.config.js"
+    "dev": "preact watch --template src/index.ejs --config config/preact.config.js",
+    "predeploy": "tsc && pnpm build",
+    "deploy": "npm publish"
   },
   "devDependencies": {
     "@types/airtable": "^0.8.1",

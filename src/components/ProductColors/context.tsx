@@ -40,6 +40,7 @@ const makeContext = ( _state: State, _setState: StateUpdater<State> ) => {
 	const setCombinedColors      = setProp( 'combinedColors'      )
 
 	const selectCombinedColor = ( color: string ) => {
+		console.log( '[SET COMBINED COLOR]', color )
 		setState( {
 			selectedCombinedColor: color,
 		} )
