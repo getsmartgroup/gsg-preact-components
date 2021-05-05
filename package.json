@@ -1,0 +1,49 @@
+{
+	"name": "vite-preact-chakra-template",
+	"version": "1.0.0",
+	"author": "Ícaro C. Capobianco",
+	"license": "MIT",
+	"main": "es5/index.js",
+	"module": "esm/index.js",
+	"unpkg": "umd/index.js",
+	"source": "src/index.tsx",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"start": "tsc && yarn dev",
+		"es5": "tsc -p tsconfig.json --target es6 --outDir es6 --module es6",
+		"es6": "tsc -p tsconfig.json --target es5 --outDir es5 --module commonjs",
+		"tsc": "concurrently \"npm run es5\" \"npm run es6\"",
+		"watch": "concurrently \"npm run es5 --watch\" \"npm run es6 --watch\"",
+		"storybook": "start-storybook -p 6006",
+		"build-storybook": "build-storybook",
+		"bundle": "npm-run-all --parallel bundle:*",
+		"bundle:es5": "microbundle -i src/index.tsx -o es5/index.js --no-pkg-main -f cjs",
+		"bundle:esm": "microbundle -i src/index.tsx -o esm/index.js --no-pkg-main -f esm",
+		"bundle:umd": "microbundle -i src/index.tsx -o umd/index.js --no-pkg-main -f umd"
+	},
+	"dependencies": {
+		"@chakra-ui/icons": "^1.0.5",
+		"@chakra-ui/react": "^1.3.3",
+		"@emotion/react": "^11.1.5",
+		"@emotion/styled": "^11.1.5",
+		"framer-motion": "^3.7.0",
+		"preact": "^10.5.13",
+		"react-icons": "^4.2.0"
+	},
+	"devDependencies": {
+		"@prefresh/vite": "^2.2.1",
+		"@storybook/cli": "^6.3.0-alpha.19",
+		"@storybook/react": "^6.3.0-alpha.19",
+		"@types/node": "^14.14.31",
+		"@vitejs/plugin-react-refresh": "^1.1.0",
+		"concurrently": "^6.0.2",
+		"microbundle": "^0.13.0",
+		"npm-run-all": "^4.1.5",
+		"sb": "^6.2.8",
+		"typescript": "^4.2.4",
+		"vite": "^2.0.1",
+		"vite-aliases": "^0.5.0",
+		"vite-preset-react": "^1.1.3"
+	}
+}
