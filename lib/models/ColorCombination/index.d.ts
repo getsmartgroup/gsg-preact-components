@@ -1,8 +1,8 @@
-import { AbstractWrapper } from 'asas-virtuais-ts';
 import { Color, ColorCombination } from 'gsg-airtable-data-sdk';
 declare type ColorCombination = ColorCombination.Type;
 export declare type Type = ColorCombination;
-export declare class Wrapper extends AbstractWrapper<ColorCombination> {
+export declare class Wrapper {
+    data: ColorCombination;
     getID(): string;
     constructor(combination: ColorCombination);
     coloredParts: {
