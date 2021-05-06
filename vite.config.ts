@@ -13,6 +13,15 @@ const config: UserConfig = {
 			'react-dom': 'preact/compat',
 		},
 	},
+	build: {
+		rollupOptions: {
+			output: {
+				entryFileNames: `assets/[name].js`,
+				chunkFileNames: `assets/[name].js`,
+				assetFileNames: `assets/[name].[ext]`
+			}
+		}
+	}
 }
 
 export default config

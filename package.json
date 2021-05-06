@@ -10,7 +10,6 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"start": "tsc && yarn dev",
 		"es5": "tsc -p tsconfig.json --target es6 --outDir es6 --module es6",
 		"es6": "tsc -p tsconfig.json --target es5 --outDir es5 --module commonjs",
 		"tsc": "concurrently \"npm run es5\" \"npm run es6\"",
@@ -28,6 +27,7 @@
 		"@emotion/react": "^11.1.5",
 		"@emotion/styled": "^11.1.5",
 		"framer-motion": "^3.7.0",
+		"gsg-airtable-data-sdk": "workspace:^undefined",
 		"preact": "^10.5.13",
 		"react-icons": "^4.2.0"
 	},

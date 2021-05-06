@@ -1,66 +1,53 @@
-import { AbstractWrapper } from 'asas-virtuais-ts'
-import { BaseQL } from 'asas-virtuais-airtable'
-import { Attachment } from 'airtable'
-import { ColorCombination } from 'gsg-airtable-data-sdk'
+import { Color, ColorCombination } from 'gsg-airtable-data-sdk'
+
+const retrieve = (url: string, query: string) => {
+	return fetch(url, {
+		method: 'POST',
+		body: JSON.stringify({ query: `{${query}}` }),
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json'
+		}
+	})
+		.then(e => e.json())
+		.then(e => e.data)
+}
 
 const url = 'https://api.baseql.com/airtable/graphql/appMt27Uj2WHfsPP7'
 
-type ColorCombination = {
-	id: string
-	product?: string
-	shell?: { name: string }[]
-	cabinet?: { name: string }[]
-	combinationImage?: Attachment[]
-	shellImage?: Attachment[]
-	cabinetImage?: Attachment[]
-	combinationColor?: { name: string }[]
-	combinationColorImage?: Attachment[]
-	cabinetColorImage?: Attachment[]
-	shellColorImage?: Attachment[]
-}
-
+type ColorCombination = ColorCombination.Type
 export type Type = ColorCombination
-export class Wrapper extends AbstractWrapper<ColorCombination> {
+export class Wrapper {
+	data: ColorCombination
+
 	getID() {
 		return this.data.id
 	}
 
 	constructor(combination: ColorCombination) {
-		super(combination)
+		this.data = combination
 		this.coloredParts = (['shell', 'cabinet'] as const).map(e => {
-			const partImage = combination[(e + 'Image') as 'shellImage' | 'cabinetImage']
-			const colorImage =
-				combination[(e + 'ColorImage') as 'shellColorImage' | 'cabinetColorImage']
+			const partImage =
+				combination[(e + 'Image') as 'shellImage' | 'cabinetImage']
 			return {
 				name: e,
 				image: partImage?.[0]?.url,
-				color: {
-					name: combination[e as 'shell' | 'cabinet']?.[0]?.name,
-					imgURL: colorImage?.[0]?.url,
-				},
+				color:
+					combination[
+						(e + 'Color') as 'shellColor' | 'cabinetColor'
+					]?.[0]
 			}
 		})
-		this.combinedColor = this.data.combinationColor?.[0]?.name
-			? {
-					name: combination?.combinationColor?.[0]?.name,
-					imgURL: combination?.combinationColorImage?.[0]?.url,
-			  }
-			: null
+		this.combinedColor = this.data.combinationColor?.[0] ?? null
 	}
 
 	coloredParts: {
 		name: string
-		color?: {
-			name?: string
-			imgURL?: string
-		}
+		color?: Color.Type
 		image?: string
 	}[]
 
-	combinedColor?: {
-		name?: string
-		imgURL?: string
-	} | null
+	combinedColor?: Color.Type | null
 
 	get combinedImage() {
 		return this.data.combinationImage?.[0]?.url
@@ -68,26 +55,29 @@ export class Wrapper extends AbstractWrapper<ColorCombination> {
 }
 
 export const getByProduct = async (product: string): Promise<Wrapper[]> =>
-	(BaseQL.retrieve(
+	(retrieve(
 		url,
 		`
 	productColorCombinations( product : "${product}" ) {
 		id
-		shell {
+		shellColor {
+			id
 			name
+			image
 		}
-		cabinet {
+		cabinetColor {
+			id
 			name
+			image
 		}
 		combinationImage
 		shellImage
 		cabinetImage
 		combinationColor {
+			id
 			name
+			image
 		}
-		combinationColorImage
-		cabinetColorImage
-		shellColorImage
 	}
 	`
 	) as Promise<any>)
@@ -95,4 +85,8 @@ export const getByProduct = async (product: string): Promise<Wrapper[]> =>
 			console.log(e)
 			return e
 		})
-		.then(e => e?.productColorCombinations?.map((e: ColorCombination) => new Wrapper(e)))
+		.then(e =>
+			e?.productColorCombinations?.map(
+				(e: ColorCombination) => new Wrapper(e)
+			)
+		)

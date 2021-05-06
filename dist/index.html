@@ -5,11 +5,34 @@
 		<link rel="icon" type="image/svg+xml" href="src/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Vite + React + Typescript + Chakra + Cypress</title>
-	<script type="module" crossorigin src="/assets/index.0205b147.js"></script>
-  <link rel="modulepreload" href="/assets/vendor.ff4d7db7.js">
+		<style>
+			.preview {
+				width: 100%;
+				max-width: 1100px;
+				margin: 80px auto;
+				border: 1px dashed rgba(0, 0, 0, 0.2);
+				position: relative;
+			}
+			.preview::before {
+				content: 'WIDGET PREVIEW';
+				position: absolute;
+				display: block;
+				top: -18px;
+				font-size: 11px;
+				color: rgba(0, 0, 0, 0.5);
+			}
+		</style>
+	<script type="module" crossorigin src="/assets/index.js"></script>
+  <link rel="modulepreload" href="/assets/vendor.js">
 </head>
+
 	<body>
-		<div id="root"></div>
+		<div data-widget-host="habitat" class="preview">
+			<script type="text/props">
+				{ "color": "red"}
+			</script>
+		</div>
+		<div data-component="ProductColors" product="Excursion ® Premier"></div>
 		
 	</body>
 </html>

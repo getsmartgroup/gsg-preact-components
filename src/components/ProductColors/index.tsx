@@ -3,6 +3,7 @@ import { useEffect } from 'preact/hooks'
 import { ColorCombination as Combination } from '../../models'
 import { Box } from '@chakra-ui/react'
 import { ContextProvider, useActions, useOverState, useUtils } from './context'
+import { Color } from 'gsg-airtable-data-sdk'
 
 type Props = {
 	product: string
@@ -29,14 +30,13 @@ const ColoredProduct = () => {
 
 	const images: string[] = selectedCombinedColor
 		? [
-				combinations.find(e => e?.combinedColor?.name === selectedCombinedColor)
-					?.combinedImage as string,
+				combinations.find(
+					e => e?.combinedColor?.name === selectedCombinedColor
+				)?.combinedImage as string
 		  ]
 		: selectedCombination?.combinedImage
 		? ([selectedCombination.combinedImage] as string[])
 		: (selectedCombination?.coloredParts?.map(p => p?.image) as string[])
-
-	console.log(images)
 
 	if (!images) {
 		return null
@@ -59,7 +59,7 @@ const ColorSelector = () => {
 		colorsIndex,
 		selectedPartColors,
 		combinedColors,
-		selectedCombinedColor,
+		selectedCombinedColor
 	} = useOverState()
 	const { selectPartColor, selectCombinedColor } = useActions()
 	const { isCompatiblePartColor } = useUtils()
@@ -75,21 +75,28 @@ const ColorSelector = () => {
 				const style = {
 					width: '60px',
 					outline:
-						selectedPartColors[part] === color.name ? '1px solid rgba(0,0,0,0.1)' : '',
-					opacity: compatible ? 1 : 0.5,
+						selectedPartColors[part] === color?.image
+							? '1px solid rgba(0,0,0,0.1)'
+							: '',
+					opacity: compatible ? 1 : 0.5
 				}
 				const item = (
-					<li style={style} onClick={() => selectPartColor(part, color?.name as string)}>
+					<li
+						style={style}
+						onClick={() =>
+							selectPartColor(part, color?.name as string)
+						}
+					>
 						<img
 							style={{
 								width: '60px',
 								height: '60px',
 								objectFit: 'cover',
 								position: 'static',
-								margin: 'auto',
+								margin: 'auto'
 							}}
-							src={color.imgURL}
-							alt={`${color.name} ${part}`}
+							src={color?.image?.[0]?.url ?? ''}
+							alt={`${color?.name} ${part}`}
 						/>
 					</li>
 				)
@@ -113,7 +120,7 @@ const ColorSelector = () => {
 							flexWrap: 'wrap',
 							listStyle: 'none',
 							margin: '0',
-							gap: '16px',
+							gap: '16px'
 						}}
 					>
 						{compatibleColors}
@@ -133,7 +140,7 @@ const ColorSelector = () => {
 							flexWrap: 'wrap',
 							listStyle: 'none',
 							margin: '0',
-							gap: '16px',
+							gap: '16px'
 						}}
 					>
 						{incompatibleColors}
@@ -154,16 +161,18 @@ const ColorSelector = () => {
 							style={{
 								width: '150px',
 								outline:
-									selectedCombinedColor === color.name
+									selectedCombinedColor === color?.name
 										? '1px solid rgba(0,0,0,0.1)'
-										: '',
+										: ''
 							}}
-							onClick={() => selectCombinedColor(color?.name as string)}
+							onClick={() =>
+								selectCombinedColor(color?.name as string)
+							}
 						>
 							<img
 								style={{ width: '100%' }}
-								src={color.imgURL}
-								alt={`${color.name}`}
+								src={color?.image?.[0]?.url}
+								alt={`${color?.name}`}
 							/>
 						</li>
 					)
@@ -181,7 +190,7 @@ const ColorSelector = () => {
 						flexWrap: 'wrap',
 						listStyle: 'none',
 						margin: '0',
-						gap: '16px',
+						gap: '16px'
 					}}
 				>
 					{items}
@@ -211,45 +220,73 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 		setColorsIndexedByPart,
 		setColorsIndex,
 		setCombinedColors,
+		selectCombinedColor,
+		selectPartColor
 	} = useActions()
-	const { error } = useOverState()
+	const {
+		error,
+		selectedPartColors,
+		selectedCombinedColor,
+		combinedColors,
+		colorsIndexedByPart
+	} = useOverState()
+	const { isCompatiblePartColor } = useUtils()
+	if (combinedColors?.[0]) {
+		const color = combinedColors[0]
+		if (!selectedCombinedColor && color) {
+			selectCombinedColor(color)
+		}
+	} else {
+		for (const [part, colors] of Object.entries(colorsIndexedByPart)) {
+			if (!selectedPartColors[part]) {
+				for (const color of colors) {
+					if (color) {
+						if (isCompatiblePartColor(part, color)) {
+							selectPartColor(part, color)
+						}
+					}
+				}
+			}
+		}
+	}
 
 	useEffect(() => {
 		Combination.getByProduct(product)
 			.then(combinations => {
 				setCombinations(combinations)
 				setColorsIndexedByPart(
-					combinations?.reduce<Record<string, string[]>>((index, combination) => {
-						combination?.coloredParts?.forEach(p => {
-							if (p.color) {
-								let array = index[p.name] ?? []
-								if (p.color.name && !array.includes(p.color.name)) {
-									array.push(p.color.name)
+					combinations?.reduce<Record<string, string[]>>(
+						(index, combination) => {
+							combination?.coloredParts?.forEach(p => {
+								if (p.color) {
+									let array = index[p.name] ?? []
+									if (
+										p.color.name &&
+										!array.includes(p.color.name)
+									) {
+										array.push(p.color.name)
+									}
+									index[p.name] = array
 								}
-								index[p.name] = array
-							}
-						})
-						return index
-					}, {}) ?? {}
+							})
+							return index
+						},
+						{}
+					) ?? {}
 				)
 				setColorsIndex(
 					combinations?.reduce(
-						(
-							acc: Record<
-								string,
-								{
-									name?: string
-									imgURL?: string
-								}
-							>,
-							e
-						) => {
-							if (e?.combinedColor?.name && !acc[e.combinedColor.name]) {
-								acc[e.combinedColor.name] = e.combinedColor
+						(acc: Record<string, Color.Type>, e) => {
+							if (
+								e?.combinedColor &&
+								e?.combinedColor?.name &&
+								!acc[e?.combinedColor?.name]
+							) {
+								acc[e?.combinedColor?.name] = e?.combinedColor
 							} else {
 								e.coloredParts.forEach(p => {
 									if (p.color?.name && !acc[p.color?.name]) {
-										acc[p.color.name] = p.color
+										acc[p?.color?.name] = p.color
 									}
 								})
 							}
@@ -260,7 +297,10 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 				)
 				setCombinedColors(
 					combinations?.reduce((acc: string[], c) => {
-						if (c?.combinedColor?.name && !acc.includes(c.combinedColor.name)) {
+						if (
+							c?.combinedColor?.name &&
+							!acc.includes(c.combinedColor.name)
+						) {
 							acc.push(c.combinedColor.name)
 						}
 						return acc

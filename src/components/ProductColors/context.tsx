@@ -8,7 +8,7 @@ type State = {
 	colorsIndexedByPart: Record<string, string[]>
 	error?: Error
 	colorsIndex?: {
-		[K: string]: Color.Type[]
+		[K: string]: Color.Type
 	}
 	selectedPartColors: Record<string, string>
 	selectedCombination?: ColorCombination.Wrapper
@@ -21,11 +21,15 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 	const setState = (s: Partial<State>) => {
 		state = {
 			...state,
-			...s,
+			...s
 		}
 		_setState(state)
 	}
-	const setProp = <T extends State = State, P extends keyof T = keyof T, V extends T[P] = T[P]>(
+	const setProp = <
+		T extends State = State,
+		P extends keyof T = keyof T,
+		V extends T[P] = T[P]
+	>(
 		p: P
 	) => (v: V) => setState({ [p]: v })
 
@@ -39,7 +43,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 
 	const selectCombinedColor = (color: string) => {
 		setState({
-			selectedCombinedColor: color,
+			selectedCombinedColor: color
 		})
 	}
 
@@ -48,12 +52,12 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 			setState({
 				selectedPartColors: {
 					...state.selectedPartColors,
-					[part]: color,
-				},
+					[part]: color
+				}
 			})
 		} else {
 			setState({
-				selectedPartColors: getSelectionCompatibleWith(part, color),
+				selectedPartColors: getSelectionCompatibleWith(part, color)
 			})
 		}
 	}
@@ -78,7 +82,8 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 			for (const coloredPart of combination.coloredParts) {
 				if (
 					coloredPart.color &&
-					state.selectedPartColors[coloredPart.name] === coloredPart.color.name
+					state.selectedPartColors[coloredPart.name] ===
+						coloredPart.color.name
 				) {
 					points++
 				}
@@ -96,7 +101,9 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		return selection
 	}
 
-	const getCompatibleCombinationsFor = (part: string): ColorCombination.Wrapper[] => {
+	const getCompatibleCombinationsFor = (
+		part: string
+	): ColorCombination.Wrapper[] => {
 		const selected = state.selectedPartColors
 		return state.combinations.filter(combination => {
 			// Loop through the combination parts
@@ -139,7 +146,8 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 				for (const coloredPart of e.coloredParts) {
 					if (
 						!state.selectedPartColors[coloredPart.name] ||
-						state.selectedPartColors[coloredPart.name] !== coloredPart?.color?.name
+						state.selectedPartColors[coloredPart.name] !==
+							coloredPart?.color?.name
 					) {
 						return false
 					}
@@ -157,7 +165,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		setColorsIndex,
 		setCombinedColors,
 		selectPartColor,
-		selectCombinedColor,
+		selectCombinedColor
 	}
 
 	const utilities = {
@@ -165,13 +173,13 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		getCompatibleColorsFor,
 		isCompatiblePartColor,
 		getSelectionCompatibleWith,
-		getSelectedCombination,
+		getSelectedCombination
 	}
 
 	return {
 		state,
 		actions,
-		utilities,
+		utilities
 	}
 }
 
@@ -183,14 +191,20 @@ export const useOverState = (): State => useContext(context)?.state as State
 export const useActions = (): ReturnType<typeof makeContext>['actions'] =>
 	useContext(context)?.actions as ReturnType<typeof makeContext>['actions']
 export const useUtils = (): ReturnType<typeof makeContext>['utilities'] =>
-	useContext(context)?.utilities as ReturnType<typeof makeContext>['utilities']
+	useContext(context)?.utilities as ReturnType<
+		typeof makeContext
+	>['utilities']
 
 export const ContextProvider: FunctionalComponent = ({ children }) => {
 	const [state, setState] = useState<State>({
 		combinations: [],
 		colorsIndexedByPart: {},
-		selectedPartColors: {},
+		selectedPartColors: {}
 	})
 
-	return <context.Provider value={makeContext(state, setState)}>{children}</context.Provider>
+	return (
+		<context.Provider value={makeContext(state, setState)}>
+			{children}
+		</context.Provider>
+	)
 }
