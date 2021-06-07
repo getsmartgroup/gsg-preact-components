@@ -1,7 +1,7 @@
 import { createContext, FunctionalComponent, h } from 'preact'
 import { StateUpdater, useState, useContext } from 'preact/hooks'
 import { ColorCombination } from '../../models'
-import { Color } from 'gsg-airtable-data-sdk'
+import { Color } from 'gsg-airtable-sdk'
 
 type State = {
 	combinations: ColorCombination.Wrapper[]

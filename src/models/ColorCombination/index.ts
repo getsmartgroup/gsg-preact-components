@@ -1,4 +1,4 @@
-import { Color, ColorCombination } from 'gsg-airtable-data-sdk'
+import { Color, ColorCombination } from 'gsg-airtable-sdk'
 
 const retrieve = (url: string, query: string) => {
 	return fetch(url, {

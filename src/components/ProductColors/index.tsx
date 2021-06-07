@@ -3,7 +3,7 @@ import { useEffect } from 'preact/hooks'
 import { ColorCombination as Combination } from '../../models'
 import { Box } from '@chakra-ui/react'
 import { ContextProvider, useActions, useOverState, useUtils } from './context'
-import { Color } from 'gsg-airtable-data-sdk'
+import { Color } from 'gsg-airtable-sdk'
 
 type Props = {
 	product: string
