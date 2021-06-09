@@ -26,6 +26,7 @@
 		"@chakra-ui/react": "^1.3.3",
 		"@emotion/react": "^11.1.5",
 		"@emotion/styled": "^11.1.5",
+		"airtable": "^0.11.1",
 		"evosus-swaggerhub-sdk": "workspace:^6.6.4",
 		"framer-motion": "^3.7.0",
 		"gsg-airtable-sdk": "workspace:^1.0.0",

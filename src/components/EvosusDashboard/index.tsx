@@ -58,7 +58,7 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 	const [productLine, setProductLine] = useState<null | string>(null)
 	const [syncFields, setSyncFields] = useState<string[]>(['price', 'quantity', 'name', 'weight'])
 	const [syncing, setSyncing] = useState<boolean>(false)
-	const [syncResults, setSyncResults] = useState<any>(null)
+	const [_syncResults, setSyncResults] = useState<any>(null)
 
 	// Init
 	useEffect(() => {

@@ -2,6 +2,7 @@ import { createContext, FunctionalComponent, h } from 'preact'
 import { StateUpdater, useState, useContext } from 'preact/hooks'
 import { ColorCombination } from '../../models'
 import { Color } from 'gsg-airtable-sdk'
+import 'airtable/lib/attachment'
 
 type State = {
 	combinations: ColorCombination.Wrapper[]
@@ -25,13 +26,8 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		}
 		_setState(state)
 	}
-	const setProp = <
-		T extends State = State,
-		P extends keyof T = keyof T,
-		V extends T[P] = T[P]
-	>(
-		p: P
-	) => (v: V) => setState({ [p]: v })
+	const setProp = <T extends State = State, P extends keyof T = keyof T, V extends T[P] = T[P]>(p: P) => (v: V) =>
+		setState({ [p]: v })
 
 	const setCombinations = setProp('combinations')
 	const setError = setProp('error')
@@ -66,11 +62,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		const selection: Record<string, string> = {}
 		const combinations = state.combinations.filter(c => {
 			for (const coloredPart of c.coloredParts) {
-				if (
-					coloredPart.name === part &&
-					coloredPart.color &&
-					coloredPart.color.name !== color
-				) {
+				if (coloredPart.name === part && coloredPart.color && coloredPart.color.name !== color) {
 					return false
 				}
 			}
@@ -80,11 +72,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		for (const combination of combinations) {
 			let points = 0
 			for (const coloredPart of combination.coloredParts) {
-				if (
-					coloredPart.color &&
-					state.selectedPartColors[coloredPart.name] ===
-						coloredPart.color.name
-				) {
+				if (coloredPart.color && state.selectedPartColors[coloredPart.name] === coloredPart.color.name) {
 					points++
 				}
 			}
@@ -101,9 +89,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		return selection
 	}
 
-	const getCompatibleCombinationsFor = (
-		part: string
-	): ColorCombination.Wrapper[] => {
+	const getCompatibleCombinationsFor = (part: string): ColorCombination.Wrapper[] => {
 		const selected = state.selectedPartColors
 		return state.combinations.filter(combination => {
 			// Loop through the combination parts
@@ -146,8 +132,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 				for (const coloredPart of e.coloredParts) {
 					if (
 						!state.selectedPartColors[coloredPart.name] ||
-						state.selectedPartColors[coloredPart.name] !==
-							coloredPart?.color?.name
+						state.selectedPartColors[coloredPart.name] !== coloredPart?.color?.name
 					) {
 						return false
 					}
@@ -191,9 +176,7 @@ export const useOverState = (): State => useContext(context)?.state as State
 export const useActions = (): ReturnType<typeof makeContext>['actions'] =>
 	useContext(context)?.actions as ReturnType<typeof makeContext>['actions']
 export const useUtils = (): ReturnType<typeof makeContext>['utilities'] =>
-	useContext(context)?.utilities as ReturnType<
-		typeof makeContext
-	>['utilities']
+	useContext(context)?.utilities as ReturnType<typeof makeContext>['utilities']
 
 export const ContextProvider: FunctionalComponent = ({ children }) => {
 	const [state, setState] = useState<State>({
@@ -202,9 +185,5 @@ export const ContextProvider: FunctionalComponent = ({ children }) => {
 		selectedPartColors: {}
 	})
 
-	return (
-		<context.Provider value={makeContext(state, setState)}>
-			{children}
-		</context.Provider>
-	)
+	return <context.Provider value={makeContext(state, setState)}>{children}</context.Provider>
 }
