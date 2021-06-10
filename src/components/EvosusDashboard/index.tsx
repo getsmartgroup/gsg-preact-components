@@ -66,10 +66,12 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 		validateProps(props)
 			.then(({ ticket, companySN }) =>
 				// Fetch Product Lines
-				fetchProductLines(new evosus.InventoryApi(), { ticket, companySN }).then(setProductLines)
+				fetchProductLines(new evosus.InventoryApi(), { ticket, companySN })
+					.then(setProductLines)
+					.then(setErrorMessage.bind(null, null))
 			)
 			.catch(setErrorMessage)
-	}, [])
+	}, [props])
 
 	const syncProducts = () => {
 		setSyncing(true)
