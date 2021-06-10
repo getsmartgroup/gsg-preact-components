@@ -1,4 +1,5 @@
 import { render, h } from 'preact'
+import * as Components from './components'
 
 window?.addEventListener('load', () => {
 	document.querySelectorAll(`[data-component]`).forEach(e => {
@@ -13,11 +14,10 @@ window?.addEventListener('load', () => {
 			return props
 		}, {})
 		if (name) {
-			import(`./components/${name}`).then(Component => {
-				if (Component) {
-					render(<Component.default {...props} />, e)
-				}
-			})
+			const Component = (Components as Record<string, any>)[name]
+			if (Component) {
+				render(<Component {...props} />, e)
+			}
 		}
 	})
 })
