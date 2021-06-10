@@ -1,5 +1,6 @@
 import * as evosus from 'evosus-swaggerhub-sdk/es6/axios'
-
+import { Product } from 'wc-rest-ts'
+import { Table, Thead, Tbody, Tfoot, Tr, Th, Td } from '@chakra-ui/react'
 import { FunctionalComponent, h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import {
@@ -52,13 +53,27 @@ const fetchProductLines = async (
 	return Promise.resolve(productLines)
 }
 
+type Results = Array<
+	| {
+			status: 'fulfilled'
+			value: {
+				update?: Product.Type[]
+				create?: Product.Type[]
+			}
+	  }
+	| {
+			status: 'rejected'
+			value: unknown
+	  }
+>
+
 const EvosusDashboard: FunctionalComponent<Props> = props => {
 	const [productLines, setProductLines] = useState<null | evosus.ProductLine[]>(null)
 	const [errorMessage, setErrorMessage] = useState<null | string>(null)
 	const [productLine, setProductLine] = useState<null | string>(null)
 	const [syncFields, setSyncFields] = useState<string[]>(['price', 'quantity', 'name', 'weight'])
 	const [syncing, setSyncing] = useState<boolean>(false)
-	const [_syncResults, setSyncResults] = useState<any>(null)
+	const [syncResults, setSyncResults] = useState<Results | null>(null)
 
 	// Init
 	useEffect(() => {
@@ -167,6 +182,69 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 								</Button>
 							</Box>
 							<Box>{syncing ? 'Syncing...' : null}</Box>
+
+							<Accordion allowMultiple>
+								{syncResults?.map(res => {
+									return (
+										<AccordionItem bg={res.status === 'fulfilled' ? 'green.400' : 'red.400'}>
+											<AccordionButton>
+												<Box flex='1' textAlign='left'>
+													{res.status === 'fulfilled' ? 'Success' : 'Failure'}
+													{': '}
+													{res.status === 'fulfilled'
+														? res.value.update?.length || res.value.create?.length
+														: null}{' '}
+													{res.status === 'fulfilled'
+														? res.value.update
+															? 'Updated'
+															: res.value.create
+															? 'Created'
+															: null
+														: null}
+												</Box>
+												<AccordionIcon />
+											</AccordionButton>
+											<AccordionPanel pb={4} bg='white'>
+												<Table variant='simple'>
+													<Thead>
+														<Tr>
+															<Th>ID#</Th>
+															<Th>Name</Th>
+															<Th>SKU</Th>
+															<Th>Quanitity</Th>
+															<Th>Price</Th>
+														</Tr>
+													</Thead>
+													<Tbody>
+														{res.status === 'fulfilled'
+															? (res.value.update || res.value.create)?.map(product => {
+																	return (
+																		<Tr>
+																			<Td>{product.id}</Td>
+																			<Td>{product.name}</Td>
+																			<Td>{product.sku}</Td>
+																			<Td>{product.stock_quantity}</Td>
+																			<Td>{product.price}</Td>
+																		</Tr>
+																	)
+															  })
+															: null}
+													</Tbody>
+													<Tfoot>
+														<Tr>
+															<Th>ID#</Th>
+															<Th>Name</Th>
+															<Th>SKU</Th>
+															<Th>Quanitity</Th>
+															<Th>Price</Th>
+														</Tr>
+													</Tfoot>
+												</Table>
+											</AccordionPanel>
+										</AccordionItem>
+									)
+								})}
+							</Accordion>
 						</VStack>
 					</AccordionPanel>
 				</AccordionItem>
