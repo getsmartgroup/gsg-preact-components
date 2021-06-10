@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact'
-import { Box, HStack, Heading, Stack } from '@chakra-ui/react'
+import { Box, HStack, Heading, Stack, ChakraProvider } from '@chakra-ui/react'
 import { useEffect, useState } from 'preact/hooks'
 import Cookies from 'js-cookie'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
@@ -109,48 +109,50 @@ const WordpressDashboard: FunctionalComponent<Props> = ({ nonce, siteurl, cookie
 	}
 
 	return (
-		<Box>
-			<HStack as='header' justifyContent='center' alignItems='center'>
-				<Heading>Get Smart Plugin</Heading>
-				{fetching || saving ? <Spinner /> : null}
-			</HStack>
-			<Tabs variant='soft-rounded' colorScheme='blue'>
-				<TabList>
-					<Tab>GSG</Tab>
-					<Tab>WooCommerce</Tab>
-					<Tab>Evosus</Tab>
-				</TabList>
-				<TabPanels>
-					<TabPanel>
-						<Heading size='sm'>GSG Config</Heading>
-						<Stack spacing={3}>
-							{optionInput(options, 'clientID', 'Client ID')}
-							{optionInput(options, 'gsgToken', 'GSG Token')}
-						</Stack>
-					</TabPanel>
-					<TabPanel>
-						<Heading size='sm'>WooCommerce Config</Heading>
-						<Stack spacing={3}>
-							{optionInput(options.wc.access, 'key', 'WC REST API Key')}
-							{optionInput(options.wc.access, 'secret', 'WC REST API Secret')}
-						</Stack>
-					</TabPanel>
-					<TabPanel>
-						<Heading size='sm'>Evosus Config</Heading>
-						<Stack spacing={3}>
-							{optionInput(options.evosus.access, 'companySN', 'Evosus Company SN')}
-							{optionInput(options.evosus.access, 'ticket', 'Evosus Ticket')}
-						</Stack>
-						<EvosusDashboard
-							clientID={options.clientID}
-							gsgToken={options.gsgToken}
-							companySN={options.evosus.access.companySN}
-							ticket={options.evosus.access.ticket}
-						/>
-					</TabPanel>
-				</TabPanels>
-			</Tabs>
-		</Box>
+		<ChakraProvider>
+			<Box>
+				<HStack as='header' justifyContent='center' alignItems='center'>
+					<Heading>Get Smart Plugin</Heading>
+					{fetching || saving ? <Spinner /> : null}
+				</HStack>
+				<Tabs variant='soft-rounded' colorScheme='blue'>
+					<TabList>
+						<Tab>GSG</Tab>
+						<Tab>WooCommerce</Tab>
+						<Tab>Evosus</Tab>
+					</TabList>
+					<TabPanels>
+						<TabPanel>
+							<Heading size='sm'>GSG Config</Heading>
+							<Stack spacing={3}>
+								{optionInput(options, 'clientID', 'Client ID')}
+								{optionInput(options, 'gsgToken', 'GSG Token')}
+							</Stack>
+						</TabPanel>
+						<TabPanel>
+							<Heading size='sm'>WooCommerce Config</Heading>
+							<Stack spacing={3}>
+								{optionInput(options.wc.access, 'key', 'WC REST API Key')}
+								{optionInput(options.wc.access, 'secret', 'WC REST API Secret')}
+							</Stack>
+						</TabPanel>
+						<TabPanel>
+							<Heading size='sm'>Evosus Config</Heading>
+							<Stack spacing={3}>
+								{optionInput(options.evosus.access, 'companySN', 'Evosus Company SN')}
+								{optionInput(options.evosus.access, 'ticket', 'Evosus Ticket')}
+							</Stack>
+							<EvosusDashboard
+								clientID={options.clientID}
+								gsgToken={options.gsgToken}
+								companySN={options.evosus.access.companySN}
+								ticket={options.evosus.access.ticket}
+							/>
+						</TabPanel>
+					</TabPanels>
+				</Tabs>
+			</Box>
+		</ChakraProvider>
 	)
 }
 

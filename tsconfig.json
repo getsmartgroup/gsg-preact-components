@@ -4,7 +4,7 @@
 		"rootDir": "src",
 		"target": "ESNext",
 		"outDir": "lib",
-		"module": "commonjs",
+		"module": "ESNext",
 		"moduleResolution": "node",
 		/* Save .tsbuildinfo files to allow for incremental compilation of projects. */
 		"incremental": false,

@@ -1,4 +1,4 @@
-import * as evosus from 'evosus-swaggerhub-sdk/es5/axios'
+import * as evosus from 'evosus-swaggerhub-sdk/es6/axios'
 
 import { FunctionalComponent, h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
