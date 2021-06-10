@@ -10,7 +10,7 @@ export type Props = {
 	nonce: string
 	cookieHash?: string
 	cookieValue?: string
-	siteURL: string
+	siteurl: string
 }
 
 type Options = {
@@ -30,7 +30,7 @@ type Options = {
 	}
 }
 
-const RestAPI = ({ nonce, siteURL, cookieHash, cookieValue }: Props) => {
+const RestAPI = ({ nonce, siteurl, cookieHash, cookieValue }: Props) => {
 	if (cookieHash && cookieValue) {
 		Cookies.set(cookieHash, cookieValue)
 	}
@@ -40,12 +40,12 @@ const RestAPI = ({ nonce, siteURL, cookieHash, cookieValue }: Props) => {
 	}
 	return {
 		get: () =>
-			fetch(`${siteURL}/wp-json/gsg/v1/options`, {
+			fetch(`${siteurl}/wp-json/gsg/v1/options`, {
 				headers,
 				credentials: 'include'
 			}).then(res => res.json() as Promise<Options>),
 		set: (options: Options) =>
-			fetch(`${siteURL}/wp-json/gsg/v1/options`, {
+			fetch(`${siteurl}/wp-json/gsg/v1/options`, {
 				headers,
 				credentials: 'include',
 				method: 'POST',
@@ -54,8 +54,8 @@ const RestAPI = ({ nonce, siteURL, cookieHash, cookieValue }: Props) => {
 	}
 }
 
-const WordpressDashboard: FunctionalComponent<Props> = ({ nonce, siteURL, cookieHash, cookieValue }) => {
-	const api = RestAPI({ nonce, siteURL, cookieHash, cookieValue })
+const WordpressDashboard: FunctionalComponent<Props> = ({ nonce, siteurl, cookieHash, cookieValue }) => {
+	const api = RestAPI({ nonce, siteurl, cookieHash, cookieValue })
 	const [saving, setSaving] = useBoolean(false)
 	const [fetching, setFetching] = useBoolean(true)
 	const [options, setOptions] = useState<Options>({
@@ -79,10 +79,10 @@ const WordpressDashboard: FunctionalComponent<Props> = ({ nonce, siteURL, cookie
 		api.get()
 			.then(options => (options ? setOptions(options) : null))
 			.finally(setFetching.off.bind(null))
-	}, [nonce, siteURL, cookieHash, cookieValue])
+	}, [nonce, siteurl, cookieHash, cookieValue])
 	useEffect(() => {
 		if (!fetching) {
-			const api = RestAPI({ nonce, siteURL, cookieHash, cookieValue })
+			const api = RestAPI({ nonce, siteurl, cookieHash, cookieValue })
 			setSaving.on()
 			api.set(options).finally(setSaving.off.bind(null))
 		}
