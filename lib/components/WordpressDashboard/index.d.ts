@@ -1,3 +1,9 @@
-import { h } from 'preact';
-declare const _default: () => h.JSX.Element;
-export default _default;
+import { FunctionalComponent } from 'preact';
+export declare type Props = {
+    nonce: string;
+    cookieHash?: string;
+    cookieValue?: string;
+    siteURL: string;
+};
+declare const WordpressDashboard: FunctionalComponent<Props>;
+export default WordpressDashboard;
