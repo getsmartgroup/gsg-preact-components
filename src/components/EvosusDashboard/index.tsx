@@ -91,7 +91,7 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 	const syncProducts = () => {
 		setSyncing(true)
 		fetch(
-			`https://us-central1-get-smart-functions.cloudfunctions.net/main/evosus/products/sync?client=${props.clientID}`,
+			`https://us-west4-get-smart-functions.cloudfunctions.net/main/evosus/products/sync?client=${props.clientID}`,
 			{
 				method: 'POST',
 				body: JSON.stringify({
