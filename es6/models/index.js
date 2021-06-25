@@ -1,0 +1,3 @@
+import * as ColorCombination_1 from './ColorCombination';
+export { ColorCombination_1 as ColorCombination };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvbW9kZWxzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJvQ0FBa0Msb0JBQW9COytCQUExQyxnQkFBZ0IifQ==

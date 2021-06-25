@@ -1,0 +1,6 @@
+import { h } from 'preact';
+import ProductColors from '.';
+export const ProductColorsStory = () => h(ProductColors, { product: 'Provence\u2122' });
+ProductColorsStory.title = 'Product Colors Story';
+export default ProductColorsStory;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3RvcnkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9uZW50cy9Qcm9kdWN0Q29sb3JzL3N0b3J5LnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsQ0FBQyxFQUFFLE1BQU0sUUFBUSxDQUFBO0FBQzFCLE9BQU8sYUFBYSxNQUFNLEdBQUcsQ0FBQTtBQUU3QixNQUFNLENBQUMsTUFBTSxrQkFBa0IsR0FBRyxHQUFHLEVBQUUsQ0FBQyxFQUFDLGFBQWEsSUFBQyxPQUFPLEVBQUMsZ0JBQVcsR0FBRyxDQUFBO0FBRTdFLGtCQUFrQixDQUFDLEtBQUssR0FBRyxzQkFBc0IsQ0FBQTtBQUVqRCxlQUFlLGtCQUFrQixDQUFBIn0=

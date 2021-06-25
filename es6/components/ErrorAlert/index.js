@@ -1,0 +1,8 @@
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from '@chakra-ui/react';
+import { h } from 'preact';
+const ErrorAlert = ({ children }) => (h(Alert, { status: 'error' },
+    h(AlertIcon, null),
+    h(AlertTitle, { mr: 2 }, children),
+    h(AlertDescription, null)));
+export default ErrorAlert;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9uZW50cy9FcnJvckFsZXJ0L2luZGV4LnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsS0FBSyxFQUFFLGdCQUFnQixFQUFFLFNBQVMsRUFBRSxVQUFVLEVBQUUsTUFBTSxrQkFBa0IsQ0FBQTtBQUNqRixPQUFPLEVBQXVCLENBQUMsRUFBRSxNQUFNLFFBQVEsQ0FBQTtBQUUvQyxNQUFNLFVBQVUsR0FBd0IsQ0FBQyxFQUFFLFFBQVEsRUFBRSxFQUFFLEVBQUUsQ0FBQyxDQUN6RCxFQUFDLEtBQUssSUFBQyxNQUFNLEVBQUMsT0FBTztJQUNwQixFQUFDLFNBQVMsT0FBRztJQUNiLEVBQUMsVUFBVSxJQUFDLEVBQUUsRUFBRSxDQUFDLElBQUcsUUFBUSxDQUFjO0lBQzFDLEVBQUMsZ0JBQWdCLE9BQW9CLENBQzlCLENBQ1IsQ0FBQTtBQUVELGVBQWUsVUFBVSxDQUFBIn0=

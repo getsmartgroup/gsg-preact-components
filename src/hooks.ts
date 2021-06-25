@@ -22,3 +22,14 @@ export const usePromiseCall = <T extends any = any>(promiseCall?: () => Promise<
 		loading
 	}
 }
+
+export const useArray = <T>(data: T[]) => {
+	const [array, set] = useState<T[]>(data)
+	return {
+		array,
+		set,
+		push: (data: T) => set([...array, data]),
+		concat: (data: T[]) => set([...array, ...data]),
+		remove: (data: T) => set(array.filter(e => e !== data))
+	}
+}
