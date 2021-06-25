@@ -6,7 +6,6 @@ import { useEffect, useState } from 'preact/hooks'
 import {
 	Box,
 	Heading,
-	Flex,
 	Radio,
 	RadioGroup,
 	SimpleGrid,
@@ -24,6 +23,7 @@ import {
 	AlertTitle,
 	AlertDescription
 } from '@chakra-ui/react'
+import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 
 export type Props = {
 	companySN: string
@@ -137,118 +137,110 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 					</Alert>
 				) : null}
 			</Box>
-			<Accordion allowMultiple>
-				<AccordionItem>
-					<AccordionButton w='100%'>
-						<Flex w='100%' alignItems='center' justifyContent='space-between'>
-							<Heading size='md'>Sync Products</Heading>
-							<AccordionIcon />
-						</Flex>
-					</AccordionButton>
-					<AccordionPanel pb={4}>
-						<VStack
-							w='100%'
-							justifyContent='stretch'
-							alignItems='stretch'
-							alignContent='stretch'
-							justifyItems='stretch'
-						>
-							<Heading size='sm'>Select a product Line</Heading>
-							{productLines === null ? 'Loading Product Lines' : null}
-							<RadioGroup onChange={setProductLine} value={productLine ?? ''}>
-								<SimpleGrid columns={2}>
-									{productLines?.map(({ ProductLine, ProductLineID }) => (
-										<Radio value={ProductLineID?.toString()}>{ProductLine}</Radio>
-									))}
-								</SimpleGrid>
-							</RadioGroup>
-							<Heading size='sm'>Select which properties should be synced</Heading>
-							<CheckboxGroup onChange={(s: string[]) => setSyncFields(s)} value={syncFields}>
-								<SimpleGrid>
-									<Checkbox value='name'>Product Name</Checkbox>
-									<Checkbox value='price'>Price</Checkbox>
-									<Checkbox value='quantity'>Quantity</Checkbox>
-									<Checkbox value='weight'>Weight</Checkbox>
-								</SimpleGrid>
-							</CheckboxGroup>
-							<Box>
-								<Button
-									onClick={syncProducts}
-									w='100%'
-									mt={8}
-									disabled={syncing || !productLine || syncFields.length === 0}
-								>
-									Sync Products
-								</Button>
-							</Box>
-							<Box>{syncing ? 'Syncing...' : null}</Box>
+			<SimpleAccordion>
+				<SimplePanel title='Sync Products'>
+					<VStack
+						w='100%'
+						justifyContent='stretch'
+						alignItems='stretch'
+						alignContent='stretch'
+						justifyItems='stretch'
+					>
+						<Heading size='sm'>Select a product Line</Heading>
+						{productLines === null ? 'Loading Product Lines' : null}
+						<RadioGroup onChange={setProductLine} value={productLine ?? ''}>
+							<SimpleGrid columns={2}>
+								{productLines?.map(({ ProductLine, ProductLineID }) => (
+									<Radio value={ProductLineID?.toString()}>{ProductLine}</Radio>
+								))}
+							</SimpleGrid>
+						</RadioGroup>
+						<Heading size='sm'>Select which properties should be synced</Heading>
+						<CheckboxGroup onChange={(s: string[]) => setSyncFields(s)} value={syncFields}>
+							<SimpleGrid>
+								<Checkbox value='name'>Product Name</Checkbox>
+								<Checkbox value='price'>Price</Checkbox>
+								<Checkbox value='quantity'>Quantity</Checkbox>
+								<Checkbox value='weight'>Weight</Checkbox>
+							</SimpleGrid>
+						</CheckboxGroup>
+						<Box>
+							<Button
+								onClick={syncProducts}
+								w='100%'
+								mt={8}
+								disabled={syncing || !productLine || syncFields.length === 0}
+							>
+								Sync Products
+							</Button>
+						</Box>
+						<Box>{syncing ? 'Syncing...' : null}</Box>
 
-							<Accordion allowMultiple>
-								{syncResults?.map(res => {
-									return (
-										<AccordionItem bg={res.status === 'fulfilled' ? 'green.400' : 'red.400'}>
-											<AccordionButton>
-												<Box flex='1' textAlign='left'>
-													{res.status === 'fulfilled' ? 'Success' : 'Failure'}
-													{': '}
+						<Accordion allowMultiple>
+							{syncResults?.map(res => {
+								return (
+									<AccordionItem bg={res.status === 'fulfilled' ? 'green.400' : 'red.400'}>
+										<AccordionButton>
+											<Box flex='1' textAlign='left'>
+												{res.status === 'fulfilled' ? 'Success' : 'Failure'}
+												{': '}
+												{res.status === 'fulfilled'
+													? res.value.update?.length || res.value.create?.length
+													: null}{' '}
+												{res.status === 'fulfilled'
+													? res.value.update
+														? 'Updated'
+														: res.value.create
+														? 'Created'
+														: null
+													: null}
+											</Box>
+											<AccordionIcon />
+										</AccordionButton>
+										<AccordionPanel pb={4} bg='white'>
+											<Table variant='simple'>
+												<Thead>
+													<Tr>
+														<Th>ID#</Th>
+														<Th>Name</Th>
+														<Th>SKU</Th>
+														<Th>Quanitity</Th>
+														<Th>Price</Th>
+													</Tr>
+												</Thead>
+												<Tbody>
 													{res.status === 'fulfilled'
-														? res.value.update?.length || res.value.create?.length
-														: null}{' '}
-													{res.status === 'fulfilled'
-														? res.value.update
-															? 'Updated'
-															: res.value.create
-															? 'Created'
-															: null
+														? (res.value.update || res.value.create)?.map(product => {
+																return (
+																	<Tr>
+																		<Td>{product.id}</Td>
+																		<Td>{product.name}</Td>
+																		<Td>{product.sku}</Td>
+																		<Td>{product.stock_quantity}</Td>
+																		<Td>{product.price}</Td>
+																	</Tr>
+																)
+														  })
 														: null}
-												</Box>
-												<AccordionIcon />
-											</AccordionButton>
-											<AccordionPanel pb={4} bg='white'>
-												<Table variant='simple'>
-													<Thead>
-														<Tr>
-															<Th>ID#</Th>
-															<Th>Name</Th>
-															<Th>SKU</Th>
-															<Th>Quanitity</Th>
-															<Th>Price</Th>
-														</Tr>
-													</Thead>
-													<Tbody>
-														{res.status === 'fulfilled'
-															? (res.value.update || res.value.create)?.map(product => {
-																	return (
-																		<Tr>
-																			<Td>{product.id}</Td>
-																			<Td>{product.name}</Td>
-																			<Td>{product.sku}</Td>
-																			<Td>{product.stock_quantity}</Td>
-																			<Td>{product.price}</Td>
-																		</Tr>
-																	)
-															  })
-															: null}
-													</Tbody>
-													<Tfoot>
-														<Tr>
-															<Th>ID#</Th>
-															<Th>Name</Th>
-															<Th>SKU</Th>
-															<Th>Quanitity</Th>
-															<Th>Price</Th>
-														</Tr>
-													</Tfoot>
-												</Table>
-											</AccordionPanel>
-										</AccordionItem>
-									)
-								})}
-							</Accordion>
-						</VStack>
-					</AccordionPanel>
-				</AccordionItem>
-			</Accordion>
+												</Tbody>
+												<Tfoot>
+													<Tr>
+														<Th>ID#</Th>
+														<Th>Name</Th>
+														<Th>SKU</Th>
+														<Th>Quanitity</Th>
+														<Th>Price</Th>
+													</Tr>
+												</Tfoot>
+											</Table>
+										</AccordionPanel>
+									</AccordionItem>
+								)
+							})}
+						</Accordion>
+					</VStack>
+				</SimplePanel>
+			</SimpleAccordion>
 		</Box>
 	)
 }

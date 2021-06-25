@@ -9,7 +9,7 @@
 	"source": "src/index.tsx",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build",
+		"build": "vite build",
 		"es5": "tsc -p tsconfig.json --target es6 --outDir es6 --module es6",
 		"es6": "tsc -p tsconfig.json --target es5 --outDir es5 --module commonjs",
 		"tsc": "concurrently \"npm run es5\" \"npm run es6\"",
@@ -30,7 +30,9 @@
 		"airtable": "^0.11.1",
 		"evosus-swaggerhub-sdk": "workspace:^6.6.4",
 		"framer-motion": "^3.7.0",
+		"get-smart-client": "workspace:^1.0.0",
 		"gsg-airtable-sdk": "workspace:^1.0.0",
+		"gsg-rb-ts": "workspace:^1.0.0",
 		"js-cookie": "^2.2.1",
 		"preact": "^10.5.13",
 		"react-icons": "^4.2.0",

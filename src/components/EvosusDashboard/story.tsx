@@ -14,8 +14,8 @@ export default {
 
 const Template: Story<Props> = props => <EvosusDashboard {...props} />
 
-export const EvosusDashboardsStory = Template.bind({})
-EvosusDashboardsStory.args = {
+export const EvosusDashboardStory = Template.bind({})
+EvosusDashboardStory.args = {
 	companySN: process.env.STORYBOOK_EVOSUS_COMPANY_SN,
 	ticket: process.env.STORYBOOK_EVOSUS_TICKET,
 	gsgToken: process.env.STORYBOOK_GSG_TOKEN,
