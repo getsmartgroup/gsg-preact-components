@@ -1,22 +1,21 @@
 import { FunctionalComponent, h } from 'preact'
 import { rb, wc } from 'gsg-integrations'
-import { useArray, usePromiseCall } from '../../hooks'
+import { useArray, usePromiseCall, useRB, useWC } from '../../hooks'
 import { useCallback, useState } from 'preact/hooks'
 import { Button, Heading, Tr, Td, useBoolean, VStack, Thead, Checkbox } from '@chakra-ui/react'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { SimpleTable } from '../SimpleTable'
 import RadioOptions from '../RadioOptions'
+import { useANet } from '../../hooks'
 
-export type Props = {
-	rbC: rb.RBClient
-	wcC: wc.WCClient
-}
-
-const RBDashboard: FunctionalComponent<Props> = ({ rbC, wcC }) => {
+const RBDashboard: FunctionalComponent = () => {
+	const { client: wcC } = useWC()
+	const { client: rbC } = useRB()
+	const { client: anC } = useANet()
 	const depts = usePromiseCall(useCallback(rbC.getDepartments, [rbC]), [rbC])
 	const [dept, setDept] = useState<string | null>(null)
 	const cats = usePromiseCall(
-		useCallback(dept ? rbC.getCategories.bind(null, dept) : () => Promise.resolve([]), [dept]),
+		useCallback(dept ? rbC.getCategories.bind(null, dept) : () => Promise.reject('No dept selected'), [dept]),
 		[dept]
 	)
 	const [cat, setCat] = useState<string | null>(null)
@@ -41,10 +40,16 @@ const RBDashboard: FunctionalComponent<Props> = ({ rbC, wcC }) => {
 			.finally(setSyncing.off)
 	}, [dept, cat])
 	const orders = usePromiseCall(
-		useCallback(() => wcC.Order.crud.list({}), [wcC]),
+		useCallback(() => wcC.Order.crud.list({ status: 'processing' }), [wcC]),
 		[wcC]
 	)
-	const orderIDs = useArray<string[]>([])
+	const orderIds = useArray<string>([])
+	const results = useArray<string[]>([])
+	const postOrders = useCallback(() => {
+		if (orders.resolved && orderIds.array.length > 0) {
+			rb.postWCOrders(rbC, wcC, anC)(orders.resolved.filter(o => orderIds.array.includes(o.id.toString())))
+		}
+	}, [orderIds, rbC])
 	return (
 		<VStack>
 			<Heading>RB Integration Dashboard</Heading>
@@ -105,12 +110,13 @@ const RBDashboard: FunctionalComponent<Props> = ({ rbC, wcC }) => {
 												name='order-ids'
 												onChange={e => {
 													if (e.target.checked) {
-														orderIDs.push(e.target.value)
+														orderIds.push(e.target.value)
 													} else {
-														orderIDs.remove(e.target.value)
+														orderIds.remove(e.target.value)
 													}
 												}}
-												value={o.id}
+												value={o.id.toString()}
+												checked={orderIds.array.includes(o.id.toString())}
 											/>
 										</Td>
 										<Td>{o.id}</Td>
@@ -122,6 +128,9 @@ const RBDashboard: FunctionalComponent<Props> = ({ rbC, wcC }) => {
 						) : (
 							'Loading Orders'
 						)}
+						<Button onClick={postOrders} disabled={orderIds.array.length === 0}>
+							Post Orders
+						</Button>
 					</VStack>
 				</SimplePanel>
 			</SimpleAccordion>
