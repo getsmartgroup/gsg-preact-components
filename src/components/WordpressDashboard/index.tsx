@@ -4,12 +4,15 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
 import EvosusDashboard from '../EvosusDashboard'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
-import { Props, useOptions } from '../../hooks/options'
+import { Props as OptionsProps, useOptions } from '../../hooks/options'
 import { WCProvider, RBProvider, ANProvider } from '../../hooks'
 import RBDashboard from '../RBDashboard'
 
+export type Props = OptionsProps
+
 const WordpressDashboard: FunctionalComponent<Props> = props => {
 	const { optionInput, fetching, saving, options } = useOptions(props)
+	console.log(options)
 
 	return (
 		<ChakraProvider>
@@ -35,13 +38,15 @@ const WordpressDashboard: FunctionalComponent<Props> = props => {
 									/>
 								</TabPanel>
 								<TabPanel>
-									<WCProvider {...options.wc.access}>
-										<RBProvider {...options.rb.access}>
-											<ANProvider {...options.an.options}>
-												<RBDashboard />
-											</ANProvider>
-										</RBProvider>
-									</WCProvider>
+									{options.wc.access.url.length > 0 ? (
+										<WCProvider {...options.wc.access}>
+											<RBProvider {...options.rb.access}>
+												<ANProvider {...options.an.options}>
+													<RBDashboard />
+												</ANProvider>
+											</RBProvider>
+										</WCProvider>
+									) : null}
 								</TabPanel>
 							</TabPanels>
 						</Tabs>

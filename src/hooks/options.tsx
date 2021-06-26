@@ -3,10 +3,12 @@ import { useEffect, useMemo, useState } from 'preact/hooks'
 import Cookies from 'js-cookie'
 import { Input, useBoolean } from '@chakra-ui/react'
 import { wc, rb, an } from 'gsg-integrations'
+import { merge } from './common'
 
 export type Props = {
 	nonce: string
 	cookieHash?: string
+	gsgToken?: string
 	cookieValue?: string
 	siteurl: string
 }
@@ -31,13 +33,17 @@ export type Options = {
 	}
 }
 
-export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue }: Props) => {
-	if (cookieHash && cookieValue) {
+export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }: Props) => {
+	if (!gsgToken && cookieHash && cookieValue) {
 		Cookies.set(cookieHash, cookieValue)
 	}
-	const headers = {
-		'X-WP-Nonce': nonce,
+	const headers: any = {
 		'content-type': 'application/json'
+	}
+	if (gsgToken) {
+		headers['Authorization'] = `Bearer ${gsgToken}`
+	} else {
+		headers['X-WP-Nonce'] = nonce
 	}
 	return {
 		get: () =>
@@ -55,8 +61,13 @@ export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue }: Props) =
 	}
 }
 
-export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue }: Props) => {
-	const api = useMemo(() => optionsAPI({ nonce, siteurl, cookieHash, cookieValue }), [nonce, siteurl, cookieHash, cookieValue])
+export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }: Props) => {
+	const api = useMemo(() => optionsAPI({ nonce, siteurl, cookieHash, cookieValue, gsgToken }), [
+		nonce,
+		siteurl,
+		cookieHash,
+		cookieValue
+	])
 	const [saving, setSaving] = useBoolean(false)
 	const [fetching, setFetching] = useBoolean(true)
 	const [options, setOptions] = useState<Options>({
@@ -96,7 +107,12 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue }: Props) =
 
 	useEffect(() => {
 		api.get()
-			.then(options => (options ? setOptions(options) : null))
+			.then(res => {
+				if (res.gsgToken) {
+					const merged = merge(options, res)
+					setOptions({ ...merged })
+				}
+			})
 			.finally(setFetching.off.bind(null))
 	}, [nonce, siteurl, cookieHash, cookieValue])
 	useEffect(() => {
@@ -113,12 +129,13 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue }: Props) =
 			<Input
 				disabled={fetching}
 				placeholder={label}
-				value={obj[target] ?? ''}
+				value={obj[target]}
 				onChange={e => {
 					const value = e.target.value
-					;(obj as any)[target as any] = value
+					;(obj as any)[target] = value
 				}}
 				onBlur={() => {
+					console.log(obj[target], initialValue)
 					if (obj[target] !== initialValue) {
 						setOptions({ ...options })
 					}

@@ -43,6 +43,7 @@ const RBDashboard: FunctionalComponent = () => {
 		useCallback(() => wcC.Order.crud.list({ status: 'processing' }), [wcC]),
 		[wcC]
 	)
+	console.log(orders)
 	const orderIds = useArray<string>([])
 	const results = useArray<string[]>([])
 	const postOrders = useCallback(() => {
@@ -56,18 +57,12 @@ const RBDashboard: FunctionalComponent = () => {
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
 					<VStack>
-						{depts.resolved ? (
-							<RadioOptions onChange={setDept} options={depts.resolved} />
-						) : (
-							'Loading Deparments'
-						)}
+						{depts.resolved ? <RadioOptions onChange={setDept} options={depts.resolved} /> : 'Loading Deparments'}
 						{cats.resolved ? <RadioOptions cats={setCat} options={cats.resolved} /> : 'Loading Categories'}
 						<Button onChange={syncProducts} disabled={!dept || !cat || syncing}>
 							Sync Products
 						</Button>
-						<SimpleTable
-							headers={['ID#', 'Name', 'SKU', 'Regular Price & Sales Price', 'Storage Quantity']}
-						>
+						<SimpleTable headers={['ID#', 'Name', 'SKU', 'Regular Price & Sales Price', 'Storage Quantity']}>
 							<Thead>Created</Thead>
 							{created.array.map(p => (
 								<Tr>
