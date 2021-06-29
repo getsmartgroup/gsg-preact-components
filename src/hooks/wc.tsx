@@ -6,6 +6,7 @@ import { useMemo } from 'preact/hooks'
 export type WCProps = wc.WCAccess
 
 export const useWCAccess = ({ key, secret, url }: WCProps) => {
+	console.log('[WC ACCESS]', { key, secret, url })
 	const client = useMemo(() => {
 		if (key && secret && url) {
 			return wc.wcClient({
