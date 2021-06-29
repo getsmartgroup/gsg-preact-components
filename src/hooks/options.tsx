@@ -51,17 +51,20 @@ export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 				headers,
 				credentials: 'include'
 			}).then(res => res.json() as Promise<Options>),
-		set: (options: Options) =>
-			fetch(`${siteurl}/wp-json/gsg/v1/options`, {
+		set: (options: Options) => {
+			console.log({ headers })
+			return fetch(`${siteurl}/wp-json/gsg/v1/options`, {
 				headers,
 				credentials: 'include',
 				method: 'POST',
 				body: JSON.stringify(options)
 			}).then(res => res.json())
+		}
 	}
 }
 
 export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }: Props) => {
+	console.log({ gsgToken })
 	const api = useMemo(() => optionsAPI({ nonce, siteurl, cookieHash, cookieValue, gsgToken }), [
 		nonce,
 		siteurl,
@@ -117,7 +120,6 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 	}, [nonce, siteurl, cookieHash, cookieValue])
 	useEffect(() => {
 		if (!fetching) {
-			const api = optionsAPI({ nonce, siteurl, cookieHash, cookieValue })
 			setSaving.on()
 			api.set(options).finally(setSaving.off.bind(null))
 		}

@@ -20,6 +20,7 @@ export const [RBContextProvider, useRBContext] = createContext<RBContext>({
 })
 
 export const RBProvider: FunctionalComponent<RBProps> = ({ children, ...access }) => {
+	console.log({ access })
 	const ctx = useRBAccess(access)
 	return <RBContextProvider value={ctx}>{children}</RBContextProvider>
 }

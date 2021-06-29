@@ -1,7 +1,7 @@
 import { FunctionalComponent, h } from 'preact'
 import { rb, wc } from 'gsg-integrations'
 import { useArray, usePromiseCall, useRB, useWC } from '../../hooks'
-import { useCallback, useState } from 'preact/hooks'
+import { useCallback, useEffect, useState } from 'preact/hooks'
 import { Button, Heading, Tr, Td, useBoolean, VStack, Thead, Checkbox } from '@chakra-ui/react'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { SimpleTable } from '../SimpleTable'
@@ -29,76 +29,95 @@ const RBDashboard: FunctionalComponent = () => {
 		setSyncing.on()
 		rbC.getProducts(dept, cat)
 			.then(rb.syncProductsWithWooCommerce(wcC))
-			.then(promises =>
-				promises.map(promise =>
-					promise.then(res => {
+			.then(promises => {
+				return promises.map(promise => {
+					return promise.then(res => {
 						if (res.create) created.concat(res.create)
 						if (res.update) updated.concat(res.update)
 					})
-				)
-			)
+				})
+			})
 			.finally(setSyncing.off)
 	}, [dept, cat])
-	const orders = usePromiseCall(
-		useCallback(() => wcC.Order.crud.list({ status: 'processing' }), [wcC]),
-		[wcC]
-	)
-	console.log(orders)
+	const orders = useArray<wc.Order.Type>([])
+	useEffect(() => {
+		wcC.Order.crud
+			.list({ status: 'processing' })
+			.then(orders =>
+				orders.filter(order =>
+					['authorize_net_cim_credit_card', 'yith_wcauthnet_credit_card_gateway'].includes(order.payment_method)
+				)
+			)
+			.then(orders.set)
+	}, [wcC])
+	console.log({ dept, cat, syncing })
 	const orderIds = useArray<string>([])
 	const results = useArray<string[]>([])
+	const [posting, setPosting] = useBoolean(false)
 	const postOrders = useCallback(() => {
-		if (orders.resolved && orderIds.array.length > 0) {
-			rb.postWCOrders(rbC, wcC, anC)(orders.resolved.filter(o => orderIds.array.includes(o.id.toString())))
+		if (orders && orderIds.array.length > 0) {
+			setPosting.on()
+			rb.postWCOrders(
+				rbC,
+				wcC,
+				anC
+			)(orders.array.filter(o => orderIds.array.includes(o.id.toString())))
+				.then(postedOrders =>
+					orders.set([...orders.array.filter(o => postedOrders.find(po => po.id === o.id) === null), ...postedOrders])
+				)
+				.finally(setPosting.off)
 		}
 	}, [orderIds, rbC])
 	return (
 		<VStack>
-			<Heading>RB Integration Dashboard</Heading>
+			<Heading size='md'>RB Integration Dashboard</Heading>
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
-					<VStack>
+					<VStack w='100%' alignItems='stretch'>
 						{depts.resolved ? <RadioOptions onChange={setDept} options={depts.resolved} /> : 'Loading Deparments'}
-						{cats.resolved ? <RadioOptions cats={setCat} options={cats.resolved} /> : 'Loading Categories'}
-						<Button onChange={syncProducts} disabled={!dept || !cat || syncing}>
+						{cats.resolved ? <RadioOptions onChange={setCat} options={cats.resolved} /> : 'Loading Categories'}
+						<Button onClick={syncProducts} disabled={!dept || !cat || syncing}>
 							Sync Products
 						</Button>
-						<SimpleTable headers={['ID#', 'Name', 'SKU', 'Regular Price & Sales Price', 'Storage Quantity']}>
-							<Thead>Created</Thead>
-							{created.array.map(p => (
-								<Tr>
-									<Td>{p.id}</Td>
-									<Td>{p.name}</Td>
-									<Td>{p.sku}</Td>
-									<Td>
-										{p.regular_price}
-										<br />
-										{p.sale_price}
-									</Td>
-									<Td>{p.stock_quantity}</Td>
-								</Tr>
-							))}
-							<Thead>Updated</Thead>
-							{updated.array.map(p => (
-								<Tr>
-									<Td>{p.id}</Td>
-									<Td>{p.name}</Td>
-									<Td>{p.sku}</Td>
-									<Td>
-										{p.regular_price}
-										<br />
-										{p.sale_price}
-									</Td>
-									<Td>{p.stock_quantity}</Td>
-								</Tr>
-							))}
-						</SimpleTable>
+						{created.array.length > 0 || updated.array.length > 0 ? (
+							<SimpleTable headers={['ID#', 'Name', 'SKU', 'Regular Price & Sales Price', 'Storage Quantity']}>
+								<Thead>Created {created.array.length}</Thead>
+								{created.array.map(p => (
+									<Tr>
+										<Td>{p.id}</Td>
+										<Td>{p.name}</Td>
+										<Td>{p.sku}</Td>
+										<Td>
+											{p.regular_price}
+											<br />
+											{p.sale_price}
+										</Td>
+										<Td>{p.stock_quantity}</Td>
+									</Tr>
+								))}
+								<Thead>Updated {updated.array.length}</Thead>
+								{updated.array.map(p => (
+									<Tr>
+										<Td>{p.id}</Td>
+										<Td>{p.name}</Td>
+										<Td>{p.sku}</Td>
+										<Td>
+											{p.regular_price}
+											<br />
+											{p.sale_price}
+										</Td>
+										<Td>{p.stock_quantity}</Td>
+									</Tr>
+								))}
+							</SimpleTable>
+						) : null}
 					</VStack>
 				</SimplePanel>
 				<SimplePanel title='Post Orders'>
-					<VStack>
-						{orders.resolved ? (
+					<VStack alignItems='stretch'>
+						{orders.array ? (
 							<SimpleTable headers={['', 'ID#', 'Status', 'CustomerID#']}>
-								{orders.resolved.map(o => (
+								{orders.array.map(o => (
 									<Tr>
 										<Td>
 											<Checkbox
@@ -123,7 +142,7 @@ const RBDashboard: FunctionalComponent = () => {
 						) : (
 							'Loading Orders'
 						)}
-						<Button onClick={postOrders} disabled={orderIds.array.length === 0}>
+						<Button onClick={postOrders} disabled={posting}>
 							Post Orders
 						</Button>
 					</VStack>

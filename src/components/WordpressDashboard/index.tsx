@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact'
-import { Box, HStack, Heading, Stack, ChakraProvider } from '@chakra-ui/react'
+import { Box, HStack, Heading, Stack, ChakraProvider, Spacer } from '@chakra-ui/react'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
 import EvosusDashboard from '../EvosusDashboard'
@@ -13,6 +13,7 @@ export type Props = OptionsProps
 const WordpressDashboard: FunctionalComponent<Props> = props => {
 	const { optionInput, fetching, saving, options } = useOptions(props)
 	console.log(options)
+	// return null
 
 	return (
 		<ChakraProvider>
@@ -38,7 +39,9 @@ const WordpressDashboard: FunctionalComponent<Props> = props => {
 									/>
 								</TabPanel>
 								<TabPanel>
-									{options.wc.access.url.length > 0 ? (
+									{options.wc.access.url.length > 0 &&
+									options.wc.access.key.length > 0 &&
+									options.wc.access.secret.length > 0 ? (
 										<WCProvider {...options.wc.access}>
 											<RBProvider {...options.rb.access}>
 												<ANProvider {...options.an.options}>
@@ -88,8 +91,6 @@ const WordpressDashboard: FunctionalComponent<Props> = props => {
 										{optionInput(options.rb.access, 'CompanyID', 'RB Company ID')}
 										{optionInput(options.rb.access, 'APIKey', 'RB API Key')}
 										{optionInput(options.rb.access, 'name', 'RB Name')}
-									</Stack>
-									<Stack spacing={3}>
 										{optionInput(options.an.options.credentials, 'name', 'Authorize.net credentials name')}
 										{optionInput(
 											options.an.options.credentials,

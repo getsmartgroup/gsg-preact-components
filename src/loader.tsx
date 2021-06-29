@@ -1,4 +1,5 @@
 import { render, h } from 'preact'
+
 import * as Components from './components'
 
 window?.addEventListener('load', () => {

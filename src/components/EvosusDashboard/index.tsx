@@ -90,22 +90,19 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 
 	const syncProducts = () => {
 		setSyncing(true)
-		fetch(
-			`https://us-central1-get-smart-functions.cloudfunctions.net/main/evosus/products/sync?client=${props.clientID}`,
-			{
-				method: 'POST',
-				body: JSON.stringify({
-					search: {
-						productLineID: productLine
-					},
-					fields: syncFields
-				}),
-				headers: {
-					authorization: `Bearer ${props.gsgToken}`,
-					'content-type': 'application/json'
-				}
+		fetch(`https://us-central1-get-smart-functions.cloudfunctions.net/main/evosus/products/sync?client=${props.clientID}`, {
+			method: 'POST',
+			body: JSON.stringify({
+				search: {
+					productLineID: productLine
+				},
+				fields: syncFields
+			}),
+			headers: {
+				authorization: `Bearer ${props.gsgToken}`,
+				'content-type': 'application/json'
 			}
-		)
+		})
 			.then(async res => {
 				if (res.status === 408) {
 					setErrorMessage('The request timed out, you may try again to finish syncing')
@@ -125,7 +122,7 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 
 	return (
 		<Box>
-			<Heading w='100%' textAlign='right'>
+			<Heading w='100%' size='md'>
 				GSG Evosus Dashboard
 			</Heading>
 			<Box>
@@ -139,13 +136,7 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 			</Box>
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
-					<VStack
-						w='100%'
-						justifyContent='stretch'
-						alignItems='stretch'
-						alignContent='stretch'
-						justifyItems='stretch'
-					>
+					<VStack w='100%' justifyContent='stretch' alignItems='stretch' alignContent='stretch' justifyItems='stretch'>
 						<Heading size='sm'>Select a product Line</Heading>
 						{productLines === null ? 'Loading Product Lines' : null}
 						<RadioGroup onChange={setProductLine} value={productLine ?? ''}>
