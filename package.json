@@ -9,7 +9,6 @@
 	"source": "src/index.tsx",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
 		"es5": "tsc -p tsconfig.json --target es6 --outDir es6 --module es6",
 		"es6": "tsc -p tsconfig.json --target es5 --outDir es5 --module commonjs",
 		"tsc": "concurrently \"npm run es5\" \"npm run es6\"",
@@ -17,6 +16,7 @@
 		"storybook": "start-storybook -p 6006",
 		"build-storybook": "build-storybook -o dist/storybook/",
 		"bundle": "npm-run-all --parallel bundle:*",
+		"bundle:vite": "vite build",
 		"bundle:es5": "microbundle -i src/index.tsx -o es5/index.js --no-pkg-main -f cjs",
 		"bundle:esm": "microbundle -i src/index.tsx -o esm/index.js --no-pkg-main -f esm",
 		"bundle:umd": "microbundle -i src/index.tsx -o umd/index.js --no-pkg-main -f umd"

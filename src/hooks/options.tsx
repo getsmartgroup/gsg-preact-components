@@ -69,10 +69,11 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 		nonce,
 		siteurl,
 		cookieHash,
-		cookieValue
+		cookieValue,
+		gsgToken
 	])
 	const [saving, setSaving] = useBoolean(false)
-	const [fetching, setFetching] = useBoolean(true)
+	const [fetching, setFetching] = useBoolean(false)
 	const [options, setOptions] = useState<Options>({
 		clientID: '',
 		gsgToken: '',
@@ -109,15 +110,16 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 	})
 
 	useEffect(() => {
+		setFetching.on()
 		api.get()
 			.then(res => {
-				if (res.gsgToken) {
+				if (res.gsgToken?.length !== undefined) {
 					const merged = merge(options, res)
 					setOptions({ ...merged })
 				}
 			})
-			.finally(setFetching.off.bind(null))
-	}, [nonce, siteurl, cookieHash, cookieValue])
+			.finally(setFetching.off)
+	}, [nonce, siteurl, cookieHash, cookieValue, gsgToken])
 	useEffect(() => {
 		if (!fetching) {
 			setSaving.on()
