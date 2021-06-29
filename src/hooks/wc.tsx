@@ -29,6 +29,9 @@ export const [WCContextProvider, useWCContext] = createContext<WCContext>({
 
 export const WCProvider: FunctionalComponent<WCProps> = ({ children, ...access }) => {
 	const ctx = useWCAccess(access)
+	if (!ctx.client) {
+		return null
+	}
 	return <WCContextProvider value={ctx}>{children}</WCContextProvider>
 }
 export const useWC = useWCContext
