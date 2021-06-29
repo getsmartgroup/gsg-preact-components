@@ -3,7 +3,9 @@ import { wc } from 'gsg-integrations'
 import { createContext } from '@chakra-ui/react-utils'
 import { useMemo } from 'preact/hooks'
 
-export type WCProps = wc.WCAccess
+export type WCProps = {
+	access : wc.Access
+}
 
 export const useWCAccess = ({ key, secret, url }: WCProps) => {
 	console.log('[WC ACCESS]', { key, secret, url })
@@ -24,11 +26,11 @@ export const useWCAccess = ({ key, secret, url }: WCProps) => {
 export type WCContext = ReturnType<typeof useWCAccess>
 
 export const [WCContextProvider, useWCContext] = createContext<WCContext>({
-	name: 'RB Context',
-	errorMessage: 'RBProvider missing'
+	name: 'WC Context',
+	errorMessage: 'WCProvider missing'
 })
 
-export const WCProvider: FunctionalComponent<WCProps> = ({ children, ...access }) => {
+export const WCProvider: FunctionalComponent<WCProps> = ({ children, access }) => {
 	const ctx = useWCAccess(access)
 	if (!ctx.client) {
 		return null

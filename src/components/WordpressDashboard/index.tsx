@@ -42,7 +42,7 @@ const WordpressDashboard: FunctionalComponent<Props> = props => {
 									{(options.wc.access.url.length ?? 0) > 0 &&
 									(options.wc.access.key.length ?? 0) > 0 &&
 									(options.wc.access.secret.length ?? 0) > 0 ? (
-										<WCProvider {...options.wc.access}>
+										<WCProvider access={options.wc.access}>
 											<RBProvider {...options.rb.access}>
 												<ANProvider {...options.an.options}>
 													<RBDashboard />
