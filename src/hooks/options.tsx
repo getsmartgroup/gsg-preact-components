@@ -121,7 +121,7 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 			.finally(setFetching.off)
 	}, [nonce, siteurl, cookieHash, cookieValue, gsgToken])
 	useEffect(() => {
-		if (!fetching) {
+		if (!fetching && !saving && options.gsgToken?.length > 0) {
 			setSaving.on()
 			api.set(options).finally(setSaving.off.bind(null))
 		}
