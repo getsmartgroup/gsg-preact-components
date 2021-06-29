@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from 'preact'
+import { Fragment, FunctionalComponent, h } from 'preact'
 import { Box, HStack, Heading, Stack, ChakraProvider, Spacer } from '@chakra-ui/react'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
@@ -30,27 +30,31 @@ const WordpressDashboard: FunctionalComponent<Props> = props => {
 								<Tab>RB</Tab>
 							</TabList>
 							<TabPanels>
-								<TabPanel>
-									<EvosusDashboard
-										clientID={options.clientID}
-										gsgToken={options.gsgToken}
-										companySN={options.evosus.access.companySN}
-										ticket={options.evosus.access.ticket}
-									/>
-								</TabPanel>
-								<TabPanel>
-									{options.wc.access.url.length > 0 &&
-									options.wc.access.key.length > 0 &&
-									options.wc.access.secret.length > 0 ? (
-										<WCProvider {...options.wc.access}>
-											<RBProvider {...options.rb.access}>
-												<ANProvider {...options.an.options}>
-													<RBDashboard />
-												</ANProvider>
-											</RBProvider>
-										</WCProvider>
-									) : null}
-								</TabPanel>
+								{fetching ? null : (
+									<Fragment>
+										<TabPanel>
+											<EvosusDashboard
+												clientID={options.clientID}
+												gsgToken={options.gsgToken}
+												companySN={options.evosus.access.companySN}
+												ticket={options.evosus.access.ticket}
+											/>
+										</TabPanel>
+										<TabPanel>
+											{(options.wc.access.url.length ?? 0) > 0 &&
+											(options.wc.access.key.length ?? 0) > 0 &&
+											(options.wc.access.secret.length ?? 0) > 0 ? (
+												<WCProvider {...options.wc.access}>
+													<RBProvider {...options.rb.access}>
+														<ANProvider {...options.an.options}>
+															<RBDashboard />
+														</ANProvider>
+													</RBProvider>
+												</WCProvider>
+											) : null}
+										</TabPanel>
+									</Fragment>
+								)}
 							</TabPanels>
 						</Tabs>
 					</SimplePanel>
