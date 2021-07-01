@@ -1,9 +1,10 @@
-import { h } from 'preact'
+import { FunctionalComponent, h } from 'preact'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import Cookies from 'js-cookie'
 import { Input, useBoolean } from '@chakra-ui/react'
 import { wc, rb, an } from 'gsg-integrations'
 import { merge } from './common'
+import { createContext } from '@chakra-ui/react-utils'
 
 export type Props = {
 	nonce: string
@@ -154,4 +155,11 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 		saving,
 		options
 	}
+}
+
+export const [OptionsContextProvider, useOptionsContext] = createContext<ReturnType<typeof useOptions>>()
+
+export const OptionsProvider: FunctionalComponent<Props> = ({ children, ...props }) => {
+	const ctx = useOptions(props)
+	return <OptionsContextProvider value={ctx}>{children}</OptionsContextProvider>
 }

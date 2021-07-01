@@ -1,17 +1,17 @@
-import { Fragment, FunctionalComponent, h } from 'preact'
-import { Box, HStack, Heading, Stack, ChakraProvider, Spacer } from '@chakra-ui/react'
+import { FunctionalComponent, h } from 'preact'
+import { Box, HStack, Heading, Stack, ChakraProvider } from '@chakra-ui/react'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
 import EvosusDashboard from '../EvosusDashboard'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
-import { Props as OptionsProps, useOptions } from '../../hooks/options'
+import { Props as OptionsProps, useOptionsContext, OptionsProvider } from '../../hooks/options'
 import { WCProvider, RBProvider, ANProvider } from '../../hooks'
 import RBDashboard from '../RBDashboard'
 
 export type Props = OptionsProps
 
-const WordpressDashboard: FunctionalComponent<Props> = props => {
-	const { optionInput, fetching, saving, options } = useOptions(props)
+const Main = () => {
+	const { optionInput, fetching, saving, options } = useOptionsContext()
 	console.log(options)
 	// return null
 
@@ -110,6 +110,14 @@ const WordpressDashboard: FunctionalComponent<Props> = props => {
 				</SimpleAccordion>
 			</Box>
 		</ChakraProvider>
+	)
+}
+
+const WordpressDashboard: FunctionalComponent<Props> = props => {
+	return (
+		<OptionsProvider {...props}>
+			<Main />
+		</OptionsProvider>
 	)
 }
 
