@@ -17,17 +17,17 @@ export type Props = {
 export type Options = {
 	clientID: string
 	gsgToken: string
-	wc: {
-		access: wc.WCAccess
-	}
 	evosus: {
 		access: {
 			companySN: string
 			ticket: string
 		}
 	}
+	wc: {
+		options: wc.Options
+	}
 	rb: {
-		access: rb.RBAccess
+		options: rb.Options
 	}
 	an: {
 		options: an.Options
@@ -79,10 +79,12 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 		clientID: '',
 		gsgToken: '',
 		wc: {
-			access: {
-				key: '',
-				secret: '',
-				url: ''
+			options: {
+				access: {
+					key: '',
+					secret: '',
+					url: ''
+				}
 			}
 		},
 		evosus: {
@@ -92,10 +94,12 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 			}
 		},
 		rb: {
-			access: {
-				CompanyID: '',
-				APIKey: '',
-				name: ''
+			options: {
+				access: {
+					CompanyID: '',
+					APIKey: '',
+					name: ''
+				}
 			}
 		},
 		an: {

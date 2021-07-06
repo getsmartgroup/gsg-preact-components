@@ -3,25 +3,31 @@ import { rb } from 'gsg-integrations'
 import { createContext } from '@chakra-ui/react-utils'
 import { useMemo } from 'preact/hooks'
 
-export type RBProps = rb.RBAccess
+export type Props = rb.Options
 
-export const useRBAccess = (access: RBProps) => {
-	const client = useMemo(() => rb.rbClient(access), [access])
+export const useIntegrationHook = (options: Props) => {
+	const client = useMemo(() => {
+		if (options) {
+			return rb.instance(options)
+		}
+	}, [options]) as rb.Client
 	return {
 		client
 	}
 }
 
-export type RBContext = ReturnType<typeof useRBAccess>
+export type Context = ReturnType<typeof useIntegrationHook>
 
-export const [RBContextProvider, useRBContext] = createContext<RBContext>({
+export const [ContextProvider, useContext] = createContext<Context>({
 	name: 'RB Context',
 	errorMessage: 'RBProvider missing'
 })
 
-export const RBProvider: FunctionalComponent<RBProps> = ({ children, ...access }) => {
-	console.log({ access })
-	const ctx = useRBAccess(access)
-	return <RBContextProvider value={ctx}>{children}</RBContextProvider>
+export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => {
+	const ctx = useIntegrationHook(props)
+	if (!ctx.client) {
+		return null
+	}
+	return <ContextProvider value={ctx}>{children}</ContextProvider>
 }
-export const useRB = useRBContext
+export const useRB = useContext

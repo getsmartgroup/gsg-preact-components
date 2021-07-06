@@ -1,102 +1,72 @@
 import { h } from 'preact';
 import { Box, HStack, Heading, Stack, ChakraProvider } from '@chakra-ui/react';
-import { useEffect, useState } from 'preact/hooks';
-import Cookies from 'js-cookie';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
-import { Input, useBoolean } from '@chakra-ui/react';
 import { Spinner } from '@chakra-ui/react';
 import EvosusDashboard from '../EvosusDashboard';
-const RestAPI = ({ nonce, siteurl, cookieHash, cookieValue }) => {
-    if (cookieHash && cookieValue) {
-        Cookies.set(cookieHash, cookieValue);
-    }
-    const headers = {
-        'X-WP-Nonce': nonce,
-        'content-type': 'application/json'
-    };
-    return {
-        get: () => fetch(`${siteurl}/wp-json/gsg/v1/options`, {
-            headers,
-            credentials: 'include'
-        }).then(res => res.json()),
-        set: (options) => fetch(`${siteurl}/wp-json/gsg/v1/options`, {
-            headers,
-            credentials: 'include',
-            method: 'POST',
-            body: JSON.stringify(options)
-        }).then(res => res.json())
-    };
-};
-const WordpressDashboard = ({ nonce, siteurl, cookieHash, cookieValue }) => {
-    const api = RestAPI({ nonce, siteurl, cookieHash, cookieValue });
-    const [saving, setSaving] = useBoolean(false);
-    const [fetching, setFetching] = useBoolean(true);
-    const [options, setOptions] = useState({
-        clientID: '',
-        gsgToken: '',
-        wc: {
-            access: {
-                key: '',
-                secret: ''
-            }
-        },
-        evosus: {
-            access: {
-                companySN: '',
-                ticket: ''
-            }
-        }
-    });
-    useEffect(() => {
-        api.get()
-            .then(options => (options ? setOptions(options) : null))
-            .finally(setFetching.off.bind(null));
-    }, [nonce, siteurl, cookieHash, cookieValue]);
-    useEffect(() => {
-        if (!fetching) {
-            const api = RestAPI({ nonce, siteurl, cookieHash, cookieValue });
-            setSaving.on();
-            api.set(options).finally(setSaving.off.bind(null));
-        }
-    }, [options]);
-    const optionInput = (obj, target, label) => {
-        const initialValue = obj[target];
-        return (h(Input, { disabled: fetching, placeholder: label, value: obj[target], onChange: e => {
-                const value = e.target.value;
-                obj[target] = value;
-            }, onBlur: () => {
-                if (obj[target] !== initialValue) {
-                    setOptions(Object.assign({}, options));
-                }
-            } }));
-    };
+import { SimpleAccordion, SimplePanel } from '../SimpleAccordion';
+import { useOptionsContext, OptionsProvider } from '../../hooks/options';
+import { an, wc, rb } from '../../hooks';
+import RBDashboard from '../RBDashboard';
+const Main = () => {
+    var _a, _b, _c;
+    const { optionInput, fetching, saving, options } = useOptionsContext();
     return (h(ChakraProvider, null,
         h(Box, null,
             h(HStack, { as: 'header', justifyContent: 'center', alignItems: 'center' },
                 h(Heading, null, "Get Smart Plugin"),
                 fetching || saving ? h(Spinner, null) : null),
-            h(Tabs, { variant: 'soft-rounded', colorScheme: 'blue' },
-                h(TabList, null,
-                    h(Tab, null, "GSG"),
-                    h(Tab, null, "WooCommerce"),
-                    h(Tab, null, "Evosus")),
-                h(TabPanels, null,
-                    h(TabPanel, null,
-                        h(Heading, { size: 'sm' }, "GSG Config"),
-                        h(Stack, { spacing: 3 },
-                            optionInput(options, 'clientID', 'Client ID'),
-                            optionInput(options, 'gsgToken', 'GSG Token'))),
-                    h(TabPanel, null,
-                        h(Heading, { size: 'sm' }, "WooCommerce Config"),
-                        h(Stack, { spacing: 3 },
-                            optionInput(options.wc.access, 'key', 'WC REST API Key'),
-                            optionInput(options.wc.access, 'secret', 'WC REST API Secret'))),
-                    h(TabPanel, null,
-                        h(Heading, { size: 'sm' }, "Evosus Config"),
-                        h(Stack, { spacing: 3 },
-                            optionInput(options.evosus.access, 'companySN', 'Evosus Company SN'),
-                            optionInput(options.evosus.access, 'ticket', 'Evosus Ticket')),
-                        h(EvosusDashboard, { clientID: options.clientID, gsgToken: options.gsgToken, companySN: options.evosus.access.companySN, ticket: options.evosus.access.ticket })))))));
+            h(SimpleAccordion, null,
+                h(SimplePanel, { title: 'Integrations' },
+                    h(Tabs, { variant: 'soft-rounded', colorScheme: 'blue' },
+                        h(TabList, null,
+                            h(Tab, null, "Evosus"),
+                            h(Tab, null, "RB")),
+                        h(TabPanels, null,
+                            h(TabPanel, null,
+                                h(EvosusDashboard, { clientID: options.clientID, gsgToken: options.gsgToken, companySN: options.evosus.access.companySN, ticket: options.evosus.access.ticket })),
+                            h(TabPanel, null, ((_a = options.wc.options.access.url.length) !== null && _a !== void 0 ? _a : 0) > 0 &&
+                                ((_b = options.wc.options.access.key.length) !== null && _b !== void 0 ? _b : 0) > 0 &&
+                                ((_c = options.wc.options.access.secret.length) !== null && _c !== void 0 ? _c : 0) > 0 ? (h(wc.Provider, Object.assign({}, options.wc.options),
+                                h(rb.Provider, Object.assign({}, options.rb.options),
+                                    h(an.Provider, Object.assign({}, options.an.options),
+                                        h(RBDashboard, null))))) : null)))),
+                h(SimplePanel, { title: 'Config' },
+                    h(Tabs, { variant: 'soft-rounded', colorScheme: 'blue' },
+                        h(TabList, null,
+                            h(Tab, null, "GSG"),
+                            h(Tab, null, "WooCommerce"),
+                            h(Tab, null, "Evosus"),
+                            h(Tab, null, "RB")),
+                        h(TabPanels, null,
+                            h(TabPanel, null,
+                                h(Heading, { size: 'sm' }, "GSG Config"),
+                                h(Stack, { spacing: 3 },
+                                    optionInput(options, 'clientID', 'Client ID'),
+                                    optionInput(options, 'gsgToken', 'GSG Token'))),
+                            h(TabPanel, null,
+                                h(Heading, { size: 'sm' }, "WooCommerce Config"),
+                                h(Stack, { spacing: 3 },
+                                    optionInput(options.wc.options.access, 'key', 'WC REST API Key'),
+                                    optionInput(options.wc.options.access, 'secret', 'WC REST API Secret'),
+                                    optionInput(options.wc.options.access, 'url', 'WC Website URL'))),
+                            h(TabPanel, null,
+                                h(Heading, { size: 'sm' }, "Evosus Config"),
+                                h(Stack, { spacing: 3 },
+                                    optionInput(options.evosus.access, 'companySN', 'Evosus Company SN'),
+                                    optionInput(options.evosus.access, 'ticket', 'Evosus Ticket'))),
+                            h(TabPanel, null,
+                                h(Heading, { size: 'sm' }, "RB Config"),
+                                h(Stack, { spacing: 3 },
+                                    optionInput(options.rb.options.access, 'CompanyID', 'RB Company ID'),
+                                    optionInput(options.rb.options.access, 'APIKey', 'RB API Key'),
+                                    optionInput(options.rb.options.access, 'name', 'RB Name'),
+                                    optionInput(options.an.options.credentials, 'name', 'Authorize.net credentials name'),
+                                    optionInput(options.an.options.credentials, 'transactionKey', 'Authorize.net credentials Transaction Key'),
+                                    optionInput(options.an.options.credentials, 'refId', 'Authorize.net credentials Ref ID (Optional)'))))))))));
+};
+const WordpressDashboard = props => {
+    return (h(OptionsProvider, Object.assign({}, props),
+        h(Main, null)));
 };
 export default WordpressDashboard;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9uZW50cy9Xb3JkcHJlc3NEYXNoYm9hcmQvaW5kZXgudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBdUIsQ0FBQyxFQUFFLE1BQU0sUUFBUSxDQUFBO0FBQy9DLE9BQU8sRUFBRSxHQUFHLEVBQUUsTUFBTSxFQUFFLE9BQU8sRUFBRSxLQUFLLEVBQUUsY0FBYyxFQUFFLE1BQU0sa0JBQWtCLENBQUE7QUFDOUUsT0FBTyxFQUFFLFNBQVMsRUFBRSxRQUFRLEVBQUUsTUFBTSxjQUFjLENBQUE7QUFDbEQsT0FBTyxPQUFPLE1BQU0sV0FBVyxDQUFBO0FBQy9CLE9BQU8sRUFBRSxJQUFJLEVBQUUsT0FBTyxFQUFFLFNBQVMsRUFBRSxHQUFHLEVBQUUsUUFBUSxFQUFFLE1BQU0sa0JBQWtCLENBQUE7QUFDMUUsT0FBTyxFQUFFLEtBQUssRUFBRSxVQUFVLEVBQUUsTUFBTSxrQkFBa0IsQ0FBQTtBQUNwRCxPQUFPLEVBQUUsT0FBTyxFQUFFLE1BQU0sa0JBQWtCLENBQUE7QUFDMUMsT0FBTyxlQUFlLE1BQU0sb0JBQW9CLENBQUE7QUF5QmhELE1BQU0sT0FBTyxHQUFHLENBQUMsRUFBRSxLQUFLLEVBQUUsT0FBTyxFQUFFLFVBQVUsRUFBRSxXQUFXLEVBQVMsRUFBRSxFQUFFO0lBQ3RFLElBQUksVUFBVSxJQUFJLFdBQVcsRUFBRTtRQUM5QixPQUFPLENBQUMsR0FBRyxDQUFDLFVBQVUsRUFBRSxXQUFXLENBQUMsQ0FBQTtLQUNwQztJQUNELE1BQU0sT0FBTyxHQUFHO1FBQ2YsWUFBWSxFQUFFLEtBQUs7UUFDbkIsY0FBYyxFQUFFLGtCQUFrQjtLQUNsQyxDQUFBO0lBQ0QsT0FBTztRQUNOLEdBQUcsRUFBRSxHQUFHLEVBQUUsQ0FDVCxLQUFLLENBQUMsR0FBRyxPQUFPLHlCQUF5QixFQUFFO1lBQzFDLE9BQU87WUFDUCxXQUFXLEVBQUUsU0FB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
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9uZW50cy9Xb3JkcHJlc3NEYXNoYm9hcmQvaW5kZXgudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBdUIsQ0FBQyxFQUFFLE1BQU0sUUFBUSxDQUFBO0FBQy9DLE9BQU8sRUFBRSxHQUFHLEVBQUUsTUFBTSxFQUFFLE9BQU8sRUFBRSxLQUFLLEVBQUUsY0FBYyxFQUFFLE1BQU0sa0JBQWtCLENBQUE7QUFDOUUsT0FBTyxFQUFFLElBQUksRUFBRSxPQUFPLEVBQUUsU0FBUyxFQUFFLEdBQUcsRUFBRSxRQUFRLEVBQUUsTUFBTSxrQkFBa0IsQ0FBQTtBQUMxRSxPQUFPLEVBQUUsT0FBTyxFQUFFLE1BQU0sa0JBQWtCLENBQUE7QUFDMUMsT0FBTyxlQUFlLE1BQU0sb0JBQW9CLENBQUE7QUFDaEQsT0FBTyxFQUFFLGVBQWUsRUFBRSxXQUFXLEVBQUUsTUFBTSxvQkFBb0IsQ0FBQTtBQUNqRSxPQUFPLEVBQXlCLGlCQUFpQixFQUFFLGVBQWUsRUFBRSxNQUFNLHFCQUFxQixDQUFBO0FBQy9GLE9BQU8sRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxNQUFNLGFBQWEsQ0FBQTtBQUN4QyxPQUFPLFdBQVcsTUFBTSxnQkFBZ0IsQ0FBQTtBQUl4QyxNQUFNLElBQUksR0FBRyxHQUFHLEVBQUU7O0lBQ2pCLE1BQU0sRUFBRSxXQUFXLEVBQUUsUUFBUSxFQUFFLE1BQU0sRUFBRSxPQUFPLEVBQUUsR0FBRyxpQkFBaUIsRUFBRSxDQUFBO0lBRXRFLE9BQU8sQ0FDTixFQUFDLGNBQWM7UUFDZCxFQUFDLEdBQUc7WUFDSCxFQUFDLE1BQU0sSUFBQyxFQUFFLEVBQUMsUUFBUSxFQUFDLGNBQWMsRUFBQyxRQUFRLEVBQUMsVUFBVSxFQUFDLFFBQVE7Z0JBQzlELEVBQUMsT0FBTywyQkFBMkI7Z0JBQ2xDLFFBQVEsSUFBSSxNQUFNLENBQUMs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

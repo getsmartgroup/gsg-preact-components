@@ -1,9 +1,5 @@
 import { FunctionalComponent } from 'preact';
-export declare type Props = {
-    nonce: string;
-    cookieHash?: string;
-    cookieValue?: string;
-    siteurl: string;
-};
+import { Props as OptionsProps } from '../../hooks/options';
+export declare type Props = OptionsProps;
 declare const WordpressDashboard: FunctionalComponent<Props>;
 export default WordpressDashboard;

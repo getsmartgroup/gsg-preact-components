@@ -1,4 +1,4 @@
 export * from './common'
-export * from './rb'
-export * from './wc'
-export * from './an'
+export * as rb from './rb'
+export * as wc from './wc'
+export * as an from './an'

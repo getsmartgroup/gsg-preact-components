@@ -5,15 +5,13 @@ import { Spinner } from '@chakra-ui/react'
 import EvosusDashboard from '../EvosusDashboard'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { Props as OptionsProps, useOptionsContext, OptionsProvider } from '../../hooks/options'
-import { WCProvider, RBProvider, ANProvider } from '../../hooks'
+import { an, wc, rb } from '../../hooks'
 import RBDashboard from '../RBDashboard'
 
 export type Props = OptionsProps
 
 const Main = () => {
 	const { optionInput, fetching, saving, options } = useOptionsContext()
-	console.log(options)
-	// return null
 
 	return (
 		<ChakraProvider>
@@ -39,16 +37,16 @@ const Main = () => {
 									/>
 								</TabPanel>
 								<TabPanel>
-									{(options.wc.access.url.length ?? 0) > 0 &&
-									(options.wc.access.key.length ?? 0) > 0 &&
-									(options.wc.access.secret.length ?? 0) > 0 ? (
-										<WCProvider access={options.wc.access}>
-											<RBProvider {...options.rb.access}>
-												<ANProvider {...options.an.options}>
+									{(options.wc.options.access.url.length ?? 0) > 0 &&
+									(options.wc.options.access.key.length ?? 0) > 0 &&
+									(options.wc.options.access.secret.length ?? 0) > 0 ? (
+										<wc.Provider {...options.wc.options}>
+											<rb.Provider {...options.rb.options}>
+												<an.Provider {...options.an.options}>
 													<RBDashboard />
-												</ANProvider>
-											</RBProvider>
-										</WCProvider>
+												</an.Provider>
+											</rb.Provider>
+										</wc.Provider>
 									) : null}
 								</TabPanel>
 							</TabPanels>
@@ -73,9 +71,9 @@ const Main = () => {
 								<TabPanel>
 									<Heading size='sm'>WooCommerce Config</Heading>
 									<Stack spacing={3}>
-										{optionInput(options.wc.access, 'key', 'WC REST API Key')}
-										{optionInput(options.wc.access, 'secret', 'WC REST API Secret')}
-										{optionInput(options.wc.access, 'url', 'WC Website URL')}
+										{optionInput(options.wc.options.access, 'key', 'WC REST API Key')}
+										{optionInput(options.wc.options.access, 'secret', 'WC REST API Secret')}
+										{optionInput(options.wc.options.access, 'url', 'WC Website URL')}
 									</Stack>
 								</TabPanel>
 								<TabPanel>
@@ -88,9 +86,9 @@ const Main = () => {
 								<TabPanel>
 									<Heading size='sm'>RB Config</Heading>
 									<Stack spacing={3}>
-										{optionInput(options.rb.access, 'CompanyID', 'RB Company ID')}
-										{optionInput(options.rb.access, 'APIKey', 'RB API Key')}
-										{optionInput(options.rb.access, 'name', 'RB Name')}
+										{optionInput(options.rb.options.access, 'CompanyID', 'RB Company ID')}
+										{optionInput(options.rb.options.access, 'APIKey', 'RB API Key')}
+										{optionInput(options.rb.options.access, 'name', 'RB Name')}
 										{optionInput(options.an.options.credentials, 'name', 'Authorize.net credentials name')}
 										{optionInput(
 											options.an.options.credentials,

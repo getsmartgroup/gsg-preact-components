@@ -3,24 +3,31 @@ import { an } from 'gsg-integrations'
 import { createContext } from '@chakra-ui/react-utils'
 import { useMemo } from 'preact/hooks'
 
-export type ANProps = an.Options
+export type Props = an.Options
 
-export const useANAccess = (options: an.Options) => {
-	const client = useMemo(() => an.gsgANetClient(options), [options])
+export const useIntegrationHook = (options: Props) => {
+	const client = useMemo(() => {
+		if (options) {
+			return an.instance(options)
+		}
+	}, [options]) as an.Client
 	return {
 		client
 	}
 }
 
-export type ANContext = ReturnType<typeof useANAccess>
+export type Context = ReturnType<typeof useIntegrationHook>
 
-export const [ANContextProvider, useANContext] = createContext<ANContext>({
+export const [ContextProvider, useContext] = createContext<Context>({
 	name: 'AN Context',
 	errorMessage: 'ANProvider missing'
 })
 
-export const ANProvider: FunctionalComponent<ANProps> = ({ children, ...options }) => {
-	const ctx = useANAccess(options)
-	return <ANContextProvider value={ctx}>{children}</ANContextProvider>
+export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => {
+	const ctx = useIntegrationHook(props)
+	if (!ctx.client) {
+		return null
+	}
+	return <ContextProvider value={ctx}>{children}</ContextProvider>
 }
-export const useANet = useANContext
+export const useAN = useContext

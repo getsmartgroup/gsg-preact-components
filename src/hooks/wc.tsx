@@ -3,38 +3,31 @@ import { wc } from 'gsg-integrations'
 import { createContext } from '@chakra-ui/react-utils'
 import { useMemo } from 'preact/hooks'
 
-export type WCProps = {
-	access : wc.Access
-}
+export type Props = wc.Options
 
-export const useWCAccess = ({ key, secret, url }: WCProps) => {
-	console.log('[WC ACCESS]', { key, secret, url })
+export const useIntegrationHook = (options: Props) => {
 	const client = useMemo(() => {
-		if (key && secret && url) {
-			return wc.wcClient({
-				key,
-				secret,
-				url
-			})
+		if (options) {
+			return wc.instance(options)
 		}
-	}, [key, secret, url]) as wc.WCClient
+	}, [options]) as wc.Client
 	return {
 		client
 	}
 }
 
-export type WCContext = ReturnType<typeof useWCAccess>
+export type Context = ReturnType<typeof useIntegrationHook>
 
-export const [WCContextProvider, useWCContext] = createContext<WCContext>({
+export const [ContextProvider, useContext] = createContext<Context>({
 	name: 'WC Context',
 	errorMessage: 'WCProvider missing'
 })
 
-export const WCProvider: FunctionalComponent<WCProps> = ({ children, access }) => {
-	const ctx = useWCAccess(access)
+export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => {
+	const ctx = useIntegrationHook(props)
 	if (!ctx.client) {
 		return null
 	}
-	return <WCContextProvider value={ctx}>{children}</WCContextProvider>
+	return <ContextProvider value={ctx}>{children}</ContextProvider>
 }
-export const useWC = useWCContext
+export const useWC = useContext

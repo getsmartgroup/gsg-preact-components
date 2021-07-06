@@ -1,17 +1,19 @@
 import { FunctionalComponent, h } from 'preact'
 import { rb, wc } from 'gsg-integrations'
-import { useArray, usePromiseCall, useRB, useWC } from '../../hooks'
+import { useArray, usePromiseCall } from '../../hooks'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { Button, Heading, Tr, Td, useBoolean, VStack, Thead, Checkbox } from '@chakra-ui/react'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { SimpleTable } from '../SimpleTable'
 import RadioOptions from '../RadioOptions'
-import { useANet } from '../../hooks'
+import { useWC } from '../../hooks/wc'
+import { useRB } from '../../hooks/rb'
+import { useAN } from '../../hooks/an'
 
 const RBDashboard: FunctionalComponent = () => {
 	const { client: wcC } = useWC()
 	const { client: rbC } = useRB()
-	const { client: anC } = useANet()
+	const { client: anC } = useAN()
 	const depts = usePromiseCall(useCallback(rbC.getDepartments, [rbC]), [rbC])
 	const [dept, setDept] = useState<string | null>(null)
 	const cats = usePromiseCall(
