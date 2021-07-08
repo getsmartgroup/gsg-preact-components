@@ -1,18 +1,10 @@
-import {
-	Accordion,
-	AccordionPanel,
-	AccordionItem,
-	AccordionButton,
-	Flex,
-	Heading,
-	AccordionIcon
-} from '@chakra-ui/react'
+import { Accordion, AccordionPanel, AccordionItem, AccordionButton, Flex, Heading, AccordionIcon } from '@chakra-ui/react'
 import { ComponentProps, Fragment, FunctionalComponent, h } from 'preact'
 
 export const SimpleAccordion: FunctionalComponent<ComponentProps<typeof Accordion> & {
 	itemProps?: ComponentProps<typeof AccordionItem>
 }> = ({ children, itemProps, ...props }) => (
-	<Accordion w='100%' allowMultiple {...props}>
+	<Accordion w='100%' allowMultiple={false} allowToggle={true} {...props}>
 		{(Array.isArray(children) ? children : [children]).map(child => {
 			return <AccordionItem>{child}</AccordionItem>
 		})}

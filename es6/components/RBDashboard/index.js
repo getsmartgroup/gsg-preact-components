@@ -59,7 +59,7 @@ const RBDashboard = () => {
         }
     }, [orderIds, rbC]);
     return (h(VStack, null,
-        h(Heading, { size: 'md' }, "RB Integration Dashboard"),
+        h(Heading, { size: 'lg' }, "RB Integration Dashboard"),
         h(SimpleAccordion, null,
             h(SimplePanel, { title: 'Sync Products' },
                 h(VStack, { w: '100%', alignItems: 'stretch' },

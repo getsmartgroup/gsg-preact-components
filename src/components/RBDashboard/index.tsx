@@ -72,7 +72,7 @@ const RBDashboard: FunctionalComponent = () => {
 	}, [orderIds, rbC])
 	return (
 		<VStack>
-			<Heading size='md'>RB Integration Dashboard</Heading>
+			<Heading size='lg'>RB Integration Dashboard</Heading>
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
 					<VStack w='100%' alignItems='stretch'>

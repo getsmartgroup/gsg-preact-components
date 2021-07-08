@@ -75,7 +75,7 @@ var RBDashboard = function () {
         }
     }, [orderIds, rbC]);
     return (preact_1.h(react_1.VStack, null,
-        preact_1.h(react_1.Heading, { size: 'md' }, "RB Integration Dashboard"),
+        preact_1.h(react_1.Heading, { size: 'lg' }, "RB Integration Dashboard"),
         preact_1.h(SimpleAccordion_1.SimpleAccordion, null,
             preact_1.h(SimpleAccordion_1.SimplePanel, { title: 'Sync Products' },
                 preact_1.h(react_1.VStack, { w: '100%', alignItems: 'stretch' },
