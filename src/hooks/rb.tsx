@@ -18,10 +18,7 @@ export const useIntegrationHook = (options: Props) => {
 
 export type Context = ReturnType<typeof useIntegrationHook>
 
-export const [ContextProvider, useContext] = createContext<Context>({
-	name: 'RB Context',
-	errorMessage: 'RBProvider missing'
-})
+export const [ContextProvider, useContext] = createContext<Context>()
 
 export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => {
 	const ctx = useIntegrationHook(props)

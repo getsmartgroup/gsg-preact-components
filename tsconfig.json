@@ -32,7 +32,7 @@
 		/* Report errors on unused parameters. */
 		"noUnusedParameters": true,
 		/* Report error when not all code paths in function return a value. */
-		"noImplicitReturns": true,
+		"noImplicitReturns": false,
 		/* Report errors for fallthrough cases in switch statement. */
 		"noFallthroughCasesInSwitch": true,
 		/* Add undefined to a type when accessed using an index. */

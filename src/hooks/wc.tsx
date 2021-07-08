@@ -7,9 +7,9 @@ export type Props = wc.Options
 
 export const useIntegrationHook = (options: Props) => {
 	const client = useMemo(() => {
-		if (options) {
-			return wc.instance(options)
-		}
+		if (!options.access.key || !options.access.url || !options.access.secret) return
+		if (!options) return
+		return wc.instance(options)
 	}, [options]) as wc.Client
 	return {
 		client
@@ -18,10 +18,7 @@ export const useIntegrationHook = (options: Props) => {
 
 export type Context = ReturnType<typeof useIntegrationHook>
 
-export const [ContextProvider, useContext] = createContext<Context>({
-	name: 'WC Context',
-	errorMessage: 'WCProvider missing'
-})
+export const [ContextProvider, useContext] = createContext<Context>()
 
 export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => {
 	const ctx = useIntegrationHook(props)

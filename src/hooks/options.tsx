@@ -1,8 +1,8 @@
 import { FunctionalComponent, h } from 'preact'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import Cookies from 'js-cookie'
-import { Input, useBoolean } from '@chakra-ui/react'
-import { wc, rb, an } from 'gsg-integrations'
+import { chakra, Input, useBoolean } from '@chakra-ui/react'
+import { wc, rb, an, gsc } from 'gsg-integrations'
 import { merge } from './common'
 import { createContext } from '@chakra-ui/react-utils'
 
@@ -15,8 +15,9 @@ export type Props = {
 }
 
 export type Options = {
-	clientID: string
-	gsgToken: string
+	gsc: {
+		options: gsc.Options
+	}
 	evosus: {
 		access: {
 			companySN: string
@@ -53,7 +54,6 @@ export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 				credentials: 'include'
 			}).then(res => res.json() as Promise<Options>),
 		set: (options: Options) => {
-			console.log({ headers })
 			return fetch(`${siteurl}/wp-json/gsg/v1/options`, {
 				headers,
 				credentials: 'include',
@@ -65,7 +65,6 @@ export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 }
 
 export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }: Props) => {
-	console.log({ gsgToken })
 	const api = useMemo(() => optionsAPI({ nonce, siteurl, cookieHash, cookieValue, gsgToken }), [
 		nonce,
 		siteurl,
@@ -74,10 +73,16 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 		gsgToken
 	])
 	const [saving, setSaving] = useBoolean(false)
-	const [fetching, setFetching] = useBoolean(false)
+	const [fetching, setFetching] = useBoolean(true)
 	const [options, setOptions] = useState<Options>({
-		clientID: '',
-		gsgToken: '',
+		gsc: {
+			options: {
+				access: {
+					clientID: '',
+					gsgToken: ''
+				}
+			}
+		},
 		wc: {
 			options: {
 				access: {
@@ -118,7 +123,7 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 		setFetching.on()
 		api.get()
 			.then(res => {
-				if (res.gsgToken?.length !== undefined) {
+				if (res?.gsc?.options?.access?.gsgToken?.length !== undefined) {
 					const merged = merge(options, res)
 					setOptions({ ...merged })
 				}
@@ -126,7 +131,7 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 			.finally(setFetching.off)
 	}, [nonce, siteurl, cookieHash, cookieValue, gsgToken])
 	useEffect(() => {
-		if (!fetching && !saving && options.gsgToken?.length > 0) {
+		if (!fetching && !saving && options.gsc.options.access.gsgToken?.length > 0) {
 			setSaving.on()
 			api.set(options).finally(setSaving.off.bind(null))
 		}
@@ -135,21 +140,24 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 	const optionInput = <T extends { [K in string]: any }>(obj: Partial<T>, target: keyof T, label: string) => {
 		const initialValue = obj[target]
 		return (
-			<Input
-				disabled={fetching}
-				placeholder={label}
-				value={obj[target]}
-				onChange={e => {
-					const value = e.target.value
-					;(obj as any)[target] = value
-				}}
-				onBlur={() => {
-					console.log(obj[target], initialValue)
-					if (obj[target] !== initialValue) {
-						setOptions({ ...options })
-					}
-				}}
-			/>
+			<chakra.label>
+				{label}
+				<Input
+					disabled={fetching}
+					placeholder={label}
+					value={obj[target]}
+					onChange={e => {
+						const value = e.target.value
+						;(obj as any)[target] = value
+					}}
+					onBlur={() => {
+						console.log(obj[target], initialValue)
+						if (obj[target] !== initialValue) {
+							setOptions({ ...options })
+						}
+					}}
+				/>
+			</chakra.label>
 		)
 	}
 

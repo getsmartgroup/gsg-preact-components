@@ -1,16 +1,16 @@
 import { FunctionalComponent, h } from 'preact'
-import { an } from 'gsg-integrations'
+import { gsc } from 'gsg-integrations'
 import { createContext } from '@chakra-ui/react-utils'
 import { useMemo } from 'preact/hooks'
 
-export type Props = an.Options
+export type Props = gsc.Options
 
 export const useIntegrationHook = (options: Props) => {
 	const client = useMemo(() => {
 		if (options) {
-			return an.instance(options)
+			return gsc.instance(options)
 		}
-	}, [options]) as an.Client
+	}, [options]) as gsc.Client
 	return {
 		client
 	}
@@ -27,4 +27,4 @@ export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => 
 	}
 	return <ContextProvider value={ctx}>{children}</ContextProvider>
 }
-export const useAN = useContext
+export const useGSC = useContext
