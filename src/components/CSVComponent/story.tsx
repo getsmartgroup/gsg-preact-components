@@ -3,7 +3,7 @@ import { Story, Meta } from '@storybook/preact'
 import { CSVComponent, Props } from '.'
 
 export default {
-	title: 'Wordpress Dashboard Story',
+	title: 'CSV Content Story',
 	argTypes: {
 		file: { control: { type: 'text' }, name: 'File' },
 		content: { control: { type: 'text' }, name: 'Content' }

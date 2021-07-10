@@ -5,10 +5,7 @@ import { default as WordpressDashboard, Props } from '.'
 export default {
 	title: 'Wordpress Dashboard Story',
 	argTypes: {
-		nonce: { control: { type: 'text' }, name: 'Wordpress Nonce' },
 		siteurl: { control: { type: 'text' }, name: 'Website URL' },
-		cookieHash: { control: { type: 'text' }, name: 'Cookies Hash' },
-		cookieValue: { control: { type: 'text' }, name: 'Cookies Value' },
 		gsgToken: { control: { type: 'text' }, name: 'GSG Token' }
 	}
 } as Meta
@@ -18,8 +15,5 @@ const Template: Story<Props> = props => <WordpressDashboard {...props} />
 export const WordpressDashboardStory = Template.bind({})
 WordpressDashboardStory.args = {
 	siteurl: process.env.STORYBOOK_WP_URL,
-	nonce: process.env.STORYBOOK_WP_NONCE,
-	cookieHash: process.env.STORYBOOK_WP_COOKIE_HASH,
-	cookieValue: process.env.STORYBOOK_WP_COOKIE_VALUE,
 	gsgToken: process.env.STORYBOOK_GSG_TOKEN
 }
