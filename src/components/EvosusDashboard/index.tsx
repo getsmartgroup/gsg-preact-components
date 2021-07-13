@@ -1,6 +1,5 @@
 import { evosus } from 'gsg-integrations'
-import { Product } from 'wc-rest-ts'
-import { Table, Thead, Tbody, Tfoot, Tr, Th, Td } from '@chakra-ui/react'
+import { Tr, Td, Link } from '@chakra-ui/react'
 import { FunctionalComponent, h } from 'preact'
 import { useCallback, useState } from 'preact/hooks'
 import {
@@ -15,14 +14,15 @@ import {
 	AccordionPanel,
 	AccordionIcon,
 	Button,
-	CheckboxGroup,
-	Checkbox,
 	VStack
 } from '@chakra-ui/react'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { useEvosus } from '../../hooks/evosus'
-import { usePromiseCall } from '../../hooks'
+import { useArray, usePromiseCall } from '../../hooks'
 import { useWC } from '../../hooks/wc'
+import { SimpleTable } from '../SimpleTable'
+import { Product } from 'gsg-integrations/es5/woocommerce'
+import { useOptions } from '../../hooks/options'
 
 export type Props = {
 	companySN: string
@@ -31,54 +31,55 @@ export type Props = {
 	clientID: string
 }
 
-const validateProps = ({ ticket, companySN, gsgToken, clientID }: Props): Promise<Props> => {
-	if (!companySN || !ticket) {
-		return Promise.reject('Invalid evosus access credentials')
-	}
-	if (!gsgToken || !clientID) {
-		return Promise.reject('Invalid GSG access credentials')
-	}
-	return Promise.resolve({ ticket, companySN, gsgToken, clientID })
-}
-
-type Results = Array<PromiseSettledResult<Product.Type[] | undefined> | PromiseRejectedResult>
-type Await<T> = T extends PromiseLike<infer U> ? U : T
 const EvosusDashboard: FunctionalComponent<Props> = () => {
+	const { options } = useOptions()
 	const { client: wcC } = useWC()
 	const { client: evosusC } = useEvosus()
 
 	const { resolved: productLines } = usePromiseCall(evosusC.inventoryApi.inventoryProductLineSearch)
 
 	const [productLine, setProductLine] = useState<null | string>(null)
-	const [syncFields, setSyncFields] = useState<string[]>(['price', 'quantity', 'name', 'weight'])
 	const [syncing, setSyncing] = useState<boolean>(false)
-	const [syncResults, setSyncResults] = useState<Await<ReturnType<typeof evosus.searchAndImportToWooCommerce>> | null>(null)
+	const syncResults = useArray<{
+		status: string
+		products: Product.Type[]
+	}>([])
+	const syncErrors = useArray<Error>([])
 
 	const syncProducts = useCallback(() => {
 		if (!productLine) {
 			return
 		}
+		syncResults.set([])
 		setSyncing(true)
 		evosus
 			.searchAndImportToWooCommerce(wcC, evosusC, { ProductLineID: productLine })
-			.then(res => setSyncResults(res))
+			.then(promises => {
+				const results: any[] = []
+				const errors: any[] = []
+
+				return Promise.allSettled(
+					promises.map(promise => {
+						return promise
+							.then(res => {
+								results.push(res)
+								syncResults.concat(results)
+							})
+							.catch(err => {
+								errors.push(err)
+								syncErrors.concat(errors)
+							})
+					})
+				)
+			})
 			.finally(setSyncing.bind(null, false))
-	}, [productLine, evosus, wcC, evosusC])
+	}, [productLine, evosus, wcC, evosusC, syncResults])
 
 	return (
 		<Box>
-			<Heading w='100%' size='md'>
-				GSG Evosus Dashboard
+			<Heading w='100%' size='lg' textAlign='center'>
+				Evosus Dashboard
 			</Heading>
-			<Box>
-				{/* {errorMessage ? (
-					<Alert status='error'>
-						<AlertIcon />
-						<AlertTitle mr={2}>{errorMessage}</AlertTitle>
-						<AlertDescription></AlertDescription>
-					</Alert>
-				) : null} */}
-			</Box>
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
 					<VStack w='100%' justifyContent='stretch' alignItems='stretch' alignContent='stretch' justifyItems='stretch'>
@@ -91,84 +92,43 @@ const EvosusDashboard: FunctionalComponent<Props> = () => {
 								))}
 							</SimpleGrid>
 						</RadioGroup>
-						<Heading size='sm'>Select which properties should be synced</Heading>
-						<CheckboxGroup onChange={(s: string[]) => setSyncFields(s)} value={syncFields}>
-							<SimpleGrid>
-								<Checkbox value='name'>Product Name</Checkbox>
-								<Checkbox value='price'>Price</Checkbox>
-								<Checkbox value='quantity'>Quantity</Checkbox>
-								<Checkbox value='weight'>Weight</Checkbox>
-							</SimpleGrid>
-						</CheckboxGroup>
 						<Box>
-							<Button
-								onClick={syncProducts}
-								w='100%'
-								mt={8}
-								disabled={syncing || !productLine || syncFields.length === 0}
-							>
+							<Button onClick={syncProducts} w='100%' mt={8} disabled={syncing || !productLine}>
 								Sync Products
 							</Button>
 						</Box>
 						<Box>{syncing ? 'Syncing...' : null}</Box>
-
 						<Accordion allowMultiple>
-							{syncResults?.map(res => {
+							{syncResults.array.map(res => {
 								return (
-									<AccordionItem bg={res.status === 'fulfilled' ? 'green.400' : 'red.400'}>
+									<AccordionItem bg={res.status === 'created' ? 'green.400' : 'blue.400'}>
 										<AccordionButton>
 											<Box flex='1' textAlign='left'>
-												{res.status === 'fulfilled' ? 'Success' : 'Failure'}
-												{': '}
-												{res.status === 'fulfilled'
-													? res.value.update?.length || res.value.create?.length
-													: null}{' '}
-												{res.status === 'fulfilled'
-													? res.value.update
-														? 'Updated'
-														: res.value.create
-														? 'Created'
-														: null
-													: null}
+												{res.products.length} {res.status === 'created' ? 'Created' : 'Updated'}
 											</Box>
 											<AccordionIcon />
 										</AccordionButton>
 										<AccordionPanel pb={4} bg='white'>
-											<Table variant='simple'>
-												<Thead>
-													<Tr>
-														<Th>ID#</Th>
-														<Th>Name</Th>
-														<Th>SKU</Th>
-														<Th>Quanitity</Th>
-														<Th>Price</Th>
-													</Tr>
-												</Thead>
-												<Tbody>
-													{res.status === 'fulfilled'
-														? (res.value.update || res.value.create)?.map(product => {
-																return (
-																	<Tr>
-																		<Td>{product.id}</Td>
-																		<Td>{product.name}</Td>
-																		<Td>{product.sku}</Td>
-																		<Td>{product.stock_quantity}</Td>
-																		<Td>{product.price}</Td>
-																	</Tr>
-																)
-														  })
-														: null}
-												</Tbody>
-												<Tfoot>
-													<Tr>
-														<Th>ID#</Th>
-														<Th>Name</Th>
-														<Th>SKU</Th>
-														<Th>Quanitity</Th>
-														<Th>Price</Th>
-													</Tr>
-												</Tfoot>
-											</Table>
+											<SimpleTable headers={['ID#', 'Name', 'SKU', 'Quanitity', 'Price']}>
+												{res.products.map(product => {
+													return (
+														<Tr>
+															<Td>
+																<Link
+																	href={`${options.wc.options.access.url}wp-admin/post.php?post=${product.id}&action=edit`}
+																	target='_blank'
+																>
+																	#{product.id}
+																</Link>
+															</Td>
+															<Td>{product.name}</Td>
+															<Td>{product.sku}</Td>
+															<Td>{product.stock_quantity}</Td>
+															<Td>{product.price}</Td>
+														</Tr>
+													)
+												})}
+											</SimpleTable>
 										</AccordionPanel>
 									</AccordionItem>
 								)

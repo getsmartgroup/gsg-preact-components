@@ -1,10 +1,12 @@
-import { FunctionalComponent, h } from 'preact'
+import { chakra, IconButton, Input, InputGroup, InputRightElement, useBoolean } from '@chakra-ui/react'
 import { useEffect, useMemo, useState } from 'preact/hooks'
-import Cookies from 'js-cookie'
-import { chakra, Input, useBoolean } from '@chakra-ui/react'
 import { wc, rb, an, gsc, evosus } from 'gsg-integrations'
-import { merge } from './common'
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { createContext } from '@chakra-ui/react-utils'
+import { FunctionalComponent, h } from 'preact'
+import Cookies from 'js-cookie'
+
+import { merge } from './common'
 
 export type Props = {
 	nonce: string
@@ -61,7 +63,7 @@ export const optionsAPI = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 	}
 }
 
-export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }: Props) => {
+export const useOptionsHook = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }: Props) => {
 	const api = useMemo(() => optionsAPI({ nonce, siteurl, cookieHash, cookieValue, gsgToken }), [
 		nonce,
 		siteurl,
@@ -136,12 +138,41 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 		}
 	}, [options])
 
-	const optionInput = <T extends { [K in string]: any }>(obj: Partial<T>, target: keyof T, label: string) => {
-		const initialValue = obj[target]
-		return (
-			<chakra.label>
-				{label}
+	return {
+		fetching,
+		saving,
+		options,
+		setOptions
+	}
+}
+
+export const [OptionsContextProvider, useOptionsContext] = createContext<ReturnType<typeof useOptionsHook>>()
+
+export const OptionsProvider: FunctionalComponent<Props> = ({ children, ...props }) => {
+	const ctx = useOptionsHook(props)
+	return <OptionsContextProvider value={ctx}>{children}</OptionsContextProvider>
+}
+
+export const OptionInput = <T extends { [K in string]: any }>({
+	obj,
+	target,
+	label,
+	secret
+}: {
+	obj: T
+	target: keyof T
+	label: string
+	secret?: boolean
+}) => {
+	const { options, fetching, saving, setOptions } = useOptionsContext()
+	const initialValue = obj[target]
+	const [view, setView] = useBoolean(false)
+	return (
+		<chakra.label>
+			{label}
+			<InputGroup>
 				<Input
+					type={view || !secret ? 'text' : 'password'}
 					disabled={fetching}
 					placeholder={label}
 					value={obj[target]}
@@ -150,27 +181,23 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 						;(obj as any)[target] = value
 					}}
 					onBlur={() => {
-						console.log(obj[target], initialValue)
 						if (obj[target] !== initialValue) {
 							setOptions({ ...options })
 						}
 					}}
 				/>
-			</chakra.label>
-		)
-	}
-
-	return {
-		optionInput,
-		fetching,
-		saving,
-		options
-	}
+				{secret ? (
+					<InputRightElement>
+						<IconButton
+							aria-label='View Input'
+							onClick={() => setView.toggle()}
+							icon={(view ? <ViewOffIcon /> : <ViewIcon />) as any}
+						/>
+					</InputRightElement>
+				) : null}
+			</InputGroup>
+		</chakra.label>
+	)
 }
 
-export const [OptionsContextProvider, useOptionsContext] = createContext<ReturnType<typeof useOptions>>()
-
-export const OptionsProvider: FunctionalComponent<Props> = ({ children, ...props }) => {
-	const ctx = useOptions(props)
-	return <OptionsContextProvider value={ctx}>{children}</OptionsContextProvider>
-}
+export const useOptions = useOptionsContext

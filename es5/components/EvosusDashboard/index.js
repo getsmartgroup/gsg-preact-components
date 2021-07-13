@@ -9,37 +9,44 @@ var SimpleAccordion_1 = require("../SimpleAccordion");
 var evosus_1 = require("../../hooks/evosus");
 var hooks_2 = require("../../hooks");
 var wc_1 = require("../../hooks/wc");
-var validateProps = function (_a) {
-    var ticket = _a.ticket, companySN = _a.companySN, gsgToken = _a.gsgToken, clientID = _a.clientID;
-    if (!companySN || !ticket) {
-        return Promise.reject('Invalid evosus access credentials');
-    }
-    if (!gsgToken || !clientID) {
-        return Promise.reject('Invalid GSG access credentials');
-    }
-    return Promise.resolve({ ticket: ticket, companySN: companySN, gsgToken: gsgToken, clientID: clientID });
-};
+var SimpleTable_1 = require("../SimpleTable");
+var options_1 = require("../../hooks/options");
 var EvosusDashboard = function () {
+    var options = options_1.useOptions().options;
     var wcC = wc_1.useWC().client;
     var evosusC = evosus_1.useEvosus().client;
     var productLines = hooks_2.usePromiseCall(evosusC.inventoryApi.inventoryProductLineSearch).resolved;
     var _a = hooks_1.useState(null), productLine = _a[0], setProductLine = _a[1];
-    var _b = hooks_1.useState(['price', 'quantity', 'name', 'weight']), syncFields = _b[0], setSyncFields = _b[1];
-    var _c = hooks_1.useState(false), syncing = _c[0], setSyncing = _c[1];
-    var _d = hooks_1.useState(null), syncResults = _d[0], setSyncResults = _d[1];
+    var _b = hooks_1.useState(false), syncing = _b[0], setSyncing = _b[1];
+    var syncResults = hooks_2.useArray([]);
+    var syncErrors = hooks_2.useArray([]);
     var syncProducts = hooks_1.useCallback(function () {
         if (!productLine) {
             return;
         }
+        syncResults.set([]);
         setSyncing(true);
         gsg_integrations_1.evosus
             .searchAndImportToWooCommerce(wcC, evosusC, { ProductLineID: productLine })
-            .then(function (res) { return setSyncResults(res); })
+            .then(function (promises) {
+            var results = [];
+            var errors = [];
+            return Promise.allSettled(promises.map(function (promise) {
+                return promise
+                    .then(function (res) {
+                    results.push(res);
+                    syncResults.concat(results);
+                })
+                    .catch(function (err) {
+                    errors.push(err);
+                    syncErrors.concat(errors);
+                });
+            }));
+        })
             .finally(setSyncing.bind(null, false));
-    }, [productLine, gsg_integrations_1.evosus, wcC, evosusC]);
+    }, [productLine, gsg_integrations_1.evosus, wcC, evosusC, syncResults]);
     return (preact_1.h(react_2.Box, null,
-        preact_1.h(react_2.Heading, { w: '100%', size: 'md' }, "GSG Evosus Dashboard"),
-        preact_1.h(react_2.Box, null),
+        preact_1.h(react_2.Heading, { w: '100%', size: 'lg', textAlign: 'center' }, "Evosus Dashboard"),
         preact_1.h(SimpleAccordion_1.SimpleAccordion, null,
             preact_1.h(SimpleAccordion_1.SimplePanel, { title: 'Sync Products' },
                 preact_1.h(react_2.VStack, { w: '100%', justifyContent: 'stretch', alignItems: 'stretch', alignContent: 'stretch', justifyItems: 'stretch' },
@@ -50,62 +57,30 @@ var EvosusDashboard = function () {
                             var ProductLine = _a.ProductLine, ProductLineID = _a.ProductLineID;
                             return (preact_1.h(react_2.Radio, { value: ProductLineID === null || ProductLineID === void 0 ? void 0 : ProductLineID.toString() }, ProductLine));
                         }))),
-                    preact_1.h(react_2.Heading, { size: 'sm' }, "Select which properties should be synced"),
-                    preact_1.h(react_2.CheckboxGroup, { onChange: function (s) { return setSyncFields(s); }, value: syncFields },
-                        preact_1.h(react_2.SimpleGrid, null,
-                            preact_1.h(react_2.Checkbox, { value: 'name' }, "Product Name"),
-                            preact_1.h(react_2.Checkbox, { value: 'price' }, "Price"),
-                            preact_1.h(react_2.Checkbox, { value: 'quantity' }, "Quantity"),
-                            preact_1.h(react_2.Checkbox, { value: 'weight' }, "Weight"))),
                     preact_1.h(react_2.Box, null,
-                        preact_1.h(react_2.Button, { onClick: syncProducts, w: '100%', mt: 8, disabled: syncing || !productLine || syncFields.length === 0 }, "Sync Products")),
+                        preact_1.h(react_2.Button, { onClick: syncProducts, w: '100%', mt: 8, disabled: syncing || !productLine }, "Sync Products")),
                     preact_1.h(react_2.Box, null, syncing ? 'Syncing...' : null),
-                    preact_1.h(react_2.Accordion, { allowMultiple: true }, syncResults === null || syncResults === void 0 ? void 0 : syncResults.map(function (res) {
-                        var _a, _b, _c;
-                        return (preact_1.h(react_2.AccordionItem, { bg: res.status === 'fulfilled' ? 'green.400' : 'red.400' },
+                    preact_1.h(react_2.Accordion, { allowMultiple: true }, syncResults.array.map(function (res) {
+                        return (preact_1.h(react_2.AccordionItem, { bg: res.status === 'created' ? 'green.400' : 'blue.400' },
                             preact_1.h(react_2.AccordionButton, null,
                                 preact_1.h(react_2.Box, { flex: '1', textAlign: 'left' },
-                                    res.status === 'fulfilled' ? 'Success' : 'Failure',
-                                    ': ',
-                                    res.status === 'fulfilled'
-                                        ? ((_a = res.value.update) === null || _a === void 0 ? void 0 : _a.length) || ((_b = res.value.create) === null || _b === void 0 ? void 0 : _b.length)
-                                        : null,
-                                    ' ',
-                                    res.status === 'fulfilled'
-                                        ? res.value.update
-                                            ? 'Updated'
-                                            : res.value.create
-                                                ? 'Created'
-                                                : null
-                                        : null),
+                                    res.products.length,
+                                    " ",
+                                    res.status === 'created' ? 'Created' : 'Updated'),
                                 preact_1.h(react_2.AccordionIcon, null)),
                             preact_1.h(react_2.AccordionPanel, { pb: 4, bg: 'white' },
-                                preact_1.h(react_1.Table, { variant: 'simple' },
-                                    preact_1.h(react_1.Thead, null,
-                                        preact_1.h(react_1.Tr, null,
-                                            preact_1.h(react_1.Th, null, "ID#"),
-                                            preact_1.h(react_1.Th, null, "Name"),
-                                            preact_1.h(react_1.Th, null, "SKU"),
-                                            preact_1.h(react_1.Th, null, "Quanitity"),
-                                            preact_1.h(react_1.Th, null, "Price"))),
-                                    preact_1.h(react_1.Tbody, null, res.status === 'fulfilled'
-                                        ? (_c = (res.value.update || res.value.create)) === null || _c === void 0 ? void 0 : _c.map(function (product) {
-                                            return (preact_1.h(react_1.Tr, null,
-                                                preact_1.h(react_1.Td, null, product.id),
-                                                preact_1.h(react_1.Td, null, product.name),
-                                                preact_1.h(react_1.Td, null, product.sku),
-                                                preact_1.h(react_1.Td, null, product.stock_quantity),
-                                                preact_1.h(react_1.Td, null, product.price)));
-                                        })
-                                        : null),
-                                    preact_1.h(react_1.Tfoot, null,
-                                        preact_1.h(react_1.Tr, null,
-                                            preact_1.h(react_1.Th, null, "ID#"),
-                                            preact_1.h(react_1.Th, null, "Name"),
-                                            preact_1.h(react_1.Th, null, "SKU"),
-                                            preact_1.h(react_1.Th, null, "Quanitity"),
-                                            preact_1.h(react_1.Th, null, "Price")))))));
+                                preact_1.h(SimpleTable_1.SimpleTable, { headers: ['ID#', 'Name', 'SKU', 'Quanitity', 'Price'] }, res.products.map(function (product) {
+                                    return (preact_1.h(react_1.Tr, null,
+                                        preact_1.h(react_1.Td, null,
+                                            preact_1.h(react_1.Link, { href: options.wc.options.access.url + "wp-admin/post.php?post=" + product.id + "&action=edit", target: '_blank' },
+                                                "#",
+                                                product.id)),
+                                        preact_1.h(react_1.Td, null, product.name),
+                                        preact_1.h(react_1.Td, null, product.sku),
+                                        preact_1.h(react_1.Td, null, product.stock_quantity),
+                                        preact_1.h(react_1.Td, null, product.price)));
+                                })))));
                     })))))));
 };
 exports.default = EvosusDashboard;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9uZW50cy9Fdm9zdXNEYXNoYm9hcmQvaW5kZXgudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEscURBQXlDO0FBRXpDLDBDQUF5RTtBQUN6RSxpQ0FBK0M7QUFDL0Msc0NBQW9EO0FBQ3BELDBDQWV5QjtBQUN6QixzREFBaUU7QUFDakUsNkNBQThDO0FBQzlDLHFDQUE0QztBQUM1QyxxQ0FBc0M7QUFTdEMsSUFBTSxhQUFhLEdBQUcsVUFBQyxFQUFnRDtRQUE5QyxNQUFNLFlBQUEsRUFBRSxTQUFTLGVBQUEsRUFBRSxRQUFRLGNBQUEsRUFBRSxRQUFRLGNBQUE7SUFDN0QsSUFBSSxDQUFDLFNBQVMsSUFBSSxDQUFDLE1BQU0sRUFBRTtRQUMxQixPQUFPLE9BQU8sQ0FBQyxNQUFNLENBQUMsbUNBQW1DLENBQUMsQ0FBQTtLQUMxRDtJQUNELElBQUksQ0FBQyxRQUFRLElBQUksQ0FBQyxRQUFRLEVBQUU7UUFDM0IsT0FBTyxPQUFPLENBQUMsTUFBTSxDQUFDLGdDQUFnQyxDQUFDLENBQUE7S0FDdkQ7SUFDRCxPQUFPLE9BQU8sQ0FBQyxPQUFPLENBQUMsRUFBRSxNQUFNLFFBQUEsRUFBRSxTQUFTLFdBQUEsRUFBRSxRQUFRLFVBQUEsRUFBRSxRQUFRLFVBQUEsRUFBRSxDQUFDLENBQUE7QUFDbEUsQ0FBQyxDQUFBO0FBSUQsSUFBTSxlQUFlLEdBQStCO0lBQzNDLElBQVEsR0FBRyxHQUFLLFVBQUssRUFBRSxPQUFaLENBQVk7SUFDdkIsSUFBUSxPQUFPLEdBQUssa0JBQVMsRUFBRSxPQUFoQixDQUFnQjtJQUUvQixJQUFVLFlBQVksR0FBSyxzQkFBYyxDQUFDLE9BQU8sQ0FBQyxZQUFZLENBQUMsMEJBQTBCLENBQUMsU0FBcEUsQ0FBb0U7SUFFNUYsSUFBQSxLQUFnQyxnQkFBUSxDQUFnQixJQUFJLENBQUMsRUFBNUQsV0FBVyxRQUFBLEVBQUUsY0FB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
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9uZW50cy9Fdm9zdXNEYXNoYm9hcmQvaW5kZXgudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEscURBQXlDO0FBQ3pDLDBDQUErQztBQUMvQyxpQ0FBK0M7QUFDL0Msc0NBQW9EO0FBQ3BELDBDQWF5QjtBQUN6QixzREFBaUU7QUFDakUsNkNBQThDO0FBQzlDLHFDQUFzRDtBQUN0RCxxQ0FBc0M7QUFDdEMsOENBQTRDO0FBRTVDLCtDQUFnRDtBQVNoRCxJQUFNLGVBQWUsR0FBK0I7SUFDM0MsSUFBQSxPQUFPLEdBQUssb0JBQVUsRUFBRSxRQUFqQixDQUFpQjtJQUN4QixJQUFRLEdBQUcsR0FBSyxVQUFLLEVBQUUsT0FBWixDQUFZO0lBQ3ZCLElBQVEsT0FBTyxHQUFLLGtCQUFTLEVBQUUsT0FBaEIsQ0FBZ0I7SUFFL0IsSUFBVSxZQUFZLEdBQUssc0JBQWMsQ0FBQyxPQUFPLENBQUMsWUFBWSxDQUFDLDBCQUEwQixDQUFDLFNBQXBFLENBQW9FO0lBRTVGLElBQUEsS0FBZ0MsZ0JBQVEsQ0FBZ0IsSUFBSSxDQUFDLEVBQTVELFdBQVcsUUFBQSxFQUFFLGNBQWMsUUFBaUMsQ0FBQTtJQUM3RCxJQUFBLEtBQXdCLGdCQUFRLENBQVUsS0FBSyxDQUFDLEVBQS9DLE9BQU8sUUFBQSxFQUFFLFVBQVUsUUFBNEIsQ0FBQTtJQUN0RCxJQUFNLFdBQVcsR0FBRyxnQkFBUSxDQUd6QixFQUFFLENBQUMsQ0FBQTtJQUNOLElBQU0sVUFBVSxHQUFHLGdCQUFRLENBQVEsRUFBRSxDQUFDLENBQUE7SUFFdEMsSUFBTSxZQUFZLEdBQUcsbUJBQVcsQ0FBQztRQUNoQyxJQUFJLENBQUMsV0FBVyxFQUFFO1lBQ2pCLE9BQU07U0FDTjtRQUNELFdBQVcsQ0FBQyxHQUFHLENBQUMsRUFBRSxDQUFDLENBQUE7UUFDbkIsVUFBVSxDQUFDLElBQUksQ0FBQyxDQUFBO1FBQ2hCLHlCQUFNO2FBQ0osNEJBQTRCLENBQUMsR0FBRyxFQUFFLE9BQU8sRUFBRSxFQUFFLGFBQWEsRUFBRSxXQUFXLEVBQUUsQ0FBQzthQUMxRSxJQUFJLENBQUMsVUFBQSxRQUFRO1lBQ2IsSUFBTSxPQUFPLEdBQVUsRUFBRSxDQUFBO1lBQ3pCLElBQU0sTUFBTSxHQUFVLEVBQUUsQ0FBQTtZQUV4QixPQUFPLE9BQU8sQ0FBQyxVQUFVLENBQ3hCLFFBQVEsQ0FBQyxHQUFHLENBQUMsVUFBQSxPQUFPO2dCQUNuQixPQUFPLE9BQU87cUJBQ1osSUFBSSxDQUFDLFVBQUEsR0FBRztvQkFDUixPQUFPLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFBO29CQUNqQixXQUFXLENBQUMsTUFBTSxDQUFDLE9BQU8sQ0FBQyxDQUFBO2dCQUM1QixDQUFDLENBQUM7cUJBQ0QsS0FBSyxDQUFDLFVBQUEsR0FBRztvQkFDVCxNQUFNLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFBO29CQUNoQixVQUFVLENBQUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxDQUFBO2dCQUMxQixDQUFDLENBQUMsQ0FBQTtZQUNKLENBQUMsQ0FBQyxDQUNGLENBQUE7UUFDRixDQUFDLENBQUM7YUFDRCxPQUFPLENBQUMsVUFBVSxDQUFDLElBQUksQ0FBQyxJQUFJLEVBQUUsS0FBSyxDQUFDLENBQUMsQ0FBQTtJQUN4QyxDQUFDLEVBQUUsQ0FBQyxXQUFXLEVBQUUseUJBQU0sRUFBRSxHQUFHLEVBQUUsT0FBTyxFQUFFLFdBQVcsQ0FBQyxDQUFDLENBQUE7SUFFcEQsT0FBTyxDQUNOLFdBQUMsV0FBRztRQUNILFdBQUMsZUFBTyxJQUFDLENBQUMsRUFBQyxNQUFNLEVBQUMsSUFBSSxFQUFDLElBQUksRUFBQyxTQUFTLEVBQUMsUUFBUSx1QkFFcEM7UUFDVixXQUFDLGlDQUFlO1lBQ2YsV0FBQyw2QkFBVyxJQUFDLEtBQUssRUFBQyxlQUFlO2dCQUNqQyxXQUFDLGNBQU0sSUFBQyxDQUFDLEVBQUMsTUFBTSxFQUFDLGNBQWMsRUFBQyxTQUFTLEVBQUMsVUFBVSxFQUFDLFNBQVMsRUFBQyxZQUFZLEVBQUMsU0FBUyxFQUFDLFlBQVksRUFBQyxTQUFTO29CQUMzRyxXQUFDLGVBQU8sSUFBQyxJQUFJLEVBQUMsSUFBSSw0QkFBZ0M7b0JBQ2pELE9BQU8sQ0FBQyxDQUFDLENBQUMsdUJBQXVCLENBQUMsQ0FBQyxDQUFDLElBQUk7b0JBQ3pDLFdBQUMsa0JBQVUsSUFBQyxRQUFRLEVBQUUsY0FBYyxFQUFFLEtBQUssRUFBRSxXQUFXLGFBQVgsV0FBVyxjQUFYLFdBQVcsR0FBSSxFQUFFO3dCQUM3RCxXQUFDLGtCQUFVLElBQUMsT0FBTyxFQUFFLENBQUMsSUFDcEIsWUFBWSxhQUFaLFlBQVksdUJBQVosWUFBWSxDQUFFLEdBQUcsQ0FBQyxVQUFDLEVBQThCO2dDQUE1QixXQUFXLGlCQUFBLEVBQUUsYUFBYSxtQkFBQTs0QkFBTyxPQUFBLENBQ3RELFdBQUMsYUFBSyxJQUFDLEtBQUssRUFBRSxhQUFhLGFBQWIsYUFBYSx1QkFBYixhQUFhLENBQUUsUUFBUSxFQUFFLElBQUcsV0FBVyxDQUFTLENBQzlEO3dCQUZzRCxDQUV0RCxDQUFDLENBQ1UsQ0FDRDtvQkFDYixXQUFDLFdBQUc7d0JBQ0gsV0FBQyxjQUFNLElBQUMsT0FBTyxFQUFFLFlBQVksRUFBRSxDQUFDLEVBQUMsTUFBTSxFQUFDLEVBQUUsRUFBRSxDQUFDLEVBQUUsUUFBUSxFQUFFLE9BQU8sSUFBSSxDQUFDLFdBQVcsb0JBRXZFLENBQ0o7b0JBQ04sV0FBQyxXQUFHLFFBQUUsT0FBTyxDQUFDLENBQUMsQ0FBQyxZQUFZLENBQUMsQ0FBQyxDQUFDLElBQUksQ0FBTztvQkFDMUMsV0FBQyxpQkFBUyxJQUFDLGFBQWEsVUFDdEIsV0FBVyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsVUFBQSxHQUFHO3dCQUN6QixPQUFPLENBQ04sV0FBQyxxQkFBYSxJQUFDLEVBQUUsRUFBRSxHQUFHLENBQUMsTUFBTSxLQUFLLFNBQVMsQ0FBQyxDQUFDLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FBQyxVQUFVOzRCQUNyRSxXQUFDLHVCQUFlO2dDQUNmLFdBQUMsV0FBRyxJQUFDLElBQUksRUFBQyxHQUFHLEVBQUMsU0FBUyxFQUFDLE1BQU07b0NBQzVCLEdBQUcsQ0FBQyxRQUFRLENBQUMsTUFBTTs7b0NBQUcsR0FBRyxDQUFDLE1BQU0sS0FBSyxTQUFTLENBQUMsQ0FBQyxDQUFDLFNBQVMsQ0FBQyxDQUFDLENBQUMsU0FBUyxDQUNsRTtnQ0FDTixXQUFDLHFCQUFhLE9BQUcsQ0FDQTs0QkFDbEIsV0FBQyxzQkFBYyxJQUFDLEVBQUUsRUFBRSxDQUFDLEVBQUUsRUFBRSxFQUFDLE9BQU87Z0NBQ2hDLFdBQUMseUJBQVcsSUFBQyxPQUFPLEVBQUUsQ0FBQyxLQUFLLEVBQUUsTUFBTSxFQUFFLEtBQUssRUFBRSxXQUFXLEVBQUUsT0FBTyxDQUFDLElBQ2hFLEdBQUcsQ0FBQyxRQUFRLENBQUMsR0FBRyxDQUFDLFVBQUEsT0FBTztvQ0FDeEIsT0FBTyxDQUNOLFdBQUMsVUFBRTt3Q0FDRixXQUFDLFVBQUU7NENBQ0YsV0FBQyxZQUFJLElBQ0osSUFBSSxFQUFLLE9BQU8sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLE1BQU0sQ0FBQyxHQUFHLCtCQUEwQixPQUFPLENBQUMsRUFBRSxpQkFBYyxFQUN4RixNQUFNLEVBQUMsUUFBUTs7Z0RBRWIsT0FBTyxDQUFDLEVBQUUsQ0FDTixDQUNIO3dDQUNMLFdBQUMsVUFBRSxRQUFFLE9BQU8sQ0FBQyxJQUFJLENBQU07d0NBQ3ZCLFdBQUMsVUFBRSxRQUFFLE9BQU8sQ0FBQyxHQUFHLENBQU07d0NBQ3RCLFdBQUMsVUFBRSxRQUFFLE9BQU8sQ0FBQyxjQUFjLENBQU07d0NBQ2pDLFdBQUMsVUFBRSxRQUFFLE9BQU8sQ0FBQyxLQUFLLENBQU0sQ0FDcEIsQ0FDTCxDQUFBO2dDQUNGLENBQUMsQ0FBQyxDQUNXLENBQ0UsQ0FDRixDQUNoQixDQUFBO29CQUNGLENBQUMsQ0FBQyxDQUNTLENBQ0osQ0FDSSxDQUNHLENBQ2IsQ0FDTixDQUFBO0FBQ0YsQ0FBQyxDQUFBO0FBRUQsa0JBQWUsZUFBZSxDQUFBIn0=

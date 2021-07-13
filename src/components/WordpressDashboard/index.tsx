@@ -1,33 +1,23 @@
 import { Fragment, FunctionalComponent, h } from 'preact'
-import {
-	Box,
-	HStack,
-	Heading,
-	Stack,
-	ChakraProvider,
-	AlertIcon,
-	Link,
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink
-} from '@chakra-ui/react'
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
+import { Box, HStack, Heading, Stack, ChakraProvider, Link, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
-import EvosusDashboard from '../EvosusDashboard'
-import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
-import { Props as OptionsProps, useOptionsContext, OptionsProvider } from '../../hooks/options'
-import { an, wc, rb, gsc, evosus, usePromiseCall } from '../../hooks'
-import RBDashboard from '../RBDashboard'
-import ErrorAlert from '../ErrorAlert'
+
 import Router, { Route } from 'preact-router'
 import { Match } from 'preact-router/match'
 import { createHashHistory } from 'history'
+
+import EvosusDashboard from '../EvosusDashboard'
+import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
+import { Props as OptionsProps, useOptionsContext, OptionsProvider, useOptions, OptionInput } from '../../hooks/options'
+import { an, wc, rb, gsc, evosus, usePromiseCall } from '../../hooks'
+import RBDashboard from '../RBDashboard'
+import ErrorAlert from '../ErrorAlert'
 import { theme } from './theme'
 
 export type Props = OptionsProps
 
 const Evosus = () => {
-	const { optionInput, fetching, saving, options } = useOptionsContext()
+	const { fetching, saving, options } = useOptionsContext()
 
 	return (
 		<SimpleAccordion>
@@ -43,8 +33,8 @@ const Evosus = () => {
 			</SimplePanel>
 			<SimplePanel title='Settings'>
 				<Stack>
-					{optionInput(options.evosus.options.access, 'companySN', 'Company SN')}
-					{optionInput(options.evosus.options.access, 'ticket', 'Ticket')}
+					<OptionInput secret obj={options.evosus.options.access} target='companySN' label='Company SN' />
+					<OptionInput secret obj={options.evosus.options.access} target='ticket' label='Ticket' />
 				</Stack>
 			</SimplePanel>
 		</SimpleAccordion>
@@ -52,7 +42,7 @@ const Evosus = () => {
 }
 
 const RB = () => {
-	const { optionInput, fetching, saving, options } = useOptionsContext()
+	const { fetching, saving, options } = useOptionsContext()
 
 	return (
 		<SimpleAccordion>
@@ -65,12 +55,17 @@ const RB = () => {
 			</SimplePanel>
 			<SimplePanel title='Settings'>
 				<Stack>
-					{optionInput(options.rb.options.access, 'CompanyID', 'Company ID')}
-					{optionInput(options.rb.options.access, 'APIKey', 'API Key')}
-					{optionInput(options.rb.options.access, 'name', 'Company Name')}
-					{optionInput(options.an.options.credentials, 'name', 'Authorize.net Name')}
-					{optionInput(options.an.options.credentials, 'transactionKey', 'Authorize.net Transaction Key')}
-					{optionInput(options.an.options.credentials, 'refId', 'Authorize.net Ref ID (Optional)')}
+					<OptionInput obj={options.rb.options.access} target='CompanyID' label='Company ID' />
+					<OptionInput secret obj={options.rb.options.access} target='APIKey' label='API Key' />
+					<OptionInput obj={options.rb.options.access} target='name' label='Company Name' />
+					<OptionInput secret obj={options.an.options.credentials} target='name' label='Authorize.net Name' />
+					<OptionInput
+						secret
+						obj={options.an.options.credentials}
+						target='transactionKey'
+						label='Authorize.net Transaction Key'
+					/>
+					<OptionInput obj={options.an.options.credentials} target='refId' label='Authorize.net Ref ID (Optional)' />
 				</Stack>
 			</SimplePanel>
 		</SimpleAccordion>
@@ -79,7 +74,7 @@ const RB = () => {
 
 const Integrations = () => {
 	const { client } = gsc.useGSC()
-	const { optionInput, fetching, saving, options } = useOptionsContext()
+	const { fetching, saving, options } = useOptions()
 	const { resolved, loading, rejected } = usePromiseCall(client.getServices)
 	if (rejected) {
 		return <ErrorAlert>Failed to authenticate client, verify credentials under Settings</ErrorAlert>
@@ -96,18 +91,18 @@ const Integrations = () => {
 }
 
 const Home = () => {
-	const { optionInput, fetching, saving, options } = useOptionsContext()
+	const { fetching, saving, options } = useOptions()
 	return (
 		<Box>
 			<SimpleAccordion defaultIndex={[0]} allowMultiple={false} allowToggle={true}>
 				<SimplePanel title='Integrations'>{fetching ? <Spinner /> : <Integrations />}</SimplePanel>
 				<SimplePanel title='Settings'>
 					<Stack spacing={3}>
-						{optionInput(options.gsc.options.access, 'clientID', 'Client ID')}
-						{optionInput(options.gsc.options.access, 'gsgToken', 'GSG Token')}
-						{optionInput(options.wc.options.access, 'key', 'WooCommerce API Key')}
-						{optionInput(options.wc.options.access, 'secret', 'WooCommerce API Secret')}
-						{optionInput(options.wc.options.access, 'url', 'Website URL')}
+						<OptionInput obj={options.gsc.options.access} target='clientID' label='Client ID' />
+						<OptionInput secret obj={options.gsc.options.access} target='gsgToken' label='GSG Token' />
+						<OptionInput secret obj={options.wc.options.access} target='key' label='WooCommerce API Key' />
+						<OptionInput secret obj={options.wc.options.access} target='secret' label='WooCommerce API Secret' />
+						<OptionInput secret obj={options.wc.options.access} target='url' label='Website URL' />
 					</Stack>
 				</SimplePanel>
 			</SimpleAccordion>
@@ -116,7 +111,7 @@ const Home = () => {
 }
 
 const Main = () => {
-	const { optionInput, fetching, saving, options } = useOptionsContext()
+	const { fetching, saving, options } = useOptions()
 
 	return (
 		<ChakraProvider theme={theme}>

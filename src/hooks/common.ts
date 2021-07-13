@@ -1,5 +1,5 @@
 import { useBoolean } from '@chakra-ui/react'
-import { useEffect, useState } from 'preact/hooks'
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
 
 export const usePromiseCall = <T extends any = any>(promiseCall?: () => Promise<T>, inputs: any[] = []) => {
 	const [resolved, setResolved] = useState<T | null>(null)
@@ -23,15 +23,24 @@ export const usePromiseCall = <T extends any = any>(promiseCall?: () => Promise<
 	}
 }
 
-export const useArray = <T>(data: T[]) => {
-	const [array, set] = useState<T[]>(data)
-	return {
-		array,
-		set,
-		push: (data: T) => set([...array, data]),
-		concat: (data: T[]) => set([...array, ...data]),
-		remove: (data: T) => set(array.filter(e => e !== data))
-	}
+export const useArray = <T>(initial: T[]) => {
+	const [value, _set] = useState<{ array: T[] }>(() => ({ array: initial }))
+	// prettier-ignore
+	const res = useMemo( () => {
+		const set = ( data: T[] ) => _set( { array : data } )
+		const push = (data: T) => set([...value.array, data])
+		const concat = (data: T[]) => set([...value.array, ...data])
+		const remove = (data: T) => set(value.array.filter(e => e !== data))
+
+		return {
+			set,
+			push,
+			concat,
+			remove,
+			array : value.array
+		}
+	}, [value.array] )
+	return res
 }
 interface IObject {
 	[key: string]: any
