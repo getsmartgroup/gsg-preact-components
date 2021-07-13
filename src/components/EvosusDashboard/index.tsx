@@ -1,8 +1,8 @@
-import * as evosus from 'evosus-swaggerhub-sdk/es6/axios'
+import { evosus } from 'gsg-integrations'
 import { Product } from 'wc-rest-ts'
 import { Table, Thead, Tbody, Tfoot, Tr, Th, Td } from '@chakra-ui/react'
 import { FunctionalComponent, h } from 'preact'
-import { useEffect, useState } from 'preact/hooks'
+import { useCallback, useState } from 'preact/hooks'
 import {
 	Box,
 	Heading,
@@ -17,13 +17,12 @@ import {
 	Button,
 	CheckboxGroup,
 	Checkbox,
-	VStack,
-	Alert,
-	AlertIcon,
-	AlertTitle,
-	AlertDescription
+	VStack
 } from '@chakra-ui/react'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
+import { useEvosus } from '../../hooks/evosus'
+import { usePromiseCall } from '../../hooks'
+import { useWC } from '../../hooks/wc'
 
 export type Props = {
 	companySN: string
@@ -42,83 +41,29 @@ const validateProps = ({ ticket, companySN, gsgToken, clientID }: Props): Promis
 	return Promise.resolve({ ticket, companySN, gsgToken, clientID })
 }
 
-const fetchProductLines = async (
-	inventory: evosus.InventoryApi,
-	{ companySN, ticket }: { companySN: string; ticket: string }
-) => {
-	const productLines = await inventory.inventoryProductLineSearch(companySN, ticket).then(res => res.data.response)
-	if (!productLines) {
-		return Promise.reject('Failed to retrieve product line items from Evosus API')
-	}
-	return Promise.resolve(productLines)
-}
+type Results = Array<PromiseSettledResult<Product.Type[] | undefined> | PromiseRejectedResult>
+type Await<T> = T extends PromiseLike<infer U> ? U : T
+const EvosusDashboard: FunctionalComponent<Props> = () => {
+	const { client: wcC } = useWC()
+	const { client: evosusC } = useEvosus()
 
-type Results = Array<
-	| {
-			status: 'fulfilled'
-			value: {
-				update?: Product.Type[]
-				create?: Product.Type[]
-			}
-	  }
-	| {
-			status: 'rejected'
-			value: unknown
-	  }
->
+	const { resolved: productLines } = usePromiseCall(evosusC.inventoryApi.inventoryProductLineSearch)
 
-const EvosusDashboard: FunctionalComponent<Props> = props => {
-	const [productLines, setProductLines] = useState<null | evosus.ProductLine[]>(null)
-	const [errorMessage, setErrorMessage] = useState<null | string>(null)
 	const [productLine, setProductLine] = useState<null | string>(null)
 	const [syncFields, setSyncFields] = useState<string[]>(['price', 'quantity', 'name', 'weight'])
 	const [syncing, setSyncing] = useState<boolean>(false)
-	const [syncResults, setSyncResults] = useState<Results | null>(null)
+	const [syncResults, setSyncResults] = useState<Await<ReturnType<typeof evosus.searchAndImportToWooCommerce>> | null>(null)
 
-	// Init
-	useEffect(() => {
-		// Validate Props
-		validateProps(props)
-			.then(({ ticket, companySN }) =>
-				// Fetch Product Lines
-				fetchProductLines(new evosus.InventoryApi(), { ticket, companySN })
-					.then(setProductLines)
-					.then(setErrorMessage.bind(null, null))
-			)
-			.catch(setErrorMessage)
-	}, [props])
-
-	const syncProducts = () => {
+	const syncProducts = useCallback(() => {
+		if (!productLine) {
+			return
+		}
 		setSyncing(true)
-		fetch(`https://us-central1-get-smart-functions.cloudfunctions.net/main/evosus/products/sync?client=${props.clientID}`, {
-			method: 'POST',
-			body: JSON.stringify({
-				search: {
-					productLineID: productLine
-				},
-				fields: syncFields
-			}),
-			headers: {
-				authorization: `Bearer ${props.gsgToken}`,
-				'content-type': 'application/json'
-			}
-		})
-			.then(async res => {
-				if (res.status === 408) {
-					setErrorMessage('The request timed out, you may try again to finish syncing')
-					throw new Error(await res.text())
-				}
-				if (res.status !== 200) {
-					setErrorMessage(null)
-					return res.json()
-				}
-				return res.json()
-			})
-			.then(setSyncResults)
-			.then(setErrorMessage.bind(null, null))
-			.catch(setErrorMessage.bind(null, 'Error while syncing'))
+		evosus
+			.searchAndImportToWooCommerce(wcC, evosusC, { ProductLineID: productLine })
+			.then(res => setSyncResults(res))
 			.finally(setSyncing.bind(null, false))
-	}
+	}, [productLine, evosus, wcC, evosusC])
 
 	return (
 		<Box>
@@ -126,19 +71,19 @@ const EvosusDashboard: FunctionalComponent<Props> = props => {
 				GSG Evosus Dashboard
 			</Heading>
 			<Box>
-				{errorMessage ? (
+				{/* {errorMessage ? (
 					<Alert status='error'>
 						<AlertIcon />
 						<AlertTitle mr={2}>{errorMessage}</AlertTitle>
 						<AlertDescription></AlertDescription>
 					</Alert>
-				) : null}
+				) : null} */}
 			</Box>
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
 					<VStack w='100%' justifyContent='stretch' alignItems='stretch' alignContent='stretch' justifyItems='stretch'>
 						<Heading size='sm'>Select a product Line</Heading>
-						{productLines === null ? 'Loading Product Lines' : null}
+						{syncing ? 'Loading Product Lines' : null}
 						<RadioGroup onChange={setProductLine} value={productLine ?? ''}>
 							<SimpleGrid columns={2}>
 								{productLines?.map(({ ProductLine, ProductLineID }) => (

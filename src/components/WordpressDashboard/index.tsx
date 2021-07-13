@@ -16,12 +16,13 @@ import { Spinner } from '@chakra-ui/react'
 import EvosusDashboard from '../EvosusDashboard'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { Props as OptionsProps, useOptionsContext, OptionsProvider } from '../../hooks/options'
-import { an, wc, rb, gsc, usePromiseCall } from '../../hooks'
+import { an, wc, rb, gsc, evosus, usePromiseCall } from '../../hooks'
 import RBDashboard from '../RBDashboard'
 import ErrorAlert from '../ErrorAlert'
 import Router, { Route } from 'preact-router'
 import { Match } from 'preact-router/match'
 import { createHashHistory } from 'history'
+import { theme } from './theme'
 
 export type Props = OptionsProps
 
@@ -31,17 +32,19 @@ const Evosus = () => {
 	return (
 		<SimpleAccordion>
 			<SimplePanel title='Dashboard'>
-				<EvosusDashboard
-					clientID={options.gsc.options.access.clientID}
-					gsgToken={options.gsc.options.access.gsgToken}
-					companySN={options.evosus.access.companySN}
-					ticket={options.evosus.access.ticket}
-				/>
+				<evosus.Provider {...options.evosus.options}>
+					<EvosusDashboard
+						clientID={options.gsc.options.access.clientID}
+						gsgToken={options.gsc.options.access.gsgToken}
+						companySN={options.evosus.options.access.companySN}
+						ticket={options.evosus.options.access.ticket}
+					/>
+				</evosus.Provider>
 			</SimplePanel>
 			<SimplePanel title='Settings'>
 				<Stack>
-					{optionInput(options.evosus.access, 'companySN', 'Company SN')}
-					{optionInput(options.evosus.access, 'ticket', 'Ticket')}
+					{optionInput(options.evosus.options.access, 'companySN', 'Company SN')}
+					{optionInput(options.evosus.options.access, 'ticket', 'Ticket')}
 				</Stack>
 			</SimplePanel>
 		</SimpleAccordion>
@@ -54,13 +57,11 @@ const RB = () => {
 	return (
 		<SimpleAccordion>
 			<SimplePanel title='Dashboard'>
-				<wc.Provider {...options.wc.options}>
-					<rb.Provider {...options.rb.options}>
-						<an.Provider {...options.an.options}>
-							<RBDashboard />
-						</an.Provider>
-					</rb.Provider>
-				</wc.Provider>
+				<rb.Provider {...options.rb.options}>
+					<an.Provider {...options.an.options}>
+						<RBDashboard />
+					</an.Provider>
+				</rb.Provider>
 			</SimplePanel>
 			<SimplePanel title='Settings'>
 				<Stack>
@@ -118,7 +119,7 @@ const Main = () => {
 	const { optionInput, fetching, saving, options } = useOptionsContext()
 
 	return (
-		<ChakraProvider>
+		<ChakraProvider theme={theme}>
 			<Stack>
 				<HStack as='header' justifyContent='center' alignItems='center'>
 					<Heading>
@@ -156,11 +157,13 @@ const Main = () => {
 				</Match>
 			</Stack>
 			<gsc.Provider {...options.gsc.options}>
-				<Router history={createHashHistory() as any}>
-					<Route path='/' component={Home} />
-					<Route path='/evosus' component={Evosus} />
-					<Route path='/rb' component={RB} />
-				</Router>
+				<wc.Provider {...options.wc.options}>
+					<Router history={createHashHistory() as any}>
+						<Route path='/' component={Home} />
+						<Route path='/evosus' component={Evosus} />
+						<Route path='/rb' component={RB} />
+					</Router>
+				</wc.Provider>
 			</gsc.Provider>
 		</ChakraProvider>
 	)

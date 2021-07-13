@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import { FunctionalComponent, h } from 'preact';
-import { wc, rb, an, gsc } from 'gsg-integrations';
+import { wc, rb, an, gsc, evosus } from 'gsg-integrations';
 export declare type Props = {
     nonce: string;
     cookieHash?: string;
@@ -13,10 +13,7 @@ export declare type Options = {
         options: gsc.Options;
     };
     evosus: {
-        access: {
-            companySN: string;
-            ticket: string;
-        };
+        options: evosus.Options;
     };
     wc: {
         options: wc.Options;

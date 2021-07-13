@@ -2,7 +2,7 @@ import { FunctionalComponent, h } from 'preact'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import Cookies from 'js-cookie'
 import { chakra, Input, useBoolean } from '@chakra-ui/react'
-import { wc, rb, an, gsc } from 'gsg-integrations'
+import { wc, rb, an, gsc, evosus } from 'gsg-integrations'
 import { merge } from './common'
 import { createContext } from '@chakra-ui/react-utils'
 
@@ -19,10 +19,7 @@ export type Options = {
 		options: gsc.Options
 	}
 	evosus: {
-		access: {
-			companySN: string
-			ticket: string
-		}
+		options: evosus.Options
 	}
 	wc: {
 		options: wc.Options
@@ -93,9 +90,11 @@ export const useOptions = ({ nonce, siteurl, cookieHash, cookieValue, gsgToken }
 			}
 		},
 		evosus: {
-			access: {
-				companySN: '',
-				ticket: ''
+			options: {
+				access: {
+					companySN: '',
+					ticket: ''
+				}
 			}
 		},
 		rb: {
