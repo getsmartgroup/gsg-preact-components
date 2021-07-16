@@ -6,7 +6,7 @@ export const useWCOrdersList = (props) => {
     const { client: wcC } = useWC();
     return usePromiseCall(useCallback(wcC.Order.crud.list.bind(null, props), [props]), [props]);
 };
-const OrdersList = Props => {
+const OrdersList = props => {
     const page = useCounter({
         min: 0
     });

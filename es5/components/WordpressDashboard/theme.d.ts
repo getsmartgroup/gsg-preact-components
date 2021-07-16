@@ -1,4 +1,4 @@
-export declare const theme: {
+export declare const theme: import("@chakra-ui/react").BaseThemeWithExtensions<{
     components: {
         Accordion: {
             parts: string[];
@@ -11,6 +11,8 @@ export declare const theme: {
                     };
                 };
                 button: {
+                    transitionProperty: string;
+                    transitionDuration: string;
                     fontSize: string;
                     _focus: {
                         boxShadow: string;
@@ -276,7 +278,9 @@ export declare const theme: {
             parts: string[];
             baseStyle: {
                 link: {
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
+                    transitionTimingFunction: string;
                     cursor: string;
                     textDecoration: string;
                     outline: string;
@@ -295,6 +299,8 @@ export declare const theme: {
                 lineHeight: string;
                 borderRadius: string;
                 fontWeight: string;
+                transitionProperty: string;
+                transitionDuration: string;
                 _focus: {
                     boxShadow: string;
                 };
@@ -437,9 +443,14 @@ export declare const theme: {
         Checkbox: {
             parts: string[];
             baseStyle: (props: Record<string, any>) => {
+                icon: {
+                    transitionProperty: string;
+                    transitionDuration: string;
+                };
                 control: {
                     w: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     border: string;
                     borderRadius: string;
                     borderColor: string;
@@ -527,7 +538,8 @@ export declare const theme: {
         CloseButton: {
             baseStyle: (props: Record<string, any>) => {
                 borderRadius: string;
-                transition: string;
+                transitionProperty: string;
+                transitionDuration: string;
                 _disabled: {
                     opacity: number;
                     cursor: string;
@@ -728,12 +740,14 @@ export declare const theme: {
                 preview: {
                     borderRadius: string;
                     py: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                 };
                 input: {
                     borderRadius: string;
                     py: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     width: string;
                     _focus: {
                         boxShadow: string;
@@ -765,7 +779,8 @@ export declare const theme: {
                 marginEnd: number;
                 mb: number;
                 fontWeight: string;
-                transition: string;
+                transitionProperty: string;
+                transitionDuration: string;
                 opacity: number;
                 _disabled: {
                     opacity: number;
@@ -824,7 +839,8 @@ export declare const theme: {
                     outline: number;
                     position: string;
                     appearance: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                 };
             };
             sizes: {
@@ -1009,7 +1025,9 @@ export declare const theme: {
         };
         Link: {
             baseStyle: {
-                transition: string;
+                transitionProperty: string;
+                transitionDuration: string;
+                transitionTimingFunction: string;
                 cursor: string;
                 textDecoration: string;
                 outline: string;
@@ -1037,6 +1055,10 @@ export declare const theme: {
         Menu: {
             parts: string[];
             baseStyle: (props: Record<string, any>) => {
+                button: {
+                    transitionProperty: string;
+                    transitionDuration: string;
+                };
                 list: {
                     bg: any;
                     boxShadow: any;
@@ -1050,7 +1072,9 @@ export declare const theme: {
                 item: {
                     py: string;
                     px: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
+                    transitionTimingFunction: string;
                     _focus: {
                         bg: any;
                     };
@@ -1268,7 +1292,8 @@ export declare const theme: {
                     outline: number;
                     position: string;
                     appearance: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                 };
                 stepperGroup: {
                     width: string;
@@ -1573,7 +1598,8 @@ export declare const theme: {
                 outline: number;
                 position: string;
                 appearance: string;
-                transition: string;
+                transitionProperty: string;
+                transitionDuration: string;
             };
             sizes: {
                 lg: {
@@ -1795,7 +1821,8 @@ export declare const theme: {
                         };
                     };
                     w: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     border: string;
                     borderColor: string;
                     color: string;
@@ -1864,7 +1891,8 @@ export declare const theme: {
                     minWidth: number;
                     outline: number;
                     position: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                 };
                 icon: {
                     width: string;
@@ -2134,7 +2162,8 @@ export declare const theme: {
                     p: string;
                     width: string;
                     height: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     bg: any;
                     _focus: {
                         boxShadow: string;
@@ -2149,7 +2178,8 @@ export declare const theme: {
                 };
                 thumb: {
                     bg: string;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     borderRadius: string;
                     width: string;
                     height: string;
@@ -2353,7 +2383,8 @@ export declare const theme: {
                 };
                 tab: {
                     flex: number | undefined;
-                    transition: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     _focus: {
                         zIndex: number;
                         boxShadow: string;
@@ -2370,23 +2401,23 @@ export declare const theme: {
             sizes: {
                 sm: {
                     tab: {
-                        py: string;
-                        px: string;
+                        py: number;
+                        px: number;
                         fontSize: string;
                     };
                 };
                 md: {
                     tab: {
                         fontSize: string;
-                        py: string;
-                        px: string;
+                        py: number;
+                        px: number;
                     };
                 };
                 lg: {
                     tab: {
                         fontSize: string;
-                        py: string;
-                        px: string;
+                        py: number;
+                        px: number;
                     };
                 };
             };
@@ -2539,6 +2570,8 @@ export declare const theme: {
                     fontSize: string;
                     w: string;
                     h: string;
+                    transitionProperty: string;
+                    transitionDuration: string;
                     borderRadius: string;
                     marginStart: string;
                     marginEnd: string;
@@ -2602,12 +2635,14 @@ export declare const theme: {
                 paddingY: string;
                 minHeight: string;
                 lineHeight: string;
+                verticalAlign: string;
                 width: string;
                 minWidth: number;
                 outline: number;
                 position: string;
                 appearance: string;
-                transition: string;
+                transitionProperty: string;
+                transitionDuration: string;
             };
             sizes: {
                 xs: {
@@ -2972,6 +3007,16 @@ export declare const theme: {
         "3xl": string;
         full: string;
     };
+    blur: {
+        none: number;
+        sm: string;
+        base: string;
+        md: string;
+        lg: string;
+        xl: string;
+        "2xl": string;
+        "3xl": string;
+    };
     colors: {
         transparent: string;
         current: string;
@@ -3195,4 +3240,4 @@ export declare const theme: {
         };
     };
     direction: import("@chakra-ui/react").ThemeDirection;
-};
+}, [{}]>;

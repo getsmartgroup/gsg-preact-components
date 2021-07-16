@@ -1,6 +1,7 @@
 import { Fragment, FunctionalComponent, h } from 'preact'
 import { Box, HStack, Heading, Stack, ChakraProvider, Link, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
+import { extendTheme } from '@chakra-ui/react'
 
 import Router, { Route } from 'preact-router'
 import { Match } from 'preact-router/match'
@@ -74,8 +75,7 @@ const RB = () => {
 
 const Integrations = () => {
 	const { client } = gsc.useGSC()
-	const { fetching, saving, options } = useOptions()
-	const { resolved, loading, rejected } = usePromiseCall(client.getServices)
+	const { resolved, rejected } = usePromiseCall(client.getServices)
 	if (rejected) {
 		return <ErrorAlert>Failed to authenticate client, verify credentials under Settings</ErrorAlert>
 	}

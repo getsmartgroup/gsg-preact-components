@@ -10,7 +10,7 @@ var useWCOrdersList = function (props) {
     return hooks_2.usePromiseCall(hooks_1.useCallback(wcC.Order.crud.list.bind(null, props), [props]), [props]);
 };
 exports.useWCOrdersList = useWCOrdersList;
-var OrdersList = function (Props) {
+var OrdersList = function (props) {
     var page = react_1.useCounter({
         min: 0
     });
