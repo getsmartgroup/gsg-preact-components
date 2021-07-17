@@ -11,13 +11,3 @@ export const useWCOrdersList = (props: Props) => {
 	const { client: wcC } = useWC()
 	return usePromiseCall(useCallback(wcC.Order.crud.list.bind(null, props), [props]), [props])
 }
-
-const OrdersList: FunctionalComponent = props => {
-	const page = useCounter({
-		min: 0
-	})
-
-	const { client: wcC } = useWC()
-
-	wcC.Order.crud.list({})
-}
