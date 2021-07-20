@@ -1,0 +1,39 @@
+import { Fragment, h } from 'preact';
+import { Heading, Td, VStack } from '@chakra-ui/react';
+import { useWC, useRestClient } from '../context';
+import { PaginationProvider, PaginationNav, PaginationSearch, usePaginationContext } from '../pagination';
+import { Post } from '../../wp';
+import { CheckListTable, CheckListTableRows } from '../../components/CheckList';
+import { useMemo } from 'preact/hooks';
+export const useOrder = () => {
+    const crud = useWC().client.Order.crud;
+    return useRestClient(crud);
+};
+export const PaginatedCheckListTable = () => {
+    const { getCurrentPage, crud } = usePaginationContext();
+    const index = useMemo(() => {
+        var _a;
+        return (_a = getCurrentPage()) === null || _a === void 0 ? void 0 : _a.reduce((acc, id) => {
+            if (crud.store[id]) {
+                acc[id] = crud.store[id];
+            }
+            return acc;
+        }, {});
+    }, [crud, getCurrentPage]);
+    return (h(CheckListTable, { name: 'orders', index: index !== null && index !== void 0 ? index : {}, headers: ['', 'ID#', 'Status', 'CustomerID#'] },
+        h(CheckListTableRows, null, (obj) => (h(Fragment, null,
+            h(Td, null,
+                h(Post.Link, { id: obj.id }, obj.id)),
+            h(Td, null, obj.status),
+            h(Td, null, obj.customer_id))))));
+};
+export const AdvancedListTable = () => {
+    const Order = useOrder();
+    return (h(PaginationProvider, { crud: Order },
+        h(VStack, null,
+            h(Heading, null, "Orders"),
+            h(PaginationSearch, null),
+            h(PaginatedCheckListTable, null),
+            h(PaginationNav, null))));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvd2Mvb3JkZXIvaW5kZXgudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxRQUFRLEVBQXVCLENBQUMsRUFBRSxNQUFNLFFBQVEsQ0FBQTtBQUN6RCxPQUFPLEVBQUUsT0FBTyxFQUFFLEVBQUUsRUFBTSxNQUFNLEVBQUUsTUFBTSxrQkFBa0IsQ0FBQTtBQUMxRCxPQUFPLEVBQUUsS0FBSyxFQUFFLGFBQWEsRUFBRSxNQUFNLFlBQVksQ0FBQTtBQUNqRCxPQUFPLEVBQUUsa0JBQWtCLEVBQUUsYUFBYSxFQUFxQixnQkFBZ0IsRUFBRSxvQkFBb0IsRUFBRSxNQUFNLGVBQWUsQ0FBQTtBQUU1SCxPQUFPLEVBQUUsSUFBSSxFQUFFLE1BQU0sVUFBVSxDQUFBO0FBQy9CLE9BQU8sRUFBRSxjQUFjLEVBQUUsa0JBQWtCLEVBQUUsTUFBTSw0QkFBNEIsQ0FBQTtBQUMvRSxPQUFPLEVBQUUsT0FBTyxFQUFFLE1BQU0sY0FBYyxDQUFBO0FBRXRDLE1BQU0sQ0FBQyxNQUFNLFFBQVEsR0FBRyxHQUFHLEVBQUU7SUFDNUIsTUFBTSxJQUFJLEdBQUcsS0FBSyxFQUFFLENBQUMsTUFBTSxDQUFDLEtBQUssQ0FBQyxJQUFJLENBQUE7SUFDdEMsT0FBTyxhQUFhLENBQUMsSUFBSSxDQUFDLENBQUE7QUFDM0IsQ0FBQyxDQUFBO0FBRUQsTUFBTSxDQUFDLE1BQU0sdUJBQXVCLEdBQXdCLEdBQUcsRUFBRTtJQUNoRSxNQUFNLEVBQUUsY0FBYyxFQUFFLElBQUksRUFBRSxHQUFHLG9CQUFvQixFQUFFLENBQUE7SUFDdkQsTUFBTSxLQUFLLEdBQUcsT0FBTyxDQUNwQixHQUFHLEVBQUU7O1FBQ0osT0FBQSxNQUFBLGNBQWMsRUFBRSwwQ0FBRSxNQUFNLENBQXNCLENBQUMsR0FBRyxFQUFFLEVBQUUsRUFBRSxFQUFFO1lBQ3pELElBQUksSUFBSSxDQUFDLEtBQUssQ0FBQyxFQUFFLENBQUMsRUFBRTtnQkFDbkIsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLElBQUksQ0FBQyxLQUFLLENBQUMsRUFBRSxDQUFDLENBQUE7YUFDeEI7WUFDRCxPQUFPLEdBQUcsQ0FBQTtRQUNYLENBQUMsRUFBRSxFQUFFLENBQUMsQ0FBQTtLQUFBLEVBQ1AsQ0FBQyxJQUFJLEVBQUUsY0FBYyxDQUFDLENBQ3RCLENBQUE7SUFDRCxPQUFPLENBQ04sRUFBQyxjQUFjLElBQUMsSUFBSSxFQUFDLFFBQVEsRUFBQyxLQUFLLEVBQUUsS0FBSyxhQUFMLEtBQUssY0FBTCxLQUFLLEdBQUksRUFBRSxFQUFFLE9BQU8sRUFBRSxDQUFDLEVBQUUsRUFBRSxLQUFLLEVBQUUsUUFBUSxFQUFFLGFBQWEsQ0FBQztRQUM5RixFQUFDLGtCQUFrQixRQUNqQixDQUFDLEdBQWUsRUFBRSxFQUFFLENBQUMsQ0FDckIsRUFBQyxRQUFRO1lBQ1IsRUFBQyxFQUFFO2dCQUNGLEVBQUMsSUFBSSxDQUFDLElBQUksSUFBQyxFQUFFLEVBQUUsR0FBRyxDQUFDLEVBQUUsSUFBRyxHQUFHLENBQUMsRUFBRSxDQUFhLENBQ3ZDO1lBQ0wsRUFBQyxFQUFFLFFBQUUsR0FBRyxDQUFDLE1BQU0sQ0FBTTtZQUNyQixFQUFDLEVBQUUsUUFBRSxHQUFHLENBQUMsV0FBVyxDQUFNLENBQ2hCLENBQ1gsQ0FDbUIsQ0FDTCxDQUNqQixDQUFBO0FBQ0YsQ0FBQyxDQUFBO0FBRUQsTUFBTSxDQUFDLE1BQU0saUJBQWlCLEdBQUcsR0FBRyxFQUFFO0lBQ3JDLE1BQU0sS0FBSyxHQUFHLFFBQVEsRUFBRSxDQUFBO0lBQ3hCLE9BQU8sQ0FDTixFQUFDLGtCQUFrQixJQUFDLElBQUksRUFBRSxLQUFLO1FBQzlCLEVBQUMsTUFBTTtZQUNOLEVBQUMsT0FBTyxpQkFBaUI7WUFDekIsRUFBQyxnQkFBZ0IsT0FBRztZQUNwQixFQUFDLHVCQUF1QixPQUFHO1lBQzNCLEVBQUMsYUFBYSxPQUFHLENBQ1QsQ0FDVyxDQUNyQixDQUFBO0FBQ0YsQ0FBQyxDQUFBIn0=

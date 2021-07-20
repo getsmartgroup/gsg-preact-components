@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from 'preact'
+import { Fragment, FunctionalComponent, h } from 'preact'
 import { Table, TableProps, Tbody, Tfoot, Th, Thead, Tr } from '@chakra-ui/react'
 import { useMemo } from 'preact/hooks'
 export type Props = { headers: string[] } & TableProps

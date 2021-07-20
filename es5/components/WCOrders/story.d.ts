@@ -1,0 +1,22 @@
+import { Story, Meta } from '@storybook/preact';
+declare const _default: Meta<import("@storybook/preact").Args>;
+export default _default;
+export declare const WCOrdersStory: Story<Partial<{
+    context: string;
+    page: number;
+    per_page: number;
+    search: string;
+    after: string;
+    before: string;
+    exclude: unknown[];
+    include: unknown[];
+    offset: number;
+    order: string;
+    orderby: string;
+    parent: unknown[];
+    parent_exclude: unknown[];
+    status: "any" | "pending" | "processing" | "on-hold" | "completed" | "cancelled" | "refunded" | "failed" | "trash";
+    customer: number;
+    product: number;
+    dp: number;
+}>>;

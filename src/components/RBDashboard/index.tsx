@@ -6,7 +6,7 @@ import { Button, Heading, Tr, Td, useBoolean, VStack, Thead, Checkbox } from '@c
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { SimpleTable } from '../SimpleTable'
 import RadioOptions from '../RadioOptions'
-import { useWC } from '../../hooks/wc'
+import { useWC } from '../../wc'
 import { useRB } from '../../hooks/rb'
 import { useAN } from '../../hooks/an'
 

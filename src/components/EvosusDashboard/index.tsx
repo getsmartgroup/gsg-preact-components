@@ -19,9 +19,9 @@ import {
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { useEvosus } from '../../hooks/evosus'
 import { useArray, usePromiseCall } from '../../hooks'
-import { useWC } from '../../hooks/wc'
+import { useWC } from '../../wc'
 import { SimpleTable } from '../SimpleTable'
-import { Product } from 'gsg-integrations/es5/woocommerce'
+import { Product } from 'gsg-integrations/types/woocommerce'
 import { useOptions } from '../../hooks/options'
 
 export type Props = {

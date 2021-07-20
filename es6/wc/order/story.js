@@ -1,0 +1,18 @@
+import { h } from 'preact';
+import { wc } from '../../modules';
+import { AdvancedListTable } from '.';
+import { OptionsProvider } from '../../hooks/options';
+export default {
+    title: 'Order Stories',
+    decorators: [
+        (Story) => (h(OptionsProvider, { nonce: '', siteurl: process.env.STORYBOOK_WP_URL },
+            h(wc.Provider, { access: {
+                    key: process.env.STORYBOOK_WC_KEY,
+                    secret: process.env.STORYBOOK_WC_SECRET,
+                    url: process.env.STORYBOOK_WP_URL
+                } },
+                h(Story, null))))
+    ]
+};
+export const AdvancedListTableStory = () => h(AdvancedListTable, null);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3RvcnkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvd2Mvb3JkZXIvc3RvcnkudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxDQUFDLEVBQUUsTUFBTSxRQUFRLENBQUE7QUFHMUIsT0FBTyxFQUFFLEVBQUUsRUFBRSxNQUFNLGVBQWUsQ0FBQTtBQUVsQyxPQUFPLEVBQUUsaUJBQWlCLEVBQUUsTUFBTSxHQUFHLENBQUE7QUFFckMsT0FBTyxFQUFFLGVBQWUsRUFBRSxNQUFNLHFCQUFxQixDQUFBO0FBRXJELGVBQWU7SUFDZCxLQUFLLEVBQUUsZUFBZTtJQUN0QixVQUFVLEVBQUU7UUFDWCxDQUFDLEtBQVksRUFBRSxFQUFFLENBQUMsQ0FDakIsRUFBQyxlQUFlLElBQUMsS0FBSyxFQUFFLEVBQUUsRUFBRSxPQUFPLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxnQkFBMEI7WUFDMUUsRUFBQyxFQUFFLENBQUMsUUFBUSxJQUNYLE1BQU0sRUFBRTtvQkFDUCxHQUFHLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxnQkFBMEI7b0JBQzNDLE1BQU0sRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLG1CQUE2QjtvQkFDakQsR0FBRyxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsZ0JBQTBCO2lCQUMzQztnQkFHRCxFQUFDLEtBQUssT0FBRyxDQUNJLENBQ0csQ0FDbEI7S0FDRDtDQUNPLENBQUE7QUFFVCxNQUFNLENBQUMsTUFBTSxzQkFBc0IsR0FBRyxHQUFHLEVBQUUsQ0FBQyxFQUFDLGlCQUFpQixPQUFHLENBQUEifQ==
