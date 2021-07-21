@@ -6,10 +6,16 @@ import { IconButton, Input, InputGroup, InputRightElement, useCounter } from '@c
 import Pagination from '../components/Pagination'
 import { InferT, InferP, WrappedCRUD } from './context'
 import { SearchIcon } from '@chakra-ui/icons'
+import { CheckListTable } from '../components/CheckListTable'
 
 /** Receives a list method and returns pagination state and methods, don't try to change the page by changing the params, use the page object and its methods, getPage will return an array of IDs, use the wrapped crud get method to get the mostly updated object */
-export const usePagination = function<C extends WrappedCRUD<any, any>, T = InferT<C>, P = InferP<C>>(crud: C, options?: P) {
+export const usePagination = function<C extends WrappedCRUD<any, any>, T = InferT<C>, P = InferP<C>>(
+	{ crud, loading, store }: C,
+	options?: P
+) {
 	const [params, setParams] = useState<P>(options ?? ({} as P))
+	// @ts-expect-error
+	const propsPage = useMemo(() => params?.page ?? 1, [params])
 	// @ts-expect-error
 	const perPage = useMemo(() => params['per_page'] ?? 10, [params])
 	const [index, setIndex] = useState<Array<string[] | undefined>>([])
@@ -17,11 +23,10 @@ export const usePagination = function<C extends WrappedCRUD<any, any>, T = Infer
 	const page = useCounter({
 		min: 1,
 		max,
-		// @ts-expect-error
-		defaultValue: options?.page ?? 1
+		defaultValue: propsPage
 	})
-	const next = useCallback(page.increment.bind(null, 1), [page])
-	const prev = useCallback(page.decrement.bind(null, 1), [page])
+	const next = page.increment.bind(null, 1)
+	const prev = page.decrement.bind(null, 1)
 	useEffect(() => {
 		setIndex([])
 		setMax(undefined)
@@ -29,49 +34,47 @@ export const usePagination = function<C extends WrappedCRUD<any, any>, T = Infer
 	}, [params])
 	useEffect(() => {
 		if (undefined === index[page.valueAsNumber]) {
-			index[page.valueAsNumber] = []
-			setIndex([...index])
-			fetchCurrentPage()
+			fetchPage(page.valueAsNumber)
 		}
-	}, [page])
+	}, [page.valueAsNumber, index])
 	const fetchPage = useCallback(
 		(page: number) => {
 			if (max && page > max) return Promise.resolve([])
-			index[page] = []
-			setIndex([...index])
+			const arr = [...index]
+			arr[page] = []
+			setIndex(arr)
 			return crud.list({ ...params, page: page }).then((data: T[]) => {
 				if (data.length < perPage) {
 					setMax(page)
 				}
-				index[page] = data.map(d => ((d as unknown) as { id: string }).id)
-				setIndex([...index])
+				arr[page] = data.map(d => ((d as unknown) as { id: string }).id)
+				setIndex([...arr])
 			})
 		},
-		[page, params]
+		[params, index, crud, max]
 	)
-	const fetchCurrentPage = useCallback(() => fetchPage(page.valueAsNumber), [page, params])
-	const getPage = useCallback((page: number) => index[page], [index])
-	const getCurrentPage = useCallback(() => getPage(page.valueAsNumber), [getPage, page])
+	const fetchCurrentPage = useCallback(() => fetchPage(page.valueAsNumber), [page.valueAsNumber, params])
+	const currentPage = useMemo(() => index[page.valueAsNumber], [index, page.valueAsNumber])
 	return {
 		crud,
+		store,
 		page,
 		next,
 		prev,
-		loading: crud.loading,
+		loading: loading,
 		params,
 		setParams,
 		index,
-		getPage,
 		max,
 		setMax,
-		getCurrentPage,
+		currentPage,
 		fetchCurrentPage
 	}
 }
 
-export type PaginationProps<C extends wc.CRUD<any, any>> = {
-	crud: C
-} & InferP<C>
+export type PaginationProps<C extends WrappedCRUD<any, any>> = {
+	module: C
+} & InferP<C['crud']>
 
 export type PaginationContext = ReturnType<typeof usePagination>
 
@@ -79,14 +82,14 @@ export const [PaginationContextProvider, usePaginationContext] = createContext<P
 
 export const PaginationProvider = <C extends WrappedCRUD<any, {}>>({
 	children,
-	crud,
+	module,
 	...props
 }: {
-	crud: C
+	module: C
 } & InferP<C> & {
 		children?: ComponentChildren
 	}) => {
-	const ctx = usePagination(crud, props)
+	const ctx = usePagination(module, props)
 	return <PaginationContextProvider value={ctx as PaginationContext}>{children}</PaginationContextProvider>
 }
 
@@ -120,14 +123,34 @@ export const PaginationSearch = () => {
 }
 
 export const PaginationContent = function<T>({ children }: { children: (obj: T) => h.JSX.Element }) {
-	const { getCurrentPage, crud } = usePaginationContext()
+	const { currentPage, crud } = usePaginationContext()
 
 	return (
 		<Fragment>
-			{getCurrentPage()?.map(id => {
-				const restrieved = crud.store[id]
+			{currentPage?.map(id => {
+				const restrieved = crud.index[id]
 				return children(restrieved)
 			}) ?? null}
 		</Fragment>
+	)
+}
+
+export const PaginatedCheckListTable: FunctionalComponent<Omit<ComponentProps<typeof CheckListTable>, 'index'>> = ({
+	children,
+	...props
+}) => {
+	const { store, index, page, currentPage } = usePaginationContext()
+	const pageIndex = useMemo(() => {
+		return currentPage?.reduce<Record<string, any>>((acc, id) => {
+			if (store[id]) {
+				acc[id] = store[id]
+			}
+			return acc
+		}, {})
+	}, [store, index, page.valueAsNumber, currentPage])
+	return (
+		<CheckListTable index={pageIndex ?? {}} {...props}>
+			{children}
+		</CheckListTable>
 	)
 }

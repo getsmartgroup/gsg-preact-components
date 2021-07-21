@@ -18,7 +18,8 @@ export declare const useWC: () => {
     client: wc.Client;
 };
 export declare const useRestClient: <C extends wc.CRUD<any, any>, T = InferT<C>, P = InferP<C>>(crud: C) => WrappedCRUD<T, P>;
-export declare type WrappedCRUD<T, LP> = wc.CRUD<T, LP> & {
+export declare type WrappedCRUD<T, LP> = {
+    crud: wc.CRUD<T, LP>;
     loading: boolean;
     error: Error | undefined;
     store: Record<string, T>;

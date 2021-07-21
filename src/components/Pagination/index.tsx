@@ -1,4 +1,11 @@
-import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons'
+import {
+	ArrowBackIcon,
+	ArrowForwardIcon,
+	ArrowLeftIcon,
+	ArrowRightIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon
+} from '@chakra-ui/icons'
 import { Button, HStack, IconButton, useCounter } from '@chakra-ui/react'
 import { h } from 'preact'
 
@@ -14,9 +21,9 @@ export const Pagination = ({
 	next: any
 }) => (
 	<HStack>
-		<IconButton disabled={page.isAtMin} aria-label='Previous' onClick={prev} icon={(<ArrowLeftIcon />) as any} />
+		<IconButton disabled={page.isAtMin} aria-label='Previous' onClick={prev} icon={(<ChevronLeftIcon />) as any} />
 		<Button disabled>{page.valueAsNumber}</Button>
-		<IconButton disabled={page.isAtMax || loading} aria-label='Next' onClick={next} icon={(<ArrowRightIcon />) as any} />
+		<IconButton disabled={page.isAtMax || loading} aria-label='Next' onClick={next} icon={(<ChevronRightIcon />) as any} />
 	</HStack>
 )
 export default Pagination

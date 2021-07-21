@@ -7,7 +7,7 @@ export const WCList = ({ crud }: { crud: WrappedCRUD<any, any> }) => {
 	return (
 		<VStack>
 			<Box>{crud.loading ? <Spinner /> : null}</Box>
-			<PaginationProvider crud={crud}>
+			<PaginationProvider module={crud}>
 				<PaginationSearch />
 				<VStack w='100%'>
 					{crud.loading ? (

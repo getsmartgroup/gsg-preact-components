@@ -1,6 +1,8 @@
 import { FunctionalComponent, h } from 'preact';
+import { WrappedCRUD, InferT } from '../context';
+import { PaginationProps } from '../pagination';
 import { Order } from 'gsg-integrations/types/woocommerce';
-export declare const useOrder: () => import("../context").WrappedCRUD<{
+export declare const useOrder: () => WrappedCRUD<{
     id: number;
     parent_id: number;
     number: string;
@@ -61,5 +63,22 @@ export declare const useOrder: () => import("../context").WrappedCRUD<{
     product: number;
     dp: number;
 }>>;
-export declare const PaginatedCheckListTable: FunctionalComponent;
+export declare type Props<W extends WrappedCRUD<any, any>, T = InferT<W>> = {
+    name: string;
+    module: W;
+    headers: {
+        [K in keyof T]: string;
+    };
+    actions?: {
+        [K in string]: (obj: T) => Promise<any>;
+    };
+} & Omit<PaginationProps<W>, 'crud'>;
+export declare const Actions: ({ actions }: {
+    actions: Required<Props<any>>['actions'];
+}) => h.JSX.Element;
+export declare const AdvancedListTableController: ({ actions }: {
+    actions?: Props<any>['actions'];
+}) => h.JSX.Element;
+export declare const PaginatedActionsCheckListTable: ({ module, actions, headers, name, ...props }: Props<any>) => h.JSX.Element;
+export declare const ModuleCheckListTableWithControllers: FunctionalComponent<Props<any, any>>;
 export declare const AdvancedListTable: () => h.JSX.Element;

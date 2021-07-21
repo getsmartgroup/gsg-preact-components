@@ -36,6 +36,10 @@ export const useWC = useContext
 
 export const useRestClient = function<C extends wc.CRUD<any, any>, T = InferT<C>, P = InferP<C>>(crud: C): WrappedCRUD<T, P> {
 	const [loading, setLoading] = useBoolean(true)
+	const sync = useCallback(() => {
+		setIndex({ ...crud.index })
+	}, [crud.index])
+
 	const [store, setIndex] = useState<Record<string, T>>(() => {
 		crud.create = addSafeHook(crud.create, sync, setError, setLoading.on, setLoading.off)
 		crud.delete = addSafeHook(crud.delete, sync, setError, setLoading.on, setLoading.off)
@@ -47,23 +51,22 @@ export const useRestClient = function<C extends wc.CRUD<any, any>, T = InferT<C>
 	})
 	const [array, setArray] = useState<T[]>(Object.values(store))
 	const [error, setError] = useState<Error | undefined>()
-
-	const sync = useCallback(() => {
-		setIndex({ ...crud.index })
-	}, [crud])
 	useEffect(() => {
 		setArray(Object.values(store))
 	}, [store])
 
-	return Object.assign(crud, {
+	return {
+		// Mixing CRUD with loading would lead to infinite loops
+		crud,
 		loading,
 		array,
 		store,
 		error
-	})
+	}
 }
 
-export type WrappedCRUD<T, LP> = wc.CRUD<T, LP> & {
+export type WrappedCRUD<T, LP> = {
+	crud: wc.CRUD<T, LP>
 	loading: boolean
 	error: Error | undefined
 	store: Record<string, T>

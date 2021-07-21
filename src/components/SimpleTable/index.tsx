@@ -1,7 +1,7 @@
 import { Fragment, FunctionalComponent, h } from 'preact'
 import { Table, TableProps, Tbody, Tfoot, Th, Thead, Tr } from '@chakra-ui/react'
 import { useMemo } from 'preact/hooks'
-export type Props = { headers: string[] } & TableProps
+export type Props = { headers: Array<string | any> } & TableProps
 
 export const SimpleTable: FunctionalComponent<Props> = ({ headers, children, ...props }) => {
 	const headerTags = useMemo(() => headers.map(header => <Th>{header}</Th>), [headers])
