@@ -3,8 +3,6 @@ import { Story, Meta } from '@storybook/preact'
 
 import { wc } from '../../modules'
 
-import { AdvancedListTable } from '.'
-
 import { OptionsProvider } from '../../hooks/options'
 
 export default {
@@ -26,5 +24,3 @@ export default {
 		)
 	]
 } as Meta
-
-export const AdvancedListTableStory = () => <AdvancedListTable />

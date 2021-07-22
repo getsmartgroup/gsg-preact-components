@@ -37,6 +37,8 @@ const Evosus = () => {
 				<Stack>
 					<OptionInput secret obj={options.evosus.options.access} target='companySN' label='Company SN' />
 					<OptionInput secret obj={options.evosus.options.access} target='ticket' label='Ticket' />
+					<OptionInput obj={options.evosus} target='defaultDistributionID' label='Default distribution ID' />
+					<OptionInput obj={options.evosus} target='defaultPaymentID' label='Default payment ID' />
 				</Stack>
 			</SimplePanel>
 		</SimpleAccordion>

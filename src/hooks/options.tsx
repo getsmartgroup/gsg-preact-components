@@ -22,6 +22,8 @@ export type Options = {
 	}
 	evosus: {
 		options: evosus.Options
+		defaultDistributionID: string
+		defaultPaymentID: string
 	}
 	wc: {
 		options: wc.Options
@@ -97,7 +99,9 @@ export const useOptionsHook = ({ nonce, siteurl, cookieHash, cookieValue, gsgTok
 					companySN: '',
 					ticket: ''
 				}
-			}
+			},
+			defaultDistributionID: '',
+			defaultPaymentID: ''
 		},
 		rb: {
 			options: {

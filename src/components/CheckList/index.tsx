@@ -10,9 +10,8 @@ export type Props = {
 	index: Record<string, any>
 	value?: string[]
 	onChangeIndex?: <T = any>(data: Record<string, T>, ids?: string[]) => any
-	onChangeArray?: <T = any>(data: T[], ids?: string[]) => any
 }
-export const useCheckboxIndex = ({ name, index, value, onChangeIndex, onChangeArray }: Props) => {
+export const useCheckboxIndex = ({ name, index, value, onChangeIndex }: Props) => {
 	const propsValue = useMemo(() => value ?? [], [value])
 	const array = useArray(propsValue)
 	useEffect(() => {
@@ -23,23 +22,20 @@ export const useCheckboxIndex = ({ name, index, value, onChangeIndex, onChangeAr
 			array.set(propsValue)
 		}
 	}, [value])
-	const indexed = useMemo(
-		() =>
-			array.array.reduce<Record<string, any>>((acc, id) => {
-				const i = index[id]
-				if (i) acc[id] = i
-				return acc
-			}, {}),
-		[array.array, index]
-	)
-	const arrayed = useMemo(() => array.array.map(id => index[id]), [array.array, index])
+	const indexed = useMemo(() => {
+		return array.array.reduce<Record<string, any>>((acc, id) => {
+			const i = index[id]
+			if (i) acc[id] = i
+			return acc
+		}, {})
+	}, [array.array, index])
 	const indexedCb = useCallback(() => {
 		if (onChangeIndex) onChangeIndex(indexed, array.array)
-	}, [indexed, array.array, onChangeIndex])
+	}, [indexed, array.array, onChangeIndex, index])
 
 	useEffect(() => {
 		indexedCb()
-	}, [array.array])
+	}, [array.array, indexed, index])
 	return {
 		name,
 		index,

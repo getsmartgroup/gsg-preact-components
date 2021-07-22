@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from 'preact';
+import { h } from 'preact';
 import { WrappedCRUD, InferT } from '../context';
 import { PaginationProps } from '../pagination';
 import { Order } from 'gsg-integrations/types/woocommerce';
@@ -51,8 +51,8 @@ export declare const useOrder: () => WrappedCRUD<{
     search: string;
     after: string;
     before: string;
-    exclude: unknown[];
-    include: unknown[];
+    exclude: string;
+    include: string;
     offset: number;
     order: string;
     orderby: string;
@@ -63,22 +63,27 @@ export declare const useOrder: () => WrappedCRUD<{
     product: number;
     dp: number;
 }>>;
-export declare type Props<W extends WrappedCRUD<any, any>, T = InferT<W>> = {
+export declare type Props<W extends WrappedCRUD<any, any>, T = InferT<W['crud']>, H extends Partial<{
+    [K in keyof T]: string;
+}> = Partial<{
+    [K in keyof T]: string;
+}>> = {
     name: string;
-    module: W;
-    headers: {
-        [K in keyof T]: string;
-    };
+    headers: H;
+    display: Array<keyof H>;
     actions?: {
         [K in string]: (obj: T) => Promise<any>;
     };
-} & Omit<PaginationProps<W>, 'crud'>;
-export declare const Actions: ({ actions }: {
-    actions: Required<Props<any>>['actions'];
+} & PaginationProps<W>;
+export declare const PaginatedActionsCheckListTable: <W extends WrappedCRUD<any, any>, T = InferT<W["crud"]>>({ module, actions, name, display, headers, children, ...props }: {
+    name: string;
+    headers: Partial<{ [K in keyof InferT<W["crud"]>]: string; }>;
+    display: (keyof InferT<W["crud"]>)[];
+    actions?: {
+        [x: string]: (obj: InferT<W["crud"]>) => Promise<any>;
+    } | undefined;
+} & {
+    module: W;
+} & import("../context").InferP<W["crud"]> & {
+    children: (partial: Partial<T>, id?: string | undefined) => h.JSX.Element;
 }) => h.JSX.Element;
-export declare const AdvancedListTableController: ({ actions }: {
-    actions?: Props<any>['actions'];
-}) => h.JSX.Element;
-export declare const PaginatedActionsCheckListTable: ({ module, actions, headers, name, ...props }: Props<any>) => h.JSX.Element;
-export declare const ModuleCheckListTableWithControllers: FunctionalComponent<Props<any, any>>;
-export declare const AdvancedListTable: () => h.JSX.Element;

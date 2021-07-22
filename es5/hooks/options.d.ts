@@ -14,6 +14,8 @@ export declare type Options = {
     };
     evosus: {
         options: evosus.Options;
+        defaultDistributionID: string;
+        defaultPaymentID: string;
     };
     wc: {
         options: wc.Options;

@@ -6,9 +6,8 @@ export declare type Props = {
     index: Record<string, any>;
     value?: string[];
     onChangeIndex?: <T = any>(data: Record<string, T>, ids?: string[]) => any;
-    onChangeArray?: <T = any>(data: T[], ids?: string[]) => any;
 };
-export declare const useCheckboxIndex: ({ name, index, value, onChangeIndex, onChangeArray }: Props) => {
+export declare const useCheckboxIndex: ({ name, index, value, onChangeIndex }: Props) => {
     name: string;
     index: Record<string, any>;
     array: {

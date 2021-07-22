@@ -38,7 +38,7 @@ export const useRestClient = function<C extends wc.CRUD<any, any>, T = InferT<C>
 	const [loading, setLoading] = useBoolean(true)
 	const sync = useCallback(() => {
 		setIndex({ ...crud.index })
-	}, [crud.index])
+	}, [crud])
 
 	const [store, setIndex] = useState<Record<string, T>>(() => {
 		crud.create = addSafeHook(crud.create, sync, setError, setLoading.on, setLoading.off)

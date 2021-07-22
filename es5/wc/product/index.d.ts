@@ -85,7 +85,11 @@ export declare const useProduct: () => import("../context").WrappedCRUD<{
     variations: number[];
     grouped_products: unknown[];
     menu_order: number;
-    meta_data: unknown[];
+    meta_data: {
+        key: string;
+        value: any;
+        id: string;
+    }[];
     _links: unknown;
 }, Partial<{
     context: string;

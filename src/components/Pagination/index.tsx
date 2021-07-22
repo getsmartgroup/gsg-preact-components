@@ -1,11 +1,4 @@
-import {
-	ArrowBackIcon,
-	ArrowForwardIcon,
-	ArrowLeftIcon,
-	ArrowRightIcon,
-	ChevronLeftIcon,
-	ChevronRightIcon
-} from '@chakra-ui/icons'
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { Button, HStack, IconButton, useCounter } from '@chakra-ui/react'
 import { h } from 'preact'
 

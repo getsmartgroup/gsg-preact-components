@@ -10,6 +10,12 @@ export declare const useArray: <T>(initial: T[]) => {
     remove: (data: T) => void;
     array: T[];
 };
+export declare const useSingleIndex: <T, R = Record<string, T>>(initial: R) => {
+    set: import("preact/hooks").StateUpdater<R>;
+    add: (id: string, data: T) => void;
+    remove: (id: keyof R) => void;
+    index: R;
+};
 interface IObject {
     [key: string]: any;
 }

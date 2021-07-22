@@ -22,12 +22,11 @@ export const CheckListTable: FunctionalComponent<ComponentProps<typeof SimpleTab
 	value,
 	headers,
 	onChangeIndex,
-	onChangeArray,
 	children,
 	...props
 }) => {
 	return (
-		<CheckboxIndex name={name} index={index} value={value} onChangeIndex={onChangeIndex} onChangeArray={onChangeArray}>
+		<CheckboxIndex name={name} index={index} value={value} onChangeIndex={onChangeIndex}>
 			<SimpleTable headers={[<CheckAll />, ...(headers ?? [])]} {...props}>
 				{children}
 			</SimpleTable>
@@ -38,9 +37,9 @@ export const CheckListTableRows: FunctionalComponent<{
 	children: (obj: any, id?: string) => any
 } & ComponentProps<typeof Tr>> = ({ children, ...props }) => {
 	const { name, index } = useCheckListContext()
-	return (
-		<Fragment>
-			{Object.entries(index).map(([id, obj]) => {
+	const renderedChildren = useMemo(
+		() =>
+			Object.entries(index).map(([id, obj]) => {
 				return (
 					<Tr key={`${name}-${id}`} {...props}>
 						<Td>
@@ -49,7 +48,8 @@ export const CheckListTableRows: FunctionalComponent<{
 						{children(obj, id)}
 					</Tr>
 				)
-			})}
-		</Fragment>
+			}),
+		[children, index, name]
 	)
+	return <Fragment>{renderedChildren}</Fragment>
 }

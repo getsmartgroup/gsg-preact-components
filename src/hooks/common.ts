@@ -42,6 +42,33 @@ export const useArray = <T>(initial: T[]) => {
 	}, [value.array] )
 	return res
 }
+export const useSingleIndex = <T, R = Record<string, T>>(initial: R) => {
+	const [index, set] = useState<R>(() => initial)
+	// prettier-ignore
+	const add = useCallback(
+		(id : string, data: T) => set({
+			...index,
+			[id] : data
+		}),
+		[index],
+	)
+	const remove = useCallback(
+		(id: keyof R) => {
+			if (index[id]) {
+				delete index[id]
+				set({ ...index })
+			}
+		},
+		[index]
+	)
+
+	return {
+		set,
+		add,
+		remove,
+		index
+	}
+}
 interface IObject {
 	[key: string]: any
 }
