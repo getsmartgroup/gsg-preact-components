@@ -19,7 +19,7 @@ const config: UserConfig = {
 				entryFileNames: `assets/[name].js`,
 				chunkFileNames: `assets/[name].js`,
 				assetFileNames: `assets/[name].[ext]`
-			}
+			},
 		}
 	}
 }

@@ -137,9 +137,7 @@ const EvosusDashboard: FunctionalComponent<Props> = () => {
 						</Accordion>
 					</VStack>
 				</SimplePanel>
-				<SimplePanel title='Manage Orders'>
-					<PostOrder />
-				</SimplePanel>
+				<SimplePanel title='Manage Orders'><PostOrder /></SimplePanel>
 			</SimpleAccordion>
 		</Box>
 	)

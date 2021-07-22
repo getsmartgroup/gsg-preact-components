@@ -7,5 +7,6 @@
 	"bracketSpacing": true,
 	"jsxBracketSameLine": false,
 	"arrowParens": "avoid",
-	"printWidth": 130
+	"printWidth": 130,
+	"filepath": "src/**/*"
 }
