@@ -23,6 +23,7 @@ import { useWC } from '../../wc'
 import { SimpleTable } from '../SimpleTable'
 import { Product } from 'gsg-integrations/types/woocommerce'
 import { useOptions } from '../../hooks/options'
+import { PostOrder } from '../../evosus'
 
 export type Props = {
 	companySN: string
@@ -135,6 +136,9 @@ const EvosusDashboard: FunctionalComponent<Props> = () => {
 							})}
 						</Accordion>
 					</VStack>
+				</SimplePanel>
+				<SimplePanel title='Manage Orders'>
+					<PostOrder />
 				</SimplePanel>
 			</SimpleAccordion>
 		</Box>
