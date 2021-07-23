@@ -72,3 +72,8 @@ export type WrappedCRUD<T, LP> = {
 	store: Record<string, T>
 	array: T[]
 }
+
+export const useOrder = () => {
+	const crud = useWC().client.Order.crud
+	return useRestClient(crud)
+}

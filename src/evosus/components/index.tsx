@@ -4,8 +4,7 @@ import { Td } from '@chakra-ui/react'
 
 import { wc, evosus } from 'gsg-integrations'
 
-import { useOrder } from '../../wc/order'
-import { PaginatedActionsCheckListTable, useWC } from '../../wc'
+import { PaginatedActionsCheckListTable, useWC, useOrder } from '../../wc'
 import { useEvosus } from '../../hooks/evosus'
 import { useOptions } from '../../hooks/options'
 import { Post } from '../../wp'
