@@ -3,17 +3,20 @@ import { useCallback } from 'preact/hooks'
 import { Td } from '@chakra-ui/react'
 
 import { wc, evosus } from 'gsg-integrations'
+import * as hooks from '../../hooks'
 
-import { PaginatedActionsCheckListTable, useWC, useOrder } from '../../wc'
-import { useEvosus } from '../../hooks/evosus'
-import { useOptions } from '../../hooks/options'
 import { Post } from '../../wp'
+import {
+	PaginatedActionsCheckListTable,
+	useWC,
+} from '../../wc'
+import { useOrder } from '../../wc/order'
 
 export const PostOrder = () => {
-	const { options } = useOptions()
+	const { options } = hooks.useOptions()
+	const Evosus = hooks.evosus.useEvosus()
 	const WC = useWC()
 	const Order = useOrder()
-	const Evosus = useEvosus()
 	const postOrder = useCallback(
 		(obj: wc.Order.Type) => {
 			if (obj.meta_data.find(({ key }) => key === 'evosusId')?.value) {

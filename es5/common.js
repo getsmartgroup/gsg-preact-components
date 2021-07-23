@@ -1,53 +1,128 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.addSafeHook = exports.addAsyncHook = exports.fun = void 0;
-var fun = function (type, f) {
-    return function () {
-        var params = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            params[_i] = arguments[_i];
-        }
-        return type.returnType().parse(f(type.parameters().parse(params)));
-    };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-exports.fun = fun;
-exports.default = exports.fun;
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.addSafeHook = exports.addAsyncHook = void 0;
 // prettier-ignore
-var addAsyncHook = function (f, effect, capture, filter, final) {
+var addAsyncHook = function (f, effect, capture, filter, final, early) {
     return (function () {
         var p = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             p[_i] = arguments[_i];
         }
-        return f.apply(void 0, (filter ? filter.apply(void 0, p) : p)).then(function (res) {
-            if (effect) {
-                return effect(res);
-            }
-            else {
-                return res;
-            }
-        })
-            .catch(capture)
-            .finally(final);
-    }).bind(f);
+        return __awaiter(void 0, void 0, void 0, function () {
+            var res, params, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        params = filter ? filter.apply(void 0, p) : p;
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 7, 8, 9]);
+                        if (!early) return [3 /*break*/, 3];
+                        return [4 /*yield*/, early.apply(void 0, params)];
+                    case 2:
+                        res = _a.sent();
+                        _a.label = 3;
+                    case 3:
+                        if (!(res === undefined)) return [3 /*break*/, 5];
+                        return [4 /*yield*/, f.apply(void 0, params)];
+                    case 4:
+                        res = _a.sent();
+                        _a.label = 5;
+                    case 5: return [4 /*yield*/, effect(res)];
+                    case 6:
+                        res = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 7:
+                        error_1 = _a.sent();
+                        if (capture)
+                            capture(error_1);
+                        return [3 /*break*/, 9];
+                    case 8:
+                        if (final)
+                            final(res);
+                        return [7 /*endfinally*/];
+                    case 9: return [2 /*return*/, res];
+                }
+            });
+        });
+    });
 };
 exports.addAsyncHook = addAsyncHook;
-var addSafeHook = function (f, effect, capture, filter, final) {
-    return exports.addAsyncHook(f, function (res) {
-        if (effect) {
-            effect(res);
-        }
-        return res;
-    }, capture, function () {
+var addSafeHook = function (f, effect, capture, filter, final, early) {
+    return (function () {
         var p = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             p[_i] = arguments[_i];
         }
-        if (filter) {
-            filter.apply(void 0, p);
-        }
-        return p;
-    }, final);
+        return __awaiter(void 0, void 0, void 0, function () {
+            var res, params, error_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (filter)
+                            filter.apply(void 0, p);
+                        params = p;
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, 4, 5]);
+                        if (early)
+                            early.apply(void 0, params);
+                        return [4 /*yield*/, f.apply(void 0, params)];
+                    case 2:
+                        res = _a.sent();
+                        if (effect)
+                            effect(res);
+                        return [3 /*break*/, 5];
+                    case 3:
+                        error_2 = _a.sent();
+                        if (capture)
+                            capture(error_2);
+                        return [3 /*break*/, 5];
+                    case 4:
+                        if (final)
+                            final(res);
+                        return [7 /*endfinally*/];
+                    case 5: return [2 /*return*/, res];
+                }
+            });
+        });
+    });
 };
 exports.addSafeHook = addSafeHook;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29tbW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2NvbW1vbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFFTyxJQUFNLEdBQUcsR0FBRyxVQUFrQyxJQUFPLEVBQUUsQ0FBYTtJQUMxRSxPQUFPO1FBQUMsZ0JBQStDO2FBQS9DLFVBQStDLEVBQS9DLHFCQUErQyxFQUEvQyxJQUErQztZQUEvQywyQkFBK0M7O1FBQ3RELE9BQU8sSUFBSSxDQUFDLFVBQVUsRUFBRSxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUMsSUFBSSxDQUFDLFVBQVUsRUFBRSxDQUFDLEtBQUssQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDLENBQUE7SUFDbkUsQ0FBQyxDQUFBO0FBQ0YsQ0FBQyxDQUFBO0FBSlksUUFBQSxHQUFHLE9BSWY7QUFDRCxrQkFBZSxXQUFHLENBQUE7QUFHbEIsa0JBQWtCO0FBQ1gsSUFBTSxZQUFZLEdBQUcsVUFDM0IsQ0FBSSxFQUNKLE1BQXlDLEVBQ3pDLE9BQThCLEVBQzlCLE1BQStDLEVBQy9DLEtBQTRCO0lBRTVCLE9BQVEsQ0FDUDtRQUFDLFdBQVc7YUFBWCxVQUFXLEVBQVgscUJBQVcsRUFBWCxJQUFXO1lBQVgsc0JBQVc7O1FBQ1gsT0FBTyxDQUFDLGVBQUksQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDLE1BQU0sZUFBSyxDQUFtQixFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFDekQsSUFBSSxDQUFDLFVBQUEsR0FBRztZQUNSLElBQUssTUFBTSxFQUFHO2dCQUNiLE9BQU8sTUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFBO2FBQ2xCO2lCQUFNO2dCQUNOLE9BQU8sR0FBRyxDQUFBO2FBQ1Y7UUFDRixDQUFDLENBQUU7YUFDRixLQUFLLENBQUMsT0FBTyxDQUFDO2FBQ2QsT0FBTyxDQUFDLEtBQUssQ0FBQyxDQUFBO0lBQ2hCLENBQUMsQ0FDTSxDQUFDLElBQUksQ0FBQyxDQUFDLENBQUMsQ0FBQTtBQUNqQixDQUFDLENBQUE7QUFyQlksUUFBQSxZQUFZLGdCQXFCeEI7QUFDTSxJQUFNLFdBQVcsR0FBRyxVQUMxQixDQUFJLEVBQ0osTUFBeUMsRUFDekMsT0FBOEIsRUFDOUIsTUFBcUMsRUFDckMsS0FBNEI7SUFFNUIsT0FBTyxvQkFBWSxDQUNsQixDQUFDLEVBQ0QsVUFBQSxHQUFHO1FBQ0YsSUFBSSxNQUFNLEVBQUU7WUFDWCxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUE7U0FDWDtRQUNELE9BQU8sR0FBRyxDQUFBO0lBQ1gsQ0FBQyxFQUNELE9BQU8sRUFDUDtRQUFDLFdBQW1CO2FBQW5CLFVBQW1CLEVBQW5CLHFCQUFtQixFQUFuQixJQUFtQjtZQUFuQixzQkFBbUI7O1FBQ25CLElBQUksTUFBTSxFQUFFO1lBQ1gsTUFBTSxlQUFJLENBQUMsRUFBQztTQUNaO1FBQ0QsT0FBTyxDQUFDLENBQUE7SUFDVCxDQUFDLEVBQ0QsS0FBSyxDQUNMLENBQUE7QUFDRixDQUFDLENBQUE7QUF4QlksUUFBQSxXQUFXLGVBd0J2QiJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29tbW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2NvbW1vbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFHQSxrQkFBa0I7QUFDWCxJQUFNLFlBQVksR0FBRyxVQUMzQixDQUFJLEVBQ0osTUFBd0MsRUFDeEMsT0FBOEIsRUFDOUIsTUFBK0MsRUFDL0MsS0FBNEIsRUFDNUIsS0FBNEI7SUFFNUIsT0FBTyxDQUFDO1FBQU8sV0FBVzthQUFYLFVBQVcsRUFBWCxxQkFBVyxFQUFYLElBQVc7WUFBWCxzQkFBVzs7Ozs7Ozt3QkFFbkIsTUFBTSxHQUFHLE1BQU0sQ0FBQyxDQUFDLENBQUMsTUFBTSxlQUFLLENBQW1CLEVBQUUsQ0FBQyxDQUFDLENBQUMsQ0FBQTs7Ozs2QkFFdEQsS0FBSyxFQUFMLHdCQUFLO3dCQUNGLHFCQUFNLEtBQUssZUFBSSxNQUFNLEdBQUM7O3dCQUE1QixHQUFHLEdBQUcsU0FBc0IsQ0FBQTs7OzZCQUV6QixDQUFBLEdBQUcsS0FBSyxTQUFTLENBQUEsRUFBakIsd0JBQWlCO3dCQUNkLHFCQUFNLENBQUMsZUFBSSxNQUFNLEdBQUM7O3dCQUF4QixHQUFHLEdBQUcsU0FBa0IsQ0FBQTs7NEJBRW5CLHFCQUFNLE1BQU0sQ0FBQyxHQUFHLENBQUMsRUFBQTs7d0JBQXZCLEdBQUcsR0FBRyxTQUFpQixDQUFBOzs7O3dCQUV2QixJQUFJLE9BQU87NEJBQUUsT0FBTyxDQUFDLE9BQUssQ0FBQyxDQUFBOzs7d0JBRTNCLElBQUksS0FBSzs0QkFBRSxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUE7OzRCQUV0QixzQkFBTyxHQUFHLEVBQUE7Ozs7S0FDVixDQUFNLENBQUE7QUFDUixDQUFDLENBQUE7QUExQlksUUFBQSxZQUFZLGdCQTBCeEI7QUFFTSxJQUFNLFdBQVcsR0FBRyxVQUMxQixDQUFJLEVBQ0osTUFBd0MsRUFDeEMsT0FBOEIsRUFDOUIsTUFBcUMsRUFDckMsS0FBNEIsRUFDNUIsS0FBNEI7SUFFNUIsT0FBTyxDQUFDO1FBQU8sV0FBVzthQUFYLFVBQVcsRUFBWCxxQkFBVyxFQUFYLElBQVc7WUFBWCxzQkFBVzs7Ozs7Ozt3QkFFekIsSUFBSyxNQUFNOzRCQUNWLE1BQU0sZUFBSyxDQUFtQixFQUFDO3dCQUMxQixNQUFNLEdBQUcsQ0FBQyxDQUFBOzs7O3dCQUVmLElBQUksS0FBSzs0QkFDUixLQUFLLGVBQUksTUFBTSxFQUFDO3dCQUNYLHFCQUFNLENBQUMsZUFBSSxNQUFNLEdBQUM7O3dCQUF4QixHQUFHLEdBQUcsU0FBa0IsQ0FBQTt3QkFDeEIsSUFBSyxNQUFNOzRCQUNWLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQTs7Ozt3QkFFWixJQUFJLE9BQU87NEJBQUUsT0FBTyxDQUFDLE9BQUssQ0FBQyxDQUFBOzs7d0JBRTNCLElBQUksS0FBSzs0QkFBRSxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUE7OzRCQUV0QixzQkFBTyxHQUFHLEVBQUE7Ozs7S0FDVixDQUFNLENBQUE7QUFDUixDQUFDLENBQUE7QUExQlksUUFBQSxXQUFXLGVBMEJ2QiJ9

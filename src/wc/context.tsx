@@ -1,7 +1,7 @@
 import { FunctionalComponent, h } from 'preact'
 import { wc } from 'gsg-integrations'
 import { createContext } from '@chakra-ui/react-utils'
-import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
+import { useCallback, useEffect, useState, useMemo } from 'preact/hooks'
 import { useBoolean } from '@chakra-ui/hooks'
 import { addSafeHook } from '../common'
 
@@ -39,6 +39,7 @@ export const useRestClient = function<C extends wc.CRUD<any, any>, T = InferT<C>
 	const sync = useCallback(() => {
 		setIndex({ ...crud.index })
 	}, [crud])
+	const [error, setError] = useState<Error | undefined>()
 
 	const [store, setIndex] = useState<Record<string, T>>(() => {
 		crud.create = addSafeHook(crud.create, sync, setError, setLoading.on, setLoading.off)
@@ -49,11 +50,7 @@ export const useRestClient = function<C extends wc.CRUD<any, any>, T = InferT<C>
 		crud.retrieve = addSafeHook(crud.retrieve, sync, setError, setLoading.on, setLoading.off)
 		return crud.index
 	})
-	const [array, setArray] = useState<T[]>(Object.values(store))
-	const [error, setError] = useState<Error | undefined>()
-	useEffect(() => {
-		setArray(Object.values(store))
-	}, [store])
+	const array = useMemo(() => Object.values(store), [store])
 
 	return {
 		// Mixing CRUD with loading would lead to infinite loops
@@ -73,7 +70,3 @@ export type WrappedCRUD<T, LP> = {
 	array: T[]
 }
 
-export const useOrder = () => {
-	const crud = useWC().client.Order.crud
-	return useRestClient(crud)
-}

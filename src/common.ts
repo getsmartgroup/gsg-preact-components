@@ -1,58 +1,59 @@
-import { z, ZodFunction } from 'zod'
 
-export const fun = <F extends ZodFunction<any, any>>(type: F, f: z.infer<F>) => {
-	return (...params: z.infer<ReturnType<F['parameters']>>): z.infer<ReturnType<F['returnType']>> => {
-		return type.returnType().parse(f(type.parameters().parse(params)))
-	}
-}
-export default fun
 type Await<T> = T extends PromiseLike<infer U> ? U : T
 
 // prettier-ignore
 export const addAsyncHook = <F extends (...p: any[]) => Promise<any>>(
 	f: F,
-	effect?: (r: Await<ReturnType<F>>) => any,
+	effect: (r: Await<ReturnType<F>>) => any,
 	capture?: (...p: any[]) => any,
 	filter?: (...p: Parameters<F>) => Parameters<F>,
-	final?: (...p: any[]) => any
+	final?: (...p: any[]) => any,
+	early?: (...p: any[]) => any
 ) => {
-	return ((
-		(...p: any[]) => {
-			return f(...(filter ? filter(...(p as Parameters<F>)) : p))
-			.then(res => {
-				if ( effect ) {
-					return effect(res)
-				} else {
-					return res
-				}
-			} )
-			.catch(capture)
-			.finally(final)
+	return (async (...p: any[]) => {
+		let res
+		const params = filter ? filter(...(p as Parameters<F>)) : p
+		try {
+			if (early) {
+				res = await early(...params)
+			}
+			if (res === undefined) {
+				res = await f(...params)
+			}
+			res = await effect(res)
+		} catch (error) {
+			if (capture) capture(error)
+		} finally {
+			if (final) final(res)
 		}
-	) as F ).bind(f)
+		return res
+	}) as F
 }
+
 export const addSafeHook = <F extends (...p: any[]) => Promise<any>>(
 	f: F,
-	effect?: (r: Await<ReturnType<F>>) => any,
+	effect: (r: Await<ReturnType<F>>) => any,
 	capture?: (...p: any[]) => any,
 	filter?: (...p: Parameters<F>) => any,
-	final?: (...p: any[]) => any
+	final?: (...p: any[]) => any,
+	early?: (...p: any[]) => any
 ) => {
-	return addAsyncHook(
-		f,
-		res => {
-			if (effect) {
+	return (async (...p: any[]) => {
+		let res
+		if ( filter )
+			filter(...(p as Parameters<F>))
+		const params = p
+		try {
+			if (early)
+				early(...params)
+			res = await f(...params)
+			if ( effect )
 				effect(res)
-			}
-			return res
-		},
-		capture,
-		(...p: Parameters<F>) => {
-			if (filter) {
-				filter(...p)
-			}
-			return p
-		},
-		final
-	)
+		} catch (error) {
+			if (capture) capture(error)
+		} finally {
+			if (final) final(res)
+		}
+		return res
+	}) as F
 }

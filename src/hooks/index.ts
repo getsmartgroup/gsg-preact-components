@@ -1,4 +1,5 @@
 export * from './common'
+export * from './options'
 export * as rb from './rb'
 export * as an from './an'
 export * as gsc from './gsc'

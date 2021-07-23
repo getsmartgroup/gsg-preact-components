@@ -1,36 +1,59 @@
-export const fun = (type, f) => {
-    return (...params) => {
-        return type.returnType().parse(f(type.parameters().parse(params)));
-    };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-export default fun;
 // prettier-ignore
-export const addAsyncHook = (f, effect, capture, filter, final) => {
-    return ((...p) => {
-        return f(...(filter ? filter(...p) : p))
-            .then(res => {
-            if (effect) {
-                return effect(res);
+export const addAsyncHook = (f, effect, capture, filter, final, early) => {
+    return ((...p) => __awaiter(void 0, void 0, void 0, function* () {
+        let res;
+        const params = filter ? filter(...p) : p;
+        try {
+            if (early) {
+                res = yield early(...params);
             }
-            else {
-                return res;
+            if (res === undefined) {
+                res = yield f(...params);
             }
-        })
-            .catch(capture)
-            .finally(final);
-    }).bind(f);
-};
-export const addSafeHook = (f, effect, capture, filter, final) => {
-    return addAsyncHook(f, res => {
-        if (effect) {
-            effect(res);
+            res = yield effect(res);
+        }
+        catch (error) {
+            if (capture)
+                capture(error);
+        }
+        finally {
+            if (final)
+                final(res);
         }
         return res;
-    }, capture, (...p) => {
-        if (filter) {
-            filter(...p);
-        }
-        return p;
-    }, final);
+    }));
 };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29tbW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2NvbW1vbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFFQSxNQUFNLENBQUMsTUFBTSxHQUFHLEdBQUcsQ0FBa0MsSUFBTyxFQUFFLENBQWEsRUFBRSxFQUFFO0lBQzlFLE9BQU8sQ0FBQyxHQUFHLE1BQTRDLEVBQXdDLEVBQUU7UUFDaEcsT0FBTyxJQUFJLENBQUMsVUFBVSxFQUFFLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxJQUFJLENBQUMsVUFBVSxFQUFFLENBQUMsS0FBSyxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsQ0FBQTtJQUNuRSxDQUFDLENBQUE7QUFDRixDQUFDLENBQUE7QUFDRCxlQUFlLEdBQUcsQ0FBQTtBQUdsQixrQkFBa0I7QUFDbEIsTUFBTSxDQUFDLE1BQU0sWUFBWSxHQUFHLENBQzNCLENBQUksRUFDSixNQUF5QyxFQUN6QyxPQUE4QixFQUM5QixNQUErQyxFQUMvQyxLQUE0QixFQUMzQixFQUFFO0lBQ0gsT0FBUSxDQUNQLENBQUMsR0FBRyxDQUFRLEVBQUUsRUFBRTtRQUNmLE9BQU8sQ0FBQyxDQUFDLEdBQUcsQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxHQUFJLENBQW1CLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7YUFDMUQsSUFBSSxDQUFDLEdBQUcsQ0FBQyxFQUFFO1lBQ1gsSUFBSyxNQUFNLEVBQUc7Z0JBQ2IsT0FBTyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUE7YUFDbEI7aUJBQU07Z0JBQ04sT0FBTyxHQUFHLENBQUE7YUFDVjtRQUNGLENBQUMsQ0FBRTthQUNGLEtBQUssQ0FBQyxPQUFPLENBQUM7YUFDZCxPQUFPLENBQUMsS0FBSyxDQUFDLENBQUE7SUFDaEIsQ0FBQyxDQUNNLENBQUMsSUFBSSxDQUFDLENBQUMsQ0FBQyxDQUFBO0FBQ2pCLENBQUMsQ0FBQTtBQUNELE1BQU0sQ0FBQyxNQUFNLFdBQVcsR0FBRyxDQUMxQixDQUFJLEVBQ0osTUFBeUMsRUFDekMsT0FBOEIsRUFDOUIsTUFBcUMsRUFDckMsS0FBNEIsRUFDM0IsRUFBRTtJQUNILE9BQU8sWUFBWSxDQUNsQixDQUFDLEVBQ0QsR0FBRyxDQUFDLEVBQUU7UUFDTCxJQUFJLE1BQU0sRUFBRTtZQUNYLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQTtTQUNYO1FBQ0QsT0FBTyxHQUFHLENBQUE7SUFDWCxDQUFDLEVBQ0QsT0FBTyxFQUNQLENBQUMsR0FBRyxDQUFnQixFQUFFLEVBQUU7UUFDdkIsSUFBSSxNQUFNLEVBQUU7WUFDWCxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQTtTQUNaO1FBQ0QsT0FBTyxDQUFDLENBQUE7SUFDVCxDQUFDLEVBQ0QsS0FBSyxDQUNMLENBQUE7QUFDRixDQUFDLENBQUEifQ==
+export const addSafeHook = (f, effect, capture, filter, final, early) => {
+    return ((...p) => __awaiter(void 0, void 0, void 0, function* () {
+        let res;
+        if (filter)
+            filter(...p);
+        const params = p;
+        try {
+            if (early)
+                early(...params);
+            res = yield f(...params);
+            if (effect)
+                effect(res);
+        }
+        catch (error) {
+            if (capture)
+                capture(error);
+        }
+        finally {
+            if (final)
+                final(res);
+        }
+        return res;
+    }));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29tbW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2NvbW1vbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7QUFHQSxrQkFBa0I7QUFDbEIsTUFBTSxDQUFDLE1BQU0sWUFBWSxHQUFHLENBQzNCLENBQUksRUFDSixNQUF3QyxFQUN4QyxPQUE4QixFQUM5QixNQUErQyxFQUMvQyxLQUE0QixFQUM1QixLQUE0QixFQUMzQixFQUFFO0lBQ0gsT0FBTyxDQUFDLENBQU8sR0FBRyxDQUFRLEVBQUUsRUFBRTtRQUM3QixJQUFJLEdBQUcsQ0FBQTtRQUNQLE1BQU0sTUFBTSxHQUFHLE1BQU0sQ0FBQyxDQUFDLENBQUMsTUFBTSxDQUFDLEdBQUksQ0FBbUIsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUE7UUFDM0QsSUFBSTtZQUNILElBQUksS0FBSyxFQUFFO2dCQUNWLEdBQUcsR0FBRyxNQUFNLEtBQUssQ0FBQyxHQUFHLE1BQU0sQ0FBQyxDQUFBO2FBQzVCO1lBQ0QsSUFBSSxHQUFHLEtBQUssU0FBUyxFQUFFO2dCQUN0QixHQUFHLEdBQUcsTUFBTSxDQUFDLENBQUMsR0FBRyxNQUFNLENBQUMsQ0FBQTthQUN4QjtZQUNELEdBQUcsR0FBRyxNQUFNLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQTtTQUN2QjtRQUFDLE9BQU8sS0FBSyxFQUFFO1lBQ2YsSUFBSSxPQUFPO2dCQUFFLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQTtTQUMzQjtnQkFBUztZQUNULElBQUksS0FBSztnQkFBRSxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUE7U0FDckI7UUFDRCxPQUFPLEdBQUcsQ0FBQTtJQUNYLENBQUMsQ0FBQSxDQUFNLENBQUE7QUFDUixDQUFDLENBQUE7QUFFRCxNQUFNLENBQUMsTUFBTSxXQUFXLEdBQUcsQ0FDMUIsQ0FBSSxFQUNKLE1BQXdDLEVBQ3hDLE9BQThCLEVBQzlCLE1BQXFDLEVBQ3JDLEtBQTRCLEVBQzVCLEtBQTRCLEVBQzNCLEVBQUU7SUFDSCxPQUFPLENBQUMsQ0FBTyxHQUFHLENBQVEsRUFBRSxFQUFFO1FBQzdCLElBQUksR0FBRyxDQUFBO1FBQ1AsSUFBSyxNQUFNO1lBQ1YsTUFBTSxDQUFDLEdBQUksQ0FBbUIsQ0FBQyxDQUFBO1FBQ2hDLE1BQU0sTUFBTSxHQUFHLENBQUMsQ0FBQTtRQUNoQixJQUFJO1lBQ0gsSUFBSSxLQUFLO2dCQUNSLEtBQUssQ0FBQyxHQUFHLE1BQU0sQ0FBQyxDQUFBO1lBQ2pCLEdBQUcsR0FBRyxNQUFNLENBQUMsQ0FBQyxHQUFHLE1BQU0sQ0FBQyxDQUFBO1lBQ3hCLElBQUssTUFBTTtnQkFDVixNQUFNLENBQUMsR0FBRyxDQUFDLENBQUE7U0FDWjtRQUFDLE9BQU8sS0FBSyxFQUFFO1lBQ2YsSUFBSSxPQUFPO2dCQUFFLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQTtTQUMzQjtnQkFBUztZQUNULElBQUksS0FBSztnQkFBRSxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUE7U0FDckI7UUFDRCxPQUFPLEdBQUcsQ0FBQTtJQUNYLENBQUMsQ0FBQSxDQUFNLENBQUE7QUFDUixDQUFDLENBQUEifQ==
