@@ -147,7 +147,7 @@ export const useOptionsHook = ({ nonce, siteurl, cookieHash, cookieValue, gsgTok
 		saving,
 		options,
 		setOptions,
-		siteurl
+		siteurl : new URL(siteurl)
 	}
 }
 

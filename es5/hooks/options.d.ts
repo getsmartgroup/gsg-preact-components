@@ -36,20 +36,20 @@ export declare const useOptionsHook: ({ nonce, siteurl, cookieHash, cookieValue,
     saving: boolean;
     options: Options;
     setOptions: import("preact/hooks").StateUpdater<Options>;
-    siteurl: string;
+    siteurl: URL;
 };
 export declare const OptionsContextProvider: import("react").Provider<{
     fetching: boolean;
     saving: boolean;
     options: Options;
     setOptions: import("preact/hooks").StateUpdater<Options>;
-    siteurl: string;
+    siteurl: URL;
 }>, useOptionsContext: () => {
     fetching: boolean;
     saving: boolean;
     options: Options;
     setOptions: import("preact/hooks").StateUpdater<Options>;
-    siteurl: string;
+    siteurl: URL;
 };
 export declare const OptionsProvider: FunctionalComponent<Props>;
 export declare const OptionInput: <T extends {
@@ -65,5 +65,5 @@ export declare const useOptions: () => {
     saving: boolean;
     options: Options;
     setOptions: import("preact/hooks").StateUpdater<Options>;
-    siteurl: string;
+    siteurl: URL;
 };
