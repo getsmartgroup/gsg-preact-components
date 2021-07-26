@@ -7,7 +7,8 @@ import Router, { Route } from 'preact-router'
 import { Match } from 'preact-router/match'
 import { createHashHistory } from 'history'
 
-import EvosusDashboard from '../EvosusDashboard'
+import { Evosus } from '../../evosus'
+import { RB } from '../../rb'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
 import { Props as OptionsProps, useOptionsContext, OptionsProvider, useOptions, OptionInput } from '../../hooks/options'
 import { an, rb, gsc, evosus, usePromiseCall } from '../../hooks'
@@ -17,64 +18,6 @@ import ErrorAlert from '../ErrorAlert'
 import { theme } from './theme'
 
 export type Props = OptionsProps
-
-const Evosus = () => {
-	const { fetching, saving, options } = useOptionsContext()
-
-	return (
-		<SimpleAccordion>
-			<SimplePanel title='Dashboard'>
-				<evosus.Provider {...options.evosus.options}>
-					<EvosusDashboard
-						clientID={options.gsc.options.access.clientID}
-						gsgToken={options.gsc.options.access.gsgToken}
-						companySN={options.evosus.options.access.companySN}
-						ticket={options.evosus.options.access.ticket}
-					/>
-				</evosus.Provider>
-			</SimplePanel>
-			<SimplePanel title='Settings'>
-				<Stack>
-					<OptionInput secret obj={options.evosus.options.access} target='companySN' label='Company SN' />
-					<OptionInput secret obj={options.evosus.options.access} target='ticket' label='Ticket' />
-					<OptionInput obj={options.evosus} target='defaultDistributionID' label='Default distribution ID' />
-					<OptionInput obj={options.evosus} target='defaultPaymentID' label='Default payment ID' />
-				</Stack>
-			</SimplePanel>
-		</SimpleAccordion>
-	)
-}
-
-const RB = () => {
-	const { fetching, saving, options } = useOptionsContext()
-
-	return (
-		<SimpleAccordion>
-			<SimplePanel title='Dashboard'>
-				<rb.Provider {...options.rb.options}>
-					<an.Provider {...options.an.options}>
-						<RBDashboard />
-					</an.Provider>
-				</rb.Provider>
-			</SimplePanel>
-			<SimplePanel title='Settings'>
-				<Stack>
-					<OptionInput obj={options.rb.options.access} target='CompanyID' label='Company ID' />
-					<OptionInput secret obj={options.rb.options.access} target='APIKey' label='API Key' />
-					<OptionInput obj={options.rb.options.access} target='name' label='Company Name' />
-					<OptionInput secret obj={options.an.options.credentials} target='name' label='Authorize.net Name' />
-					<OptionInput
-						secret
-						obj={options.an.options.credentials}
-						target='transactionKey'
-						label='Authorize.net Transaction Key'
-					/>
-					<OptionInput obj={options.an.options.credentials} target='refId' label='Authorize.net Ref ID (Optional)' />
-				</Stack>
-			</SimplePanel>
-		</SimpleAccordion>
-	)
-}
 
 const Integrations = () => {
 	const { client } = gsc.useGSC()

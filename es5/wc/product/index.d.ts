@@ -121,3 +121,4 @@ export declare const useProduct: () => import("../context").WrappedCRUD<{
     max_price: string;
     stock_status: string;
 }>>;
+export declare const PreImport: () => null;
