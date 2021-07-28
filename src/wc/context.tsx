@@ -35,7 +35,7 @@ export const Provider: FunctionalComponent<Props> = ({ children, ...props }) => 
 export const useWC = useContext
 
 export const useRestClient = function<C extends wc.CRUD<any, any>, T = InferT<C>, P = InferP<C>>(crud: C): WrappedCRUD<T, P> {
-	const [loading, setLoading] = useBoolean(true)
+	const [loading, setLoading] = useBoolean(false)
 	const sync = useCallback(() => {
 		setIndex({ ...crud.index })
 	}, [crud])

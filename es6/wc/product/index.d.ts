@@ -1,3 +1,6 @@
+import { wc } from 'gsg-integrations';
+import { ComponentProps, FunctionalComponent } from 'preact';
+import { CheckboxIndex } from '../../components/CheckList';
 export declare const useProduct: () => import("../context").WrappedCRUD<{
     id: number;
     name: string;
@@ -121,4 +124,9 @@ export declare const useProduct: () => import("../context").WrappedCRUD<{
     max_price: string;
     stock_status: string;
 }>>;
-export declare const PreImport: () => null;
+export declare type Props = {
+    products: wc.Product.Type[];
+};
+declare type CheckboxIndexProps = ComponentProps<typeof CheckboxIndex>;
+export declare const PreImport: FunctionalComponent<Omit<CheckboxIndexProps, 'name' | 'onChangeIndex'>>;
+export {};

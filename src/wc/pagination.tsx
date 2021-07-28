@@ -85,7 +85,7 @@ export const usePagination = function<C extends WrappedCRUD<any, any>, T = Infer
 		page,
 		next,
 		prev,
-		loading: loading,
+		loading,
 		params,
 		setParams,
 		index,

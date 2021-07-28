@@ -5,8 +5,9 @@ export declare type Props = {
     name: string;
     index: Record<string, any>;
     value?: string[];
-    onChangeIndex?: <T = any>(data: Record<string, T>, ids?: string[]) => any;
+    onChangeIndex?: <T extends any = any>(data: Record<string, T>, ids?: string[]) => any;
 };
+export declare const CheckAll: () => h.JSX.Element;
 export declare const useCheckboxIndex: ({ name, index, value, onChangeIndex }: Props) => {
     name: string;
     index: Record<string, any>;

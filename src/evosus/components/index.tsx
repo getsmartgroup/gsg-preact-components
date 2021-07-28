@@ -1,4 +1,4 @@
-import { h, Fragment } from 'preact'
+import { h, Fragment, FunctionalComponent } from 'preact'
 
 import { wc, evosus } from 'gsg-integrations'
 import * as hooks from '../../hooks'
@@ -7,10 +7,11 @@ import { Post } from '../../wp'
 import {
 	PaginatedActionsCheckListTable,
 	useWC,
+	Product
 } from '../../wc'
 import { useOrder } from '../../wc/order'
-import { Tr, Td, Link } from '@chakra-ui/react'
-import { useCallback, useState } from 'preact/hooks'
+import { chakra, HStack, Td, useBoolean } from '@chakra-ui/react'
+import { useCallback, useMemo, useState } from 'preact/hooks'
 import {
 	Stack,
 	Box,
@@ -18,20 +19,17 @@ import {
 	Radio,
 	RadioGroup,
 	SimpleGrid,
-	Accordion,
-	AccordionItem,
-	AccordionButton,
-	AccordionPanel,
-	AccordionIcon,
 	Button,
 	VStack
 } from '@chakra-ui/react'
 import { SimpleAccordion, SimplePanel } from '../../components/SimpleAccordion'
 import { useEvosus } from '../../hooks/evosus'
 import { useArray, usePromiseCall } from '../../hooks'
-import { SimpleTable } from '../../components/SimpleTable'
-import { Product } from 'gsg-integrations/types/woocommerce'
-import { Props as OptionsProps, useOptionsContext, OptionsProvider, useOptions, OptionInput } from '../../hooks/options'
+import { Props as OptionsProps, useOptions, OptionInput } from '../../hooks/options'
+import { CheckboxIndexItem, useContext as useCheckboxIndexContext } from '../../components/CheckList'
+import { useProduct } from '../../wc/product'
+
+import { chunk } from '../../common'
 
 export type Props = {
 	companySN: string
@@ -41,49 +39,6 @@ export type Props = {
 }
 
 export const Dashboard: FunctionalComponent<Props> = () => {
-	const { options } = useOptions()
-	const { client: wcC } = useWC()
-	const { client: evosusC } = useEvosus()
-
-	const { resolved: productLines } = usePromiseCall(evosusC.inventoryApi.inventoryProductLineSearch)
-
-	const [productLine, setProductLine] = useState<null | string>(null)
-	const [syncing, setSyncing] = useState<boolean>(false)
-	const syncResults = useArray<{
-		status: string
-		products: Product.Type[]
-	}>([])
-	const syncErrors = useArray<Error>([])
-
-	const syncProducts = useCallback(() => {
-		if (!productLine) {
-			return
-		}
-		syncResults.set([])
-		setSyncing(true)
-		evosus
-			.searchAndImportToWooCommerce(wcC, evosusC, { ProductLineID: productLine })
-			.then(promises => {
-				const results: any[] = []
-				const errors: any[] = []
-
-				return Promise.allSettled(
-					promises.map(promise => {
-						return promise
-							.then(res => {
-								results.push(res)
-								syncResults.concat(results)
-							})
-							.catch(err => {
-								errors.push(err)
-								syncErrors.concat(errors)
-							})
-					})
-				)
-			})
-			.finally(setSyncing.bind(null, false))
-	}, [productLine, evosus, wcC, evosusC, syncResults])
-
 	return (
 		<Box>
 			<Heading w='100%' size='lg' textAlign='center'>
@@ -91,64 +46,119 @@ export const Dashboard: FunctionalComponent<Props> = () => {
 			</Heading>
 			<SimpleAccordion>
 				<SimplePanel title='Sync Products'>
-					<VStack w='100%' justifyContent='stretch' alignItems='stretch' alignContent='stretch' justifyItems='stretch'>
-						<Heading size='sm'>Select a product Line</Heading>
-						{syncing ? 'Loading Product Lines' : null}
-						<RadioGroup onChange={setProductLine} value={productLine ?? ''}>
-							<SimpleGrid columns={2}>
-								{productLines?.map(({ ProductLine, ProductLineID }) => (
-									<Radio value={ProductLineID?.toString()}>{ProductLine}</Radio>
-								))}
-							</SimpleGrid>
-						</RadioGroup>
-						<Box>
-							<Button onClick={syncProducts} w='100%' mt={8} disabled={syncing || !productLine}>
-								Sync Products
-							</Button>
-						</Box>
-						<Box>{syncing ? 'Syncing...' : null}</Box>
-						<Accordion allowMultiple>
-							{syncResults.array.map(res => {
-								return (
-									<AccordionItem bg={res.status === 'created' ? 'green.400' : 'blue.400'}>
-										<AccordionButton>
-											<Box flex='1' textAlign='left'>
-												{res.products.length} {res.status === 'created' ? 'Created' : 'Updated'}
-											</Box>
-											<AccordionIcon />
-										</AccordionButton>
-										<AccordionPanel pb={4} bg='white'>
-											<SimpleTable headers={['ID#', 'Name', 'SKU', 'Quanitity', 'Price']}>
-												{res.products.map(product => {
-													return (
-														<Tr>
-															<Td>
-																<Link
-																	href={`${options.wc.options.access.url}wp-admin/post.php?post=${product.id}&action=edit`}
-																	target='_blank'
-																>
-																	#{product.id}
-																</Link>
-															</Td>
-															<Td>{product.name}</Td>
-															<Td>{product.sku}</Td>
-															<Td>{product.stock_quantity}</Td>
-															<Td>{product.price}</Td>
-														</Tr>
-													)
-												})}
-											</SimpleTable>
-										</AccordionPanel>
-									</AccordionItem>
-								)
-							})}
-						</Accordion>
-					</VStack>
+					<SyncProducts/>
 				</SimplePanel>
 				<SimplePanel title='Manage Orders'><ManageOrders /></SimplePanel>
 			</SimpleAccordion>
 		</Box>
 	)
+}
+
+export const SyncProducts = () => {
+	const { client: wcC } = useWC()
+	const { client: evosusC } = useEvosus()
+
+	const { resolved: productLines } = usePromiseCall(evosusC.inventoryApi.inventoryProductLineSearch)
+
+	const [productLine, setProductLine] = useState<null | string>(null)
+	const [searching, setSearching] = useBoolean(false)
+	const syncResults = useArray<{
+		status: string
+		products: wc.Product.Type[]
+	}>([])
+	const syncErrors = useArray<Error>([])
+
+	const [products, setProducts] = useState<null | {create : Array<Partial<wc.Product.Type>>, update : Array<Partial<wc.Product.Type>>}>()
+
+	const searchProducts = useCallback(() => {
+		if (!productLine) {
+			return
+		}
+		syncResults.set([])
+		setSearching.on()
+		evosus
+			.searchProductsToSyncToWooCommerce(wcC, evosusC, { ProductLineID: productLine })
+			.then(setProducts)
+			.finally(setSearching.off)
+	}, [productLine, evosus, wcC, evosusC, syncResults])
+
+	const indexes : Array<Record<string, wc.Product.Type>> = useMemo( () => {
+		if ( products ) {
+			const x = ([]).concat( ...(Object.values(products) as any) )
+			console.log({x})
+			return chunk( x , 100 ).map( batch => batch.reduce<any>( (
+				acc, p
+			) => {
+				// @ts-expect-error
+				acc[p.sku] = p
+				return acc
+			}, {} ) )
+		}
+		return [{}] as any
+	}, [products] )
+	console.log(indexes)
+
+	return (
+		<VStack w='100%' justifyContent='stretch' alignItems='stretch' alignContent='stretch' justifyItems='stretch'>
+			<Heading size='sm'>Select a product Line</Heading>
+			{searching ? 'Loading Product Lines' : null}
+			<RadioGroup onChange={setProductLine} value={productLine ?? ''}>
+				<SimpleGrid columns={2}>
+					{productLines?.map(({ ProductLine, ProductLineID }) => (
+						<Radio value={ProductLineID?.toString()}>{ProductLine}</Radio>
+					))}
+				</SimpleGrid>
+			</RadioGroup>
+			<Box>
+				<Button onClick={searchProducts} w='100%' mt={8} disabled={searching || !productLine}>
+					Search Products
+				</Button>
+			</Box>
+			<Box>{searching ? 'Seaching products...' : null}</Box>
+			{products ? (
+				<SimpleAccordion>
+						{indexes?.map( index => (
+							<Product.PreImport index={index}>
+								<PreImportPreview/>
+							</Product.PreImport>
+						) )}
+				</SimpleAccordion>
+			) : null}
+		</VStack>
+	)
+}
+
+export const PreImportPreview = () => {
+	const { index } = useCheckboxIndexContext()
+	const Product = useProduct()
+	const findBySku = useCallback(
+		( s : string ) => Product.array.find( ({sku}) => sku === s ),
+		[Product.array],
+	)
+	return (<SimpleGrid columns={2} gap={2} >{( Object.keys( index ).map( (sku) => {
+		const product = findBySku(sku) ?? index[sku]
+		const id = product.id
+		return (
+			<chakra.label p={4} w='100%'bg={id ? 'blue.200' : 'green.200'} justifyContent='flex-start' >
+				<HStack>
+					<CheckboxIndexItem id={sku} />
+					<Heading w='100%' size='sm' >{
+						id ? 'Update' : 'Create'
+					}</Heading>
+				</HStack>
+				<HStack>
+					<VStack w='100%' alignItems='flex-start' >
+						{product.id ?(<Box>ID: {product.id}</Box>) : null}
+						<Box>Sku: {product.sku}</Box>
+						<Box>Name: {product.name}</Box>
+						<Box>Price: {product.price}</Box>
+						<Box>Stock Quantity: {product.stock_quantity}</Box>
+						<Box>Weight: {product.weight}</Box>
+					</VStack>
+				</HStack>
+			</chakra.label>
+		)
+	} ) )}</SimpleGrid>)
 }
 
 export const Evosus = () => {

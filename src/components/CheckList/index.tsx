@@ -9,7 +9,19 @@ export type Props = {
 	name: string
 	index: Record<string, any>
 	value?: string[]
-	onChangeIndex?: <T = any>(data: Record<string, T>, ids?: string[]) => any
+	onChangeIndex?: <T extends any = any>(data: Record<string, T>, ids?: string[]) => any
+}
+
+export const CheckAll = () => {
+	const { name, index, array } = useContext()
+	const value = useMemo(() => (array.array.length === Object.keys(index).length ? array.array[0] : 'null'), [array, index])
+	return (
+		<Checkbox
+			onChange={() => array.set(array.array.length === Object.keys(index).length ? [] : Object.keys(index))}
+			name={name}
+			value={value}
+		/>
+	)
 }
 export const useCheckboxIndex = ({ name, index, value, onChangeIndex }: Props) => {
 	const propsValue = useMemo(() => value ?? [], [value])

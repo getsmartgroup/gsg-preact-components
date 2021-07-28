@@ -57,3 +57,5 @@ export const addSafeHook = <F extends (...p: any[]) => Promise<any>>(
 		return res
 	}) as F
 }
+
+export const chunk = <T>(array: T[], size: number) => Array.from(Array(Math.ceil(array.length / size)).keys()).map(i => array.slice(i * size, i * size + size))
