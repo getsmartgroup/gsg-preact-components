@@ -1,9 +1,10 @@
-import { ComponentProps, FunctionalComponent, h } from 'preact'
-import { Fragment } from 'react'
-import { Checkbox, Td, Tr } from '@chakra-ui/react'
+import { ComponentProps, FunctionalComponent, h, Fragment } from 'preact'
 import { useMemo } from 'preact/hooks'
-import { SimpleTable } from '../SimpleTable'
-import { CheckboxIndex, CheckboxIndexItem, CheckAll, useContext as useCheckListContext } from '../CheckList'
+
+import { Checkbox, Td, Tr } from '@chakra-ui/react'
+
+import { SimpleTable } from '@components/SimpleTable'
+import { CheckboxIndex, CheckboxIndexItem, CheckboxIndexAll, useContext as useCheckListContext } from '@components/CheckboxIndex'
 
 export const CheckListTable: FunctionalComponent<ComponentProps<typeof SimpleTable> & ComponentProps<typeof CheckboxIndex>> = ({
 	name,
@@ -16,11 +17,22 @@ export const CheckListTable: FunctionalComponent<ComponentProps<typeof SimpleTab
 }) => {
 	return (
 		<CheckboxIndex name={name} index={index} value={value} onChangeIndex={onChangeIndex}>
-			<SimpleTable headers={[<CheckAll />, ...(headers ?? [])]} {...props}>
+			<SimpleTable headers={[<CheckboxIndexAll />, ...(headers ?? [])]} {...props}>
 				{children}
 			</SimpleTable>
 		</CheckboxIndex>
 	)
+}
+export const CheckListTableRow: FunctionalComponent<{
+	id : string
+}> = ( { id, children, ...props } ) => {
+	const { name } = useCheckListContext()
+	return 	<Tr key={`${name}-${id}`} {...props}>
+		<Td>
+			<CheckboxIndexItem id={id} />
+		</Td>
+		{children}
+	</Tr>
 }
 export const CheckListTableRows: FunctionalComponent<{
 	children: (obj: any, id?: string) => any
@@ -30,12 +42,9 @@ export const CheckListTableRows: FunctionalComponent<{
 		() =>
 			Object.entries(index).map(([id, obj]) => {
 				return (
-					<Tr key={`${name}-${id}`} {...props}>
-						<Td>
-							<CheckboxIndexItem id={id} />
-						</Td>
+					<CheckListTableRow id={id} {...props} >
 						{children(obj, id)}
-					</Tr>
+					</CheckListTableRow>
 				)
 			}),
 		[children, index, name]

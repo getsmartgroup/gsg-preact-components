@@ -13,6 +13,7 @@ export declare const useCheckboxIndex: ({ name, index, value, onChangeIndex }: P
     array: {
         set: (data: string[]) => void;
         push: (data: string) => void;
+        setAt: (index: number, data: string) => void;
         concat: (data: string[]) => void;
         remove: (data: string) => void;
         array: string[];
@@ -25,6 +26,7 @@ export declare const ContextProvider: import("react").Provider<{
     array: {
         set: (data: string[]) => void;
         push: (data: string) => void;
+        setAt: (index: number, data: string) => void;
         concat: (data: string[]) => void;
         remove: (data: string) => void;
         array: string[];
@@ -36,6 +38,7 @@ export declare const ContextProvider: import("react").Provider<{
     array: {
         set: (data: string[]) => void;
         push: (data: string) => void;
+        setAt: (index: number, data: string) => void;
         concat: (data: string[]) => void;
         remove: (data: string) => void;
         array: string[];

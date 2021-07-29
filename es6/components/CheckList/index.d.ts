@@ -7,7 +7,6 @@ export declare type Props = {
     value?: string[];
     onChangeIndex?: <T extends any = any>(data: Record<string, T>, ids?: string[]) => any;
 };
-export declare const CheckAll: () => h.JSX.Element;
 export declare const useCheckboxIndex: ({ name, index, value, onChangeIndex }: Props) => {
     name: string;
     index: Record<string, any>;
@@ -43,7 +42,8 @@ export declare const ContextProvider: import("react").Provider<{
     };
     value: string[] | undefined;
 };
+export declare const CheckboxIndex: FunctionalComponent<Props & CheckboxGroupProps>;
 export declare const CheckboxIndexItem: ({ id, onChange, ...props }: {
     id: string;
 } & CheckboxProps) => h.JSX.Element;
-export declare const CheckboxIndex: FunctionalComponent<Props & CheckboxGroupProps>;
+export declare const CheckboxIndexAll: () => h.JSX.Element;

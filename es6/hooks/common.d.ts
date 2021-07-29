@@ -6,6 +6,7 @@ export declare const usePromiseCall: <T extends unknown = any>(promiseCall?: (()
 export declare const useArray: <T>(initial: T[]) => {
     set: (data: T[]) => void;
     push: (data: T) => void;
+    setAt: (index: number, data: T) => void;
     concat: (data: T[]) => void;
     remove: (data: T) => void;
     array: T[];

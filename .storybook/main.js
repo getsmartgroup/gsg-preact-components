@@ -1,6 +1,7 @@
 const prefresh = require('@prefresh/vite')
 const path = require('path')
 const toPath = _path => path.join(process.cwd(), _path)
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const stories = ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)', '../src/**/story.tsx']
 const addons = ['@storybook/addon-essentials']
@@ -15,13 +16,16 @@ module.exports = {
 			...config,
 			resolve: {
 				...config.resolve,
+				plugins : [...config.resolve.plugins, new TsconfigPathsPlugin( {
+					'configFile' : toPath('tsconfig.json')
+				} ) ],
 				alias: {
 					...config.resolve.alias,
 					'@emotion/core': toPath('node_modules/@emotion/react'),
 					'emotion-theming': toPath('node_modules/@emotion/react'),
 					react: toPath('node_modules/preact/compat'),
 					'react-dom': toPath('node_modules/preact/compat')
-				}
+				},
 			}
 		}
 	},

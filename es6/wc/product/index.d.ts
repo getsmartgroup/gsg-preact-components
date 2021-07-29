@@ -1,6 +1,6 @@
 import { wc } from 'gsg-integrations';
 import { ComponentProps, FunctionalComponent } from 'preact';
-import { CheckboxIndex } from '../../components/CheckList';
+import { CheckboxIndex } from '@components/CheckboxIndex';
 export declare const useProduct: () => import("../context").WrappedCRUD<{
     id: number;
     name: string;

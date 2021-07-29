@@ -63,7 +63,14 @@
 		"jsxFactory": "h",
 		"jsxFragmentFactory": "Fragment",
 		"skipLibCheck": true,
-		"preserveSymlinks": true
+		"preserveSymlinks": true,
+		"baseUrl": ".",
+		"paths": {
+			"@components/*": ["./src/components/*"],
+			"@hooks": ["./src/hooks"],
+			"@common": ["./src/common"],
+			"@src": ["./src"],
+		}
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules"],

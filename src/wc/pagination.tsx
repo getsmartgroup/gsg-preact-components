@@ -1,8 +1,8 @@
 import { ComponentChildren, ComponentProps, Fragment, FunctionalComponent, h } from 'preact'
 import { createContext } from '@chakra-ui/react-utils'
 import { useEffect, useMemo, useCallback, useState } from 'preact/hooks'
-import Pagination from '../components/Pagination'
-import { CheckListTable } from '../components/CheckListTable'
+import { PaginationNav as PaginationComponentNav } from '@components/PaginationNav'
+import { CheckListTable } from '@components/CheckListTable'
 import {
 	Input,
 	useCounter,
@@ -20,10 +20,6 @@ import {
 	Wrap,
 	NumberInput,
 	NumberInputField,
-	NumberInputStepper,
-	NumberIncrementStepper,
-	NumberDecrementStepper,
-	AlertIcon,
 	Tooltip
 } from '@chakra-ui/react'
 
@@ -119,7 +115,7 @@ export const PaginationProvider = <C extends WrappedCRUD<any, {}>>({
 
 export const PaginationNav = () => {
 	const { page, next, prev, loading } = usePaginationContext()
-	return <Pagination page={page} next={next} prev={prev} loading={loading} />
+	return <PaginationComponentNav page={page} next={next} prev={prev} loading={loading} />
 }
 
 export const PaginationSearch = () => {

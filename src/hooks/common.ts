@@ -28,6 +28,11 @@ export const useArray = <T>(initial: T[]) => {
 	// prettier-ignore
 	const res = useMemo( () => {
 		const set = ( data: T[] ) => _set( { array : data } )
+		const setAt = ( index: number, data: T ) => {
+			const array = [...value.array]
+			array[index] = data
+			set( array )
+		}
 		const push = (data: T) => set([...value.array, data])
 		const concat = (data: T[]) => set([...value.array, ...data])
 		const remove = (data: T) => set(value.array.filter(e => e !== data))
@@ -35,6 +40,7 @@ export const useArray = <T>(initial: T[]) => {
 		return {
 			set,
 			push,
+			setAt,
 			concat,
 			remove,
 			array : value.array

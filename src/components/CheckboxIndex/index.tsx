@@ -1,9 +1,11 @@
 import { FunctionalComponent, h } from 'preact'
-import { ChangeEvent } from 'react'
-import { Checkbox, CheckboxGroup, CheckboxGroupProps, CheckboxProps, Td, Tr } from '@chakra-ui/react'
-import { createContext } from '@chakra-ui/react-utils'
 import { useCallback, useEffect, useMemo } from 'preact/hooks'
-import { useArray } from '../../hooks'
+import { ChangeEvent } from 'react'
+
+import { Checkbox, CheckboxGroup, CheckboxGroupProps, CheckboxProps } from '@chakra-ui/react'
+import { createContext } from '@chakra-ui/react-utils'
+
+import { useArray } from '@hooks'
 
 export type Props = {
 	name: string
@@ -12,17 +14,6 @@ export type Props = {
 	onChangeIndex?: <T extends any = any>(data: Record<string, T>, ids?: string[]) => any
 }
 
-export const CheckAll = () => {
-	const { name, index, array } = useContext()
-	const value = useMemo(() => (array.array.length === Object.keys(index).length ? array.array[0] : 'null'), [array, index])
-	return (
-		<Checkbox
-			onChange={() => array.set(array.array.length === Object.keys(index).length ? [] : Object.keys(index))}
-			name={name}
-			value={value}
-		/>
-	)
-}
 export const useCheckboxIndex = ({ name, index, value, onChangeIndex }: Props) => {
 	const propsValue = useMemo(() => value ?? [], [value])
 	const array = useArray(propsValue)
@@ -55,7 +46,27 @@ export const useCheckboxIndex = ({ name, index, value, onChangeIndex }: Props) =
 		value
 	}
 }
+
 export const [ContextProvider, useContext] = createContext<ReturnType<typeof useCheckboxIndex>>()
+
+export const CheckboxIndex: FunctionalComponent<Props & CheckboxGroupProps> = ({
+	name,
+	index,
+	value,
+	onChangeIndex,
+	children,
+	...props
+}) => {
+	const ctx = useCheckboxIndex({ name, index, value, onChangeIndex })
+	return (
+		<ContextProvider value={ctx}>
+			<CheckboxGroup value={ctx.array.array} {...props}>
+				{children}
+			</CheckboxGroup>
+		</ContextProvider>
+	)
+}
+
 export const CheckboxIndexItem = ({ id, onChange, ...props }: { id: string } & CheckboxProps) => {
 	const { name, index, array } = useContext()
 	const wrappedOnChange = useCallback(
@@ -73,20 +84,15 @@ export const CheckboxIndexItem = ({ id, onChange, ...props }: { id: string } & C
 	)
 	return <Checkbox name={name} onChange={wrappedOnChange} value={id} {...props} />
 }
-export const CheckboxIndex: FunctionalComponent<Props & CheckboxGroupProps> = ({
-	name,
-	index,
-	value,
-	onChangeIndex,
-	children,
-	...props
-}) => {
-	const ctx = useCheckboxIndex({ name, index, value, onChangeIndex })
+
+export const CheckboxIndexAll = () => {
+	const { name, index, array } = useContext()
+	const value = useMemo(() => (array.array.length === Object.keys(index).length ? array.array[0] : 'null'), [array, index])
 	return (
-		<ContextProvider value={ctx}>
-			<CheckboxGroup value={ctx.array.array} {...props}>
-				{children}
-			</CheckboxGroup>
-		</ContextProvider>
+		<Checkbox
+			onChange={() => array.set(array.array.length === Object.keys(index).length ? [] : Object.keys(index))}
+			name={name}
+			value={value}
+		/>
 	)
 }

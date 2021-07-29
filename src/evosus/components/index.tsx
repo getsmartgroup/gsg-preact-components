@@ -26,7 +26,7 @@ import { SimpleAccordion, SimplePanel } from '../../components/SimpleAccordion'
 import { useEvosus } from '../../hooks/evosus'
 import { useArray, usePromiseCall } from '../../hooks'
 import { Props as OptionsProps, useOptions, OptionInput } from '../../hooks/options'
-import { CheckboxIndexItem, useContext as useCheckboxIndexContext } from '../../components/CheckList'
+import { CheckboxIndexItem, useContext as useCheckboxIndexContext } from '../../components/CheckboxIndex'
 import { useProduct } from '../../wc/product'
 
 import { chunk } from '../../common'

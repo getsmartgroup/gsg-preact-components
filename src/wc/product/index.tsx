@@ -2,8 +2,8 @@ import { Box, Button, HStack, Spacer, Spinner, useBoolean, VStack } from '@chakr
 import { wc } from 'gsg-integrations'
 import { ComponentProps, FunctionalComponent, h } from 'preact'
 import { useCallback, useMemo, useState } from 'preact/hooks'
-import { CheckAll, CheckboxIndex } from '../../components/CheckList'
-import { SimplePanel } from '../../components/SimpleAccordion'
+import { CheckboxIndexAll, CheckboxIndex } from '@components/CheckboxIndex'
+import { SimplePanel } from '@components/SimpleAccordion'
 import { useWC, useRestClient } from '../context'
 
 export const useProduct = () => {
@@ -43,7 +43,7 @@ export const PreImport : FunctionalComponent<Omit<CheckboxIndexProps, 'name' | '
 		<CheckboxIndex name='products' onChangeIndex={((data : Record<string, wc.Product.Type>, _ids ?: string[]) => {setValue(data)}) as CheckboxIndexProps['onChangeIndex']} index={index} {...props} >
 			<SimplePanel title={(
 				<HStack w='100%' >
-					<CheckAll/>
+					<CheckboxIndexAll/>
 					<Box>
 						{Object.values(index).length} products,{' '}
 						{Object.values(value).length} selected,{' '}

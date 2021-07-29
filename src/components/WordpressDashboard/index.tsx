@@ -1,7 +1,6 @@
-import { Fragment, FunctionalComponent, h } from 'preact'
+import { FunctionalComponent, h } from 'preact'
 import { Box, HStack, Heading, Stack, ChakraProvider, Link, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import { Spinner } from '@chakra-ui/react'
-import { extendTheme } from '@chakra-ui/react'
 
 import Router, { Route } from 'preact-router'
 import { Match } from 'preact-router/match'
@@ -10,10 +9,9 @@ import { createHashHistory } from 'history'
 import { Evosus } from '../../evosus'
 import { RB } from '../../rb'
 import { SimpleAccordion, SimplePanel } from '../SimpleAccordion'
-import { Props as OptionsProps, useOptionsContext, OptionsProvider, useOptions, OptionInput } from '../../hooks/options'
-import { an, rb, gsc, evosus, usePromiseCall } from '../../hooks'
+import { Props as OptionsProps, OptionsProvider, useOptions, OptionInput } from '../../hooks/options'
+import { gsc, usePromiseCall } from '../../hooks'
 import { wc } from '../../modules'
-import RBDashboard from '../RBDashboard'
 import ErrorAlert from '../ErrorAlert'
 import { theme } from './theme'
 
@@ -70,7 +68,6 @@ const Main = () => {
 				</HStack>
 				<Match path='/'>
 					{(match: { matches: true; path: '/'; url: '/' }) => {
-						console.dir(match)
 						return (
 							<Breadcrumb>
 								<BreadcrumbItem>
@@ -98,13 +95,20 @@ const Main = () => {
 				</Match>
 			</Stack>
 			<gsc.Provider {...options.gsc.options}>
-				<wc.Provider {...options.wc.options}>
-					<Router history={createHashHistory() as any}>
-						<Route path='/' component={Home} />
-						<Route path='/evosus' component={Evosus} />
-						<Route path='/rb' component={RB} />
-					</Router>
-				</wc.Provider>
+			<Router history={createHashHistory() as any}>
+				<Route path='/' component={Home}/>
+
+				<Route path='/evosus' component={ () => (
+					<wc.Provider {...options.wc.options}>
+						<Evosus/>
+					</wc.Provider>
+				)} />
+				<Route path='/rb' component={() => (
+					<wc.Provider {...options.wc.options}>
+						<RB/>
+					</wc.Provider>
+				)} />
+			</Router>
 			</gsc.Provider>
 		</ChakraProvider>
 	)

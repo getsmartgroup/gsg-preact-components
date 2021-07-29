@@ -1,8 +1,9 @@
 import prefresh from '@prefresh/vite'
 import type { UserConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const config: UserConfig = {
-	plugins: [prefresh()],
+	plugins: [prefresh(), tsconfigPaths()],
 	esbuild: {
 		jsxFactory: 'h',
 		jsxFragment: 'Fragment',
