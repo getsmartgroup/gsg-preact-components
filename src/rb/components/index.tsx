@@ -90,15 +90,17 @@ export const ManageOrders = () => {
 			headers={{
 				id: '#ID',
 				status: 'Status',
-				meta_data: 'RB ID'
+				meta_data: 'RB ID',
+				transaction_id : 'Transaction ID',
+				payment_method_title : 'Payment Method',
 			}}
 			actions={{
 				'Post Orders': postOrder,
 			}}
-			display={['id', 'status', 'meta_data']}
+			display={['id', 'status', 'meta_data', 'transaction_id', 'payment_method_title']}
 			module={Order}
 		>
-			{({ id, status, meta_data }: Partial<wc.Order.Type>) => {
+			{({ id, status, meta_data, transaction_id, payment_method_title }: Partial<wc.Order.Type>) => {
 				return (
 					<Fragment>
 						<Td>
@@ -106,6 +108,8 @@ export const ManageOrders = () => {
 						</Td>
 						<Td>{status}</Td>
 						<Td>{meta_data?.find( ({key}) => key === 'rbId' )?.value}</Td>
+						<Td>{transaction_id}</Td>
+						<Td>{payment_method_title}</Td>
 					</Fragment>
 				)
 			}}

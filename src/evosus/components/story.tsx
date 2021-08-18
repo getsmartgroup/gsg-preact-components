@@ -5,7 +5,7 @@ import { wc } from '../../modules'
 
 import { OptionsProvider } from '../../hooks/options'
 
-import { PostOrder } from '.'
+import { ManageOrders } from '.'
 import { evosus } from '../../hooks'
 
 export default {
@@ -39,4 +39,4 @@ export default {
 	]
 } as Meta
 
-export const PostOrderStory = () => <PostOrder />
+export const ManageOrderStory = () => <ManageOrders />

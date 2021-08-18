@@ -2,4 +2,4 @@ import { h } from 'preact';
 import { Meta } from '@storybook/preact';
 declare const _default: Meta<import("@storybook/preact").Args>;
 export default _default;
-export declare const PostOrderStory: () => h.JSX.Element;
+export declare const ManageOrderStory: () => h.JSX.Element;

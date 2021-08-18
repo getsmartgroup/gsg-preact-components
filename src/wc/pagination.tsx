@@ -300,7 +300,7 @@ export const PaginatedActionsCheckListTable = <W extends WrappedCRUD<any, any>, 
 					) : null}
 					<PaginationSearch />
 				</HStack>
-				<Wrap>
+				{/* <Wrap>
 					<CheckboxGroup onChange={displayProps.set} defaultValue={displayProps.array}>
 						{Object.keys(headers).map(p => (
 							<Center>
@@ -309,7 +309,7 @@ export const PaginatedActionsCheckListTable = <W extends WrappedCRUD<any, any>, 
 							</Center>
 						))}
 					</CheckboxGroup>
-				</Wrap>
+				</Wrap> */}
 				<PaginatedCheckListTable
 					name={name}
 					headers={displayProps.array.map(k => (headers as { [K in string]: string })[k]).concat('')}
