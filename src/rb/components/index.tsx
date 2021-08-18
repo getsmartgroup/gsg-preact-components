@@ -57,6 +57,7 @@ export const RB = () => {
 						label='Authorize.net Transaction Key'
 					/>
 					<OptionInput obj={options.an.options.credentials} target='refId' label='Authorize.net Ref ID (Optional)' />
+					<OptionInput checkbox obj={options.an.options} target='testMode' label='Authorize.net test mode' />
 				</Stack>
 			</SimplePanel>
 		</SimpleAccordion>

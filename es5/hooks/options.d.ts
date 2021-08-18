@@ -54,11 +54,12 @@ export declare const OptionsContextProvider: import("react").Provider<{
 export declare const OptionsProvider: FunctionalComponent<Props>;
 export declare const OptionInput: <T extends {
     [x: string]: any;
-}>({ obj, target, label, secret }: {
+}>({ obj, target, label, secret, checkbox }: {
     obj: T;
     target: keyof T;
     label: string;
     secret?: boolean | undefined;
+    checkbox?: boolean | undefined;
 }) => h.JSX.Element;
 export declare const useOptions: () => {
     fetching: boolean;

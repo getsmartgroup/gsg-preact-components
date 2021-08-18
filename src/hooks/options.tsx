@@ -1,4 +1,4 @@
-import { chakra, IconButton, Input, InputGroup, InputRightElement, useBoolean } from '@chakra-ui/react'
+import { chakra, IconButton, Input, InputGroup, InputRightElement, useBoolean, Switch } from '@chakra-ui/react'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import { wc, rb, an, gsc, evosus } from 'gsg-integrations'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
@@ -162,12 +162,14 @@ export const OptionInput = <T extends { [K in string]: any }>({
 	obj,
 	target,
 	label,
-	secret
+	secret,
+	checkbox
 }: {
 	obj: T
 	target: keyof T
 	label: string
 	secret?: boolean
+	checkbox?: boolean
 }) => {
 	const { options, fetching, saving, setOptions } = useOptionsContext()
 	const initialValue = obj[target]
@@ -175,32 +177,47 @@ export const OptionInput = <T extends { [K in string]: any }>({
 	return (
 		<chakra.label>
 			{label}
-			<InputGroup>
-				<Input
-					type={view || !secret ? 'text' : 'password'}
-					disabled={fetching}
-					placeholder={label}
-					value={obj[target]}
-					onChange={e => {
-						const value = e.target.value
+			{ checkbox ? (
+				<InputGroup>
+					<Switch
+						isChecked={obj[target] ?? false}
+						isDisabled={fetching}
+						onChange={e => {
+						const value = e.target.checked
 						;(obj as any)[target] = value
-					}}
-					onBlur={() => {
 						if (obj[target] !== initialValue) {
 							setOptions({ ...options })
 						}
-					}}
-				/>
-				{secret ? (
-					<InputRightElement>
-						<IconButton
-							aria-label='View Input'
-							onClick={() => setView.toggle()}
-							icon={(view ? <ViewOffIcon /> : <ViewIcon />) as any}
-						/>
-					</InputRightElement>
-				) : null}
-			</InputGroup>
+					}} />
+				</InputGroup>
+			) : (
+				<InputGroup>
+					<Input
+						type={view || !secret ? 'text' : 'password'}
+						disabled={fetching}
+						placeholder={label}
+						value={obj[target]}
+						onChange={e => {
+							const value = e.target.value
+							;(obj as any)[target] = value
+						}}
+						onBlur={() => {
+							if (obj[target] !== initialValue) {
+								setOptions({ ...options })
+							}
+						}}
+					/>
+					{secret ? (
+						<InputRightElement>
+							<IconButton
+								aria-label='View Input'
+								onClick={() => setView.toggle()}
+								icon={(view ? <ViewOffIcon /> : <ViewIcon />) as any}
+							/>
+						</InputRightElement>
+					) : null}
+				</InputGroup>
+			) }
 		</chakra.label>
 	)
 }
