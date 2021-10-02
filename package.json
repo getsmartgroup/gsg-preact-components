@@ -24,6 +24,7 @@
 		"@chakra-ui/hooks": "^1.5.4",
 		"@chakra-ui/icons": "^1.0.14",
 		"@chakra-ui/react": "^1.6.5",
+		"@chakra-ui/react-utils": "^1.1.2",
 		"@emotion/react": "^11.4.0",
 		"@emotion/styled": "^11.3.0",
 		"@types/js-cookie": "^2.2.7",
