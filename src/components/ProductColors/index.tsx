@@ -1,6 +1,6 @@
 import preact, { Fragment, FunctionalComponent, h } from 'preact'
 import { useEffect } from 'preact/hooks'
-import { ColorCombination as Combination } from '../../models'
+import { ColorCombination as Combination } from './../../models'
 import { Box } from '@chakra-ui/react'
 import { ContextProvider, useActions, useOverState, useUtils } from './context'
 import { Color } from 'gsg-airtable-sdk'
@@ -29,11 +29,7 @@ const ColoredProduct = () => {
 	const selectedCombination = getSelectedCombination()
 
 	const images: string[] = selectedCombinedColor
-		? [
-				combinations.find(
-					e => e?.combinedColor?.name === selectedCombinedColor
-				)?.combinedImage as string
-		  ]
+		? [combinations.find(e => e?.combinedColor?.name === selectedCombinedColor)?.combinedImage as string]
 		: selectedCombination?.combinedImage
 		? ([selectedCombination.combinedImage] as string[])
 		: (selectedCombination?.coloredParts?.map(p => p?.image) as string[])
@@ -54,18 +50,10 @@ const ColoredProduct = () => {
 }
 
 const ColorSelector = () => {
-	const {
-		colorsIndexedByPart,
-		colorsIndex,
-		selectedPartColors,
-		combinedColors,
-		selectedCombinedColor
-	} = useOverState()
+	const { colorsIndexedByPart, colorsIndex, selectedPartColors, combinedColors, selectedCombinedColor } = useOverState()
 	const { selectPartColor, selectCombinedColor } = useActions()
 	const { isCompatiblePartColor } = useUtils()
-	const lists: h.JSX.Element[] = Object.entries(colorsIndexedByPart).reduce<
-		preact.h.JSX.Element[]
-	>((acc, [part, colors]) => {
+	const lists: h.JSX.Element[] = Object.entries(colorsIndexedByPart).reduce<preact.h.JSX.Element[]>((acc, [part, colors]) => {
 		const compatibleColors: preact.JSX.Element[] = []
 		const incompatibleColors: preact.JSX.Element[] = []
 		colors.forEach(c => {
@@ -74,19 +62,11 @@ const ColorSelector = () => {
 			if (color) {
 				const style = {
 					width: '60px',
-					outline:
-						selectedPartColors[part] === color?.image
-							? '1px solid rgba(0,0,0,0.1)'
-							: '',
+					outline: selectedPartColors[part] === color?.image ? '1px solid rgba(0,0,0,0.1)' : '',
 					opacity: compatible ? 1 : 0.5
 				}
 				const item = (
-					<li
-						style={style}
-						onClick={() =>
-							selectPartColor(part, color?.name as string)
-						}
-					>
+					<li style={style} onClick={() => selectPartColor(part, color?.name as string)}>
 						<img
 							style={{
 								width: '60px',
@@ -160,20 +140,11 @@ const ColorSelector = () => {
 						<li
 							style={{
 								width: '150px',
-								outline:
-									selectedCombinedColor === color?.name
-										? '1px solid rgba(0,0,0,0.1)'
-										: ''
+								outline: selectedCombinedColor === color?.name ? '1px solid rgba(0,0,0,0.1)' : ''
 							}}
-							onClick={() =>
-								selectCombinedColor(color?.name as string)
-							}
+							onClick={() => selectCombinedColor(color?.name as string)}
 						>
-							<img
-								style={{ width: '100%' }}
-								src={color?.image?.[0]?.url}
-								alt={`${color?.name}`}
-							/>
+							<img style={{ width: '100%' }} src={color?.image?.[0]?.url} alt={`${color?.name}`} />
 						</li>
 					)
 				}
@@ -223,13 +194,7 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 		selectCombinedColor,
 		selectPartColor
 	} = useActions()
-	const {
-		error,
-		selectedPartColors,
-		selectedCombinedColor,
-		combinedColors,
-		colorsIndexedByPart
-	} = useOverState()
+	const { error, selectedPartColors, selectedCombinedColor, combinedColors, colorsIndexedByPart } = useOverState()
 	const { isCompatiblePartColor } = useUtils()
 	if (combinedColors?.[0]) {
 		const color = combinedColors[0]
@@ -255,52 +220,36 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 			.then(combinations => {
 				setCombinations(combinations)
 				setColorsIndexedByPart(
-					combinations?.reduce<Record<string, string[]>>(
-						(index, combination) => {
-							combination?.coloredParts?.forEach(p => {
-								if (p.color) {
-									let array = index[p.name] ?? []
-									if (
-										p.color.name &&
-										!array.includes(p.color.name)
-									) {
-										array.push(p.color.name)
-									}
-									index[p.name] = array
+					combinations?.reduce<Record<string, string[]>>((index, combination) => {
+						combination?.coloredParts?.forEach(p => {
+							if (p.color) {
+								let array = index[p.name] ?? []
+								if (p.color.name && !array.includes(p.color.name)) {
+									array.push(p.color.name)
 								}
-							})
-							return index
-						},
-						{}
-					) ?? {}
+								index[p.name] = array
+							}
+						})
+						return index
+					}, {}) ?? {}
 				)
 				setColorsIndex(
-					combinations?.reduce(
-						(acc: Record<string, Color.Type>, e) => {
-							if (
-								e?.combinedColor &&
-								e?.combinedColor?.name &&
-								!acc[e?.combinedColor?.name]
-							) {
-								acc[e?.combinedColor?.name] = e?.combinedColor
-							} else {
-								e.coloredParts.forEach(p => {
-									if (p.color?.name && !acc[p.color?.name]) {
-										acc[p?.color?.name] = p.color
-									}
-								})
-							}
-							return acc
-						},
-						{}
-					) ?? {}
+					combinations?.reduce((acc: Record<string, Color.Type>, e) => {
+						if (e?.combinedColor && e?.combinedColor?.name && !acc[e?.combinedColor?.name]) {
+							acc[e?.combinedColor?.name] = e?.combinedColor
+						} else {
+							e.coloredParts.forEach(p => {
+								if (p.color?.name && !acc[p.color?.name]) {
+									acc[p?.color?.name] = p.color
+								}
+							})
+						}
+						return acc
+					}, {}) ?? {}
 				)
 				setCombinedColors(
 					combinations?.reduce((acc: string[], c) => {
-						if (
-							c?.combinedColor?.name &&
-							!acc.includes(c.combinedColor.name)
-						) {
+						if (c?.combinedColor?.name && !acc.includes(c.combinedColor.name)) {
 							acc.push(c.combinedColor.name)
 						}
 						return acc
