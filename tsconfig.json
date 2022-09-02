@@ -66,10 +66,11 @@
 		"preserveSymlinks": true,
 		"baseUrl": ".",
 		"paths": {
-			"@components/*": ["./src/components/*"],
+			/* 			"@components/*": ["./src/components/*"],
 			"@hooks": ["./src/hooks"],
 			"@common": ["./src/common"],
-			"@src": ["./src"],
+			"@src": ["./src"], */
+			"react": ["./src/index.d.ts"]
 		}
 	},
 	"include": ["src/**/*"],

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { FunctionalComponent, h } from 'preact';
 import { CheckboxGroupProps, CheckboxProps } from '@chakra-ui/react';
 export declare type Props = {
@@ -10,43 +9,15 @@ export declare type Props = {
 export declare const useCheckboxIndex: ({ name, index, value, onChangeIndex }: Props) => {
     name: string;
     index: Record<string, any>;
-    array: {
-        set: (data: string[]) => void;
-        push: (data: string) => void;
-        setAt: (index: number, data: string) => void;
-        concat: (data: string[]) => void;
-        remove: (data: string) => void;
-        array: string[];
-    };
+    array: any;
     value: string[] | undefined;
 };
-export declare const ContextProvider: import("react").Provider<{
+export declare const ContextProvider: React.Provider<T>, useContext: () => {
     name: string;
     index: Record<string, any>;
-    array: {
-        set: (data: string[]) => void;
-        push: (data: string) => void;
-        setAt: (index: number, data: string) => void;
-        concat: (data: string[]) => void;
-        remove: (data: string) => void;
-        array: string[];
-    };
-    value: string[] | undefined;
-}>, useContext: () => {
-    name: string;
-    index: Record<string, any>;
-    array: {
-        set: (data: string[]) => void;
-        push: (data: string) => void;
-        setAt: (index: number, data: string) => void;
-        concat: (data: string[]) => void;
-        remove: (data: string) => void;
-        array: string[];
-    };
+    array: any;
     value: string[] | undefined;
 };
 export declare const CheckboxIndex: FunctionalComponent<Props & CheckboxGroupProps>;
-export declare const CheckboxIndexItem: ({ id, onChange, ...props }: {
-    id: string;
-} & CheckboxProps) => h.JSX.Element;
+export declare const CheckboxIndexItem: ({ id, onChange, ...props }: any) => h.JSX.Element;
 export declare const CheckboxIndexAll: () => h.JSX.Element;

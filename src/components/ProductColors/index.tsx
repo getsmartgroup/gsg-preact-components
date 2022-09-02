@@ -1,7 +1,7 @@
 import preact, { Fragment, FunctionalComponent, h } from 'preact'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import { ColorCombination as Combination } from './../../models'
-import { Box } from '@chakra-ui/react'
+import { ChakraProvider, Box, SimpleGrid, Flex } from '@chakra-ui/react'
 import { ContextProvider, useActions, useOverState, useUtils } from './context'
 import { Color } from 'gsg-airtable-sdk'
 
@@ -39,7 +39,7 @@ const ColoredProduct = () => {
 	}
 
 	return (
-		<Box w='full' position='relative'>
+		<Box position='relative'>
 			{images
 				.filter(e => e)
 				.map(e => (
@@ -48,10 +48,13 @@ const ColoredProduct = () => {
 		</Box>
 	)
 }
-
+const capitalizeFirstLetter = function(string: string) {
+	return string.charAt(0).toUpperCase() + string.slice(1)
+}
 const ColorSelector = () => {
 	const { colorsIndexedByPart, colorsIndex, selectedPartColors, combinedColors, selectedCombinedColor } = useOverState()
 	const { selectPartColor, selectCombinedColor } = useActions()
+	const [activeColor, setActiveColor] = useState<string>('')
 	const { isCompatiblePartColor } = useUtils()
 	const lists: h.JSX.Element[] = Object.entries(colorsIndexedByPart).reduce<preact.h.JSX.Element[]>((acc, [part, colors]) => {
 		const compatibleColors: preact.JSX.Element[] = []
@@ -62,11 +65,18 @@ const ColorSelector = () => {
 			if (color) {
 				const style = {
 					width: '60px',
-					outline: selectedPartColors[part] === color?.image ? '1px solid rgba(0,0,0,0.1)' : '',
+					outline: selectedPartColors[part] === color?.image ? '1px solid rgba(0,0,0,1)' : '',
 					opacity: compatible ? 1 : 0.5
 				}
 				const item = (
-					<li style={style} onClick={() => selectPartColor(part, color?.name as string)}>
+					<Box
+						sx={style}
+						onClick={() => {
+							selectPartColor(part, color?.name as string)
+							setActiveColor(color?.name!)
+						}}
+						border={selectedPartColors[part] === color?.image ? '1px solid rgba(0,0,0,1)' : ''}
+					>
 						<img
 							style={{
 								width: '60px',
@@ -78,7 +88,7 @@ const ColorSelector = () => {
 							src={color?.image?.[0]?.url ?? ''}
 							alt={`${color?.name} ${part}`}
 						/>
-					</li>
+					</Box>
 				)
 				if (compatible) {
 					compatibleColors.push(item)
@@ -90,42 +100,28 @@ const ColorSelector = () => {
 		const partColorsLists: preact.JSX.Element[] = []
 		if (compatibleColors.length > 0) {
 			partColorsLists.push(
-				<div style={{ marginBottom: 20 }}>
-					<div style={{ marginBottom: 7 }}>
-						<b>Compatible {part} Colors</b>
-					</div>
-					<ul
-						style={{
-							display: 'flex',
-							flexWrap: 'wrap',
-							listStyle: 'none',
-							margin: '0',
-							gap: '16px'
-						}}
-					>
-						{compatibleColors}
-					</ul>
-				</div>
+				<Box style={{ marginBottom: 20 }} mr={4}>
+					<Box sx={{ marginBottom: 7 }}>
+						<b>{capitalizeFirstLetter(part)} Colors</b>
+					</Box>
+					<Box>
+						<SimpleGrid columns={3} spacing={4}>
+							{compatibleColors}
+						</SimpleGrid>
+					</Box>
+				</Box>
 			)
 		}
 		if (incompatibleColors.length > 0) {
 			partColorsLists.push(
-				<div>
-					<div style={{ marginBottom: 7 }}>
-						<b>Other {part} Colors</b>
-					</div>
-					<ul
-						style={{
-							display: 'flex',
-							flexWrap: 'wrap',
-							listStyle: 'none',
-							margin: '0',
-							gap: '16px'
-						}}
-					>
+				<Box>
+					<Box style={{ marginBottom: 7 }}>
+						<b>Other {capitalizeFirstLetter(part)} Colors</b>
+					</Box>
+					<SimpleGrid columns={4} spacing={4}>
 						{incompatibleColors}
-					</ul>
-				</div>
+					</SimpleGrid>
+				</Box>
 			)
 		}
 		acc.push(<div style={{ display: 'flex' }}>{partColorsLists}</div>)
@@ -137,15 +133,15 @@ const ColorSelector = () => {
 				const color = colorsIndex?.[e]
 				if (color) {
 					acc.push(
-						<li
-							style={{
+						<Box
+							sx={{
 								width: '150px',
 								outline: selectedCombinedColor === color?.name ? '1px solid rgba(0,0,0,0.1)' : ''
 							}}
 							onClick={() => selectCombinedColor(color?.name as string)}
 						>
 							<img style={{ width: '100%' }} src={color?.image?.[0]?.url} alt={`${color?.name}`} />
-						</li>
+						</Box>
 					)
 				}
 				return acc
@@ -153,9 +149,9 @@ const ColorSelector = () => {
 		lists.push(
 			<div>
 				<div>
-					<b>Combined Colors</b>
+					<b>Color Options</b>
 				</div>
-				<ul
+				<Box
 					style={{
 						display: 'flex',
 						flexWrap: 'wrap',
@@ -165,7 +161,7 @@ const ColorSelector = () => {
 					}}
 				>
 					{items}
-				</ul>
+				</Box>
 			</div>
 		)
 	}
@@ -175,11 +171,10 @@ const ColorSelector = () => {
 const MainUI = () => {
 	return (
 		<div class='gsg-color-selector'>
-			<h3>Color Selector</h3>
-			<div style={{ display: 'flex', justifyContent: 'space-around' }}>
+			<Flex style={{ display: 'flex', justifyContent: 'start' }}>
 				<ColoredProduct />
 				<ColorSelector />
-			</div>
+			</Flex>
 		</div>
 	)
 }
@@ -264,9 +259,11 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 
 export const Component: FunctionalComponent<Props> = ({ product }) => {
 	return (
-		<ContextProvider>
-			<ProductColors product={product} />
-		</ContextProvider>
+		<ChakraProvider>
+			<ContextProvider>
+				<ProductColors product={product} />
+			</ContextProvider>
+		</ChakraProvider>
 	)
 }
 

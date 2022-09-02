@@ -1,1 +1,1 @@
-export { default as WordpressDashboard } from './WordpressDashboard';
+export { default as ProductColors } from './ProductColors';
