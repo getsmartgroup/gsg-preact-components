@@ -1,19 +1,16 @@
 import { Color, ColorCombination } from 'gsg-airtable-sdk'
 
-const retrieve = (url: string, query: string) => {
-	return fetch(url, {
-		method: 'POST',
-		body: JSON.stringify({ query: `{${query}}` }),
+const retrieve = (product: string) => {
+	return fetch(`https://gsg-airtable-middleware.onrender.com/api/product/${product}/colors`, {
+		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
-		}
+		},
+		mode: 'cors'
 	})
-		.then(e => e.json())
-		.then(e => e.data)
+	.then(e => e.json())
 }
-
-const url = 'https://api.baseql.com/airtable/graphql/appMt27Uj2WHfsPP7'
 
 type ColorCombination = ColorCombination.Type
 export type Type = ColorCombination
@@ -25,20 +22,27 @@ export class Wrapper {
 	}
 
 	constructor(combination: ColorCombination) {
+		console.log(combination)
 		this.data = combination
 		this.coloredParts = (['shell', 'cabinet'] as const).map(e => {
 			const partImage =
-				combination[(e + 'Image') as 'shellImage' | 'cabinetImage']
+				combination[((e === 'shell' ? 'Shell' : 'Cabinet') + ' Image Cloud URL') as 'Shell Image Cloud URL' | 'Cabinet Image Cloud URL']
+
+			// Force browser to load image
+			if (partImage) {
+				const img = new Image()
+				img.src = partImage
+			}
 			return {
 				name: e,
-				image: partImage?.[0]?.url,
+				image: partImage,
 				color:
 					combination[
-						(e + 'Color') as 'shellColor' | 'cabinetColor'
-					]?.[0]
+						(e === 'shell' ? 'Shell Color' : 'Cabinet Color')
+					]
 			}
 		})
-		this.combinedColor = this.data.combinationColor?.[0] ?? null
+		this.combinedColor = this.data['Combination Color'] ?? null
 	}
 
 	coloredParts: {
@@ -50,43 +54,23 @@ export class Wrapper {
 	combinedColor?: Color.Type | null
 
 	get combinedImage() {
-		return this.data.combinationImage?.[0]?.url
+		return this.data?.['Combination Color Image Cloud URL']?.[0]?.url
 	}
 }
 
 export const getByProduct = async (product: string): Promise<Wrapper[]> =>
 	(retrieve(
-		url,
-		`
-	productColorCombinations( product : "${product}" ) {
-		id
-		shellColor {
-			id
-			name
-			image
-		}
-		cabinetColor {
-			id
-			name
-			image
-		}
-		combinationImage
-		shellImage
-		cabinetImage
-		combinationColor {
-			id
-			name
-			image
-		}
-	}
-	`
+		product
 	) as Promise<any>)
 		.then(e => {
-			console.log(e)
 			return e
 		})
 		.then(e =>
-			e?.productColorCombinations?.map(
-				(e: ColorCombination) => new Wrapper(e)
+			e?.map(
+				(e: ColorCombination) => {
+					const wrapped = new Wrapper(e)
+					console.log(wrapped)
+					return wrapped
+				}
 			)
 		)

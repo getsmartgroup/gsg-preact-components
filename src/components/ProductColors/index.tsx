@@ -29,7 +29,7 @@ const ColoredProduct = () => {
 	const selectedCombination = getSelectedCombination()
 
 	const images: string[] = selectedCombinedColor
-		? [combinations.find(e => e?.combinedColor?.name === selectedCombinedColor)?.combinedImage as string]
+		? [combinations.find(e => e?.combinedcolor?.['Name'] === selectedCombinedColor)?.combinedImage as string]
 		: selectedCombination?.combinedImage
 		? ([selectedCombination.combinedImage] as string[])
 		: (selectedCombination?.coloredParts?.map(p => p?.image) as string[])
@@ -65,17 +65,17 @@ const ColorSelector = () => {
 			if (color) {
 				const style = {
 					width: '60px',
-					outline: selectedPartColors[part] === color?.image ? '1px solid rgba(0,0,0,1)' : '',
+					outline: selectedPartColors[part] === color?.['Image Cloud URL'] ? '1px solid rgba(0,0,0,1)' : '',
 					opacity: compatible ? 1 : 0.5
 				}
 				const item = (
 					<Box
 						sx={style}
 						onClick={() => {
-							selectPartColor(part, color?.name as string)
-							setActiveColor(color?.name!)
+							selectPartColor(part, color?.['Name'] as string)
+							setActiveColor(color?.['Name']!)
 						}}
-						border={selectedPartColors[part] === color?.image ? '1px solid rgba(0,0,0,1)' : ''}
+						border={selectedPartColors[part] === color?.['Image Cloud URL'] ? '1px solid rgba(0,0,0,1)' : ''}
 					>
 						<img
 							style={{
@@ -85,8 +85,8 @@ const ColorSelector = () => {
 								position: 'static',
 								margin: 'auto'
 							}}
-							src={color?.image?.[0]?.url ?? ''}
-							alt={`${color?.name} ${part}`}
+							src={color?.['Image Cloud URL'] ?? ''}
+							alt={`${color?.['Name']} ${part}`}
 						/>
 					</Box>
 				)
@@ -136,11 +136,11 @@ const ColorSelector = () => {
 						<Box
 							sx={{
 								width: '150px',
-								outline: selectedCombinedColor === color?.name ? '1px solid rgba(0,0,0,0.1)' : ''
+								outline: selectedCombinedColor === color?.['Name'] ? '1px solid rgba(0,0,0,0.1)' : ''
 							}}
-							onClick={() => selectCombinedColor(color?.name as string)}
+							onClick={() => selectCombinedColor(color?.['Name'] as string)}
 						>
-							<img style={{ width: '100%' }} src={color?.image?.[0]?.url} alt={`${color?.name}`} />
+							<img style={{ width: '100%' }} src={color?.['Image Cloud URL']} alt={`${color?.['Name']}`} />
 						</Box>
 					)
 				}
@@ -219,8 +219,8 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 						combination?.coloredParts?.forEach(p => {
 							if (p.color) {
 								let array = index[p.name] ?? []
-								if (p.color.name && !array.includes(p.color.name)) {
-									array.push(p.color.name)
+								if (p.color['Name'] && !array.includes(p.color['Name'])) {
+									array.push(p.color['Name'])
 								}
 								index[p.name] = array
 							}
@@ -230,12 +230,12 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 				)
 				setColorsIndex(
 					combinations?.reduce((acc: Record<string, Color.Type>, e) => {
-						if (e?.combinedColor && e?.combinedColor?.name && !acc[e?.combinedColor?.name]) {
-							acc[e?.combinedColor?.name] = e?.combinedColor
+						if (e?.combinedColor && e?.combinedcolor?.['Name'] && !acc[e?.combinedcolor?.['Name']]) {
+							acc[e?.combinedcolor?.['Name']] = e?.combinedColor
 						} else {
 							e.coloredParts.forEach(p => {
-								if (p.color?.name && !acc[p.color?.name]) {
-									acc[p?.color?.name] = p.color
+								if (p.color?.['Name'] && !acc[p.color?.['Name']]) {
+									acc[p?.color?.['Name']] = p.color
 								}
 							})
 						}
@@ -244,8 +244,8 @@ export const ProductColors: FunctionalComponent<Props> = ({ product }) => {
 				)
 				setCombinedColors(
 					combinations?.reduce((acc: string[], c) => {
-						if (c?.combinedColor?.name && !acc.includes(c.combinedColor.name)) {
-							acc.push(c.combinedColor.name)
+						if (c?.combinedcolor?.['Name'] && !acc.includes(c.combinedcolor['Name'])) {
+							acc.push(c.combinedcolor['Name'])
 						}
 						return acc
 					}, []) ?? {}

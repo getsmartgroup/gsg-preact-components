@@ -3,7 +3,7 @@ import { StateUpdater } from 'preact/hooks';
 import { ColorCombination } from '../../models';
 import { Color } from 'gsg-airtable-sdk';
 import 'airtable/lib/attachment';
-declare type State = {
+type State = {
     combinations: ColorCombination.Wrapper[];
     colorsIndexedByPart: Record<string, string[]>;
     error?: Error;

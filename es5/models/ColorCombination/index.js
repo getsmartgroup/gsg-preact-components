@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -37,30 +37,27 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getByProduct = exports.Wrapper = void 0;
-var retrieve = function (url, query) {
-    return fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({ query: "{".concat(query, "}") }),
+var retrieve = function (product) {
+    return fetch("http://localhost:3000/api/products/".concat(product, "/colors"), {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json'
         }
     })
-        .then(function (e) { return e.json(); })
-        .then(function (e) { return e.data; });
+        .then(function (e) { return e.json(); });
 };
-var url = 'https://api.baseql.com/airtable/graphql/appMt27Uj2WHfsPP7';
 var Wrapper = /** @class */ (function () {
     function Wrapper(combination) {
         var _a, _b;
         this.data = combination;
         this.coloredParts = ['shell', 'cabinet'].map(function (e) {
-            var _a, _b;
-            var partImage = combination[(e + 'Image')];
+            var _a;
+            var partImage = combination[(e + 'ImageCloudUrl')];
             return {
                 name: e,
-                image: (_a = partImage === null || partImage === void 0 ? void 0 : partImage[0]) === null || _a === void 0 ? void 0 : _a.url,
-                color: (_b = combination[(e + 'Color')]) === null || _b === void 0 ? void 0 : _b[0]
+                image: partImage,
+                color: (_a = combination[(e + 'Color')]) === null || _a === void 0 ? void 0 : _a[0]
             };
         });
         this.combinedColor = (_b = (_a = this.data.combinationColor) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : null;
@@ -71,7 +68,7 @@ var Wrapper = /** @class */ (function () {
     Object.defineProperty(Wrapper.prototype, "combinedImage", {
         get: function () {
             var _a, _b;
-            return (_b = (_a = this.data.combinationImage) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.url;
+            return (_b = (_a = this.data.combinationImageCloudUrl) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.url;
         },
         enumerable: false,
         configurable: true
@@ -81,7 +78,7 @@ var Wrapper = /** @class */ (function () {
 exports.Wrapper = Wrapper;
 var getByProduct = function (product) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        return [2 /*return*/, retrieve(url, "\n\tproductColorCombinations( product : \"".concat(product, "\" ) {\n\t\tid\n\t\tshellColor {\n\t\t\tid\n\t\t\tname\n\t\t\timage\n\t\t}\n\t\tcabinetColor {\n\t\t\tid\n\t\t\tname\n\t\t\timage\n\t\t}\n\t\tcombinationImage\n\t\tshellImage\n\t\tcabinetImage\n\t\tcombinationColor {\n\t\t\tid\n\t\t\tname\n\t\t\timage\n\t\t}\n\t}\n\t"))
+        return [2 /*return*/, retrieve(product)
                 .then(function (e) {
                 console.log(e);
                 return e;
@@ -93,4 +90,4 @@ var getByProduct = function (product) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.getByProduct = getByProduct;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvbW9kZWxzL0NvbG9yQ29tYmluYXRpb24vaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBRUEsSUFBTSxRQUFRLEdBQUcsVUFBQyxHQUFXLEVBQUUsS0FBYTtJQUMzQyxPQUFPLEtBQUssQ0FBQyxHQUFHLEVBQUU7UUFDakIsTUFBTSxFQUFFLE1BQU07UUFDZCxJQUFJLEVBQUUsSUFBSSxDQUFDLFNBQVMsQ0FBQyxFQUFFLEtBQUssRUFBRSxXQUFJLEtBQUssTUFBRyxFQUFFLENBQUM7UUFDN0MsT0FBTyxFQUFFO1lBQ1IsY0FBYyxFQUFFLGtCQUFrQjtZQUNsQyxNQUFNLEVBQUUsa0JBQWtCO1NBQzFCO0tBQ0QsQ0FBQztTQUNBLElBQUksQ0FBQyxVQUFBLENBQUMsSUFBSSxPQUFBLENBQUMsQ0FBQyxJQUFJLEVBQUUsRUFBUixDQUFRLENBQUM7U0FDbkIsSUFBSSxDQUFDLFVBQUEsQ0FBQyxJQUFJLE9BQUEsQ0FBQyxDQUFDLElBQUksRUFBTixDQUFNLENBQUMsQ0FBQTtBQUNwQixDQUFDLENBQUE7QUFFRCxJQUFNLEdBQUcsR0FBRywyREFBMkQsQ0FBQTtBQUl2RTtJQU9DLGlCQUFZLFdBQTZCOztRQUN4QyxJQUFJLENBQUMsSUFBSSxHQUFHLFdBQVcsQ0FBQTtRQUN2QixJQUFJLENBQUMsWUFBWSxHQUFJLENBQUMsT0FBTyxFQUFFLFNBQVMsQ0FBVyxDQUFDLEdBQUcsQ0FBQyxVQUFBLENBQUM7O1lBQ3hELElBQU0sU0FBUyxHQUNkLFdBQVcsQ0FBQyxDQUFDLENBQUMsR0FBRyxPQUFPLENBQWtDLENBQUMsQ0FBQTtZQUM1RCxPQUFPO2dCQUNOLElBQUksRUFBRSxDQUFDO2dCQUNQLEtBQUssRUFBRSxNQUFBLFNBQVMsYUFBVCxTQUFTLHVCQUFULFNBQVMsQ0FBRyxDQUFDLENBQUMsMENBQUUsR0FBRztnQkFDMUIsS0FBSyxFQUNKLE1BQUEsV0FBVyxDQUNWLENBQUMsQ0FBQyxHQUFHLE9BQU8sQ0FBa0MsQ0FDOUMsMENBQUcsQ0FBQyxDQUFDO2FBQ1AsQ0FBQTtRQUNGLENBQUMsQ0FBQyxDQUFBO1FBQ0YsSUFBSSxDQUFDLGFBQWEsR0FBRyxNQUFBLE1BQUEsSUFBSSxDQUFDLElBQUksQ0FBQyxnQkFBZ0IsMENBQUcsQ0FBQyxDQUFDLG1DQUFJLElBQUksQ0FBQTtJQUM3RCxDQUFDO0lBbkJELHVCQUFLLEdBQUw7UUFDQyxPQUFPLElBQUksQ0FBQyxJQUFJLENBQUMsRUFBRSxDQUFBO0lBQ3BCLENBQUM7SUEyQkQsc0JBQUksa0NBQWE7YUFBakI7O1lBQ0MsT0FBTyxNQUFBLE1BQUEsSUFBSSxDQUFDLElBQUksQ0FBQyxnQkFBZ0IsMENBQUcsQ0FBQyxDQUFDLDBDQUFFLEdBQUcsQ0FBQTtRQUM1QyxDQUFDOzs7T0FBQTtJQUNGLGNBQUM7QUFBRCxDQUFDLEFBbkNELElBbUNDO0FBbkNZLDBCQUFPO0FBcUNiLElBQU0sWUFBWSxHQUFHLFVBQU8sT0FBZTs7UUFDakQsc0JBQUMsUUFBUSxDQUNSLEdBQUcsRUFDSCxvREFDc0MsT0FBTyxnUkFxQjdDLENBQ2lCO2lCQUNoQixJQUFJLENBQUMsVUFBQSxDQUFDO2dCQUNOLE9BQU8sQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDLENBQUE7Z0JBQ2QsT0FBTyxDQUFDLENBQUE7WUFDVCxDQUFDLENBQUM7aUJBQ0QsSUFBSSxDQUFDLFVBQUEsQ0FBQzs7Z0JBQ04sT0FBQSxNQUFBLENBQUMsYUFBRCxDQUFDLHVCQUFELENBQUMsQ0FBRSx3QkFBd0IsMENBQUUsR0FBRyxDQUMvQixVQUFDLENBQW1CLElBQUssT0FBQSxJQUFJLE9BQU8sQ0FBQyxDQUFDLENBQUMsRUFBZCxDQUFjLENBQ3ZDLENBQUE7YUFBQSxDQUNELEVBQUE7O0tBQUEsQ0FBQTtBQW5DVSxRQUFBLFlBQVksZ0JBbUN0QiJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvbW9kZWxzL0NvbG9yQ29tYmluYXRpb24vaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBRUEsSUFBTSxRQUFRLEdBQUcsVUFBQyxPQUFlO0lBQ2hDLE9BQU8sS0FBSyxDQUFDLDZDQUFzQyxPQUFPLFlBQVMsRUFBRTtRQUNwRSxNQUFNLEVBQUUsS0FBSztRQUNiLE9BQU8sRUFBRTtZQUNSLGNBQWMsRUFBRSxrQkFBa0I7WUFDbEMsTUFBTSxFQUFFLGtCQUFrQjtTQUMxQjtLQUNELENBQUM7U0FDRCxJQUFJLENBQUMsVUFBQSxDQUFDLElBQUksT0FBQSxDQUFDLENBQUMsSUFBSSxFQUFFLEVBQVIsQ0FBUSxDQUFDLENBQUE7QUFDckIsQ0FBQyxDQUFBO0FBSUQ7SUFPQyxpQkFBWSxXQUE2Qjs7UUFDeEMsSUFBSSxDQUFDLElBQUksR0FBRyxXQUFXLENBQUE7UUFDdkIsSUFBSSxDQUFDLFlBQVksR0FBSSxDQUFDLE9BQU8sRUFBRSxTQUFTLENBQVcsQ0FBQyxHQUFHLENBQUMsVUFBQSxDQUFDOztZQUN4RCxJQUFNLFNBQVMsR0FDZCxXQUFXLENBQUMsQ0FBQyxDQUFDLEdBQUcsZUFBZSxDQUFrRCxDQUFDLENBQUE7WUFDcEYsT0FBTztnQkFDTixJQUFJLEVBQUUsQ0FBQztnQkFDUCxLQUFLLEVBQUUsU0FBUztnQkFDaEIsS0FBSyxFQUNKLE1BQUEsV0FBVyxDQUNWLENBQUMsQ0FBQyxHQUFHLE9BQU8sQ0FBa0MsQ0FDOUMsMENBQUcsQ0FBQyxDQUFDO2FBQ1AsQ0FBQTtRQUNGLENBQUMsQ0FBQyxDQUFBO1FBQ0YsSUFBSSxDQUFDLGFBQWEsR0FBRyxNQUFBLE1BQUEsSUFBSSxDQUFDLElBQUksQ0FBQyxnQkFBZ0IsMENBQUcsQ0FBQyxDQUFDLG1DQUFJLElBQUksQ0FBQTtJQUM3RCxDQUFDO0lBbkJELHVCQUFLLEdBQUw7UUFDQyxPQUFPLElBQUksQ0FBQyxJQUFJLENBQUMsRUFBRSxDQUFBO0lBQ3BCLENBQUM7SUEyQkQsc0JBQUksa0NBQWE7YUFBakI7O1lBQ0MsT0FBTyxNQUFBLE1BQUEsSUFBSSxDQUFDLElBQUksQ0FBQyx3QkFBd0IsMENBQUcsQ0FBQyxDQUFDLDBDQUFFLEdBQUcsQ0FBQTtRQUNwRCxDQUFDOzs7T0FBQTtJQUNGLGNBQUM7QUFBRCxDQUFDLEFBbkNELElBbUNDO0FBbkNZLDBCQUFPO0FBcUNiLElBQU0sWUFBWSxHQUFHLFVBQU8sT0FBZTs7UUFDakQsc0JBQUMsUUFBUSxDQUNSLE9BQU8sQ0FDVTtpQkFDaEIsSUFBSSxDQUFDLFVBQUEsQ0FBQztnQkFDTixPQUFPLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQyxDQUFBO2dCQUNkLE9BQU8sQ0FBQyxDQUFBO1lBQ1QsQ0FBQyxDQUFDO2lCQUNELElBQUksQ0FBQyxVQUFBLENBQUM7O2dCQUNOLE9BQUEsTUFBQSxDQUFDLGFBQUQsQ0FBQyx1QkFBRCxDQUFDLENBQUUsd0JBQXdCLDBDQUFFLEdBQUcsQ0FDL0IsVUFBQyxDQUFtQixJQUFLLE9BQUEsSUFBSSxPQUFPLENBQUMsQ0FBQyxDQUFDLEVBQWQsQ0FBYyxDQUN2QyxDQUFBO2FBQUEsQ0FDRCxFQUFBOztLQUFBLENBQUE7QUFaVSxRQUFBLFlBQVksZ0JBWXRCIn0=

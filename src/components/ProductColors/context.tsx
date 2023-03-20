@@ -62,7 +62,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		const selection: Record<string, string> = {}
 		const combinations = state.combinations.filter(c => {
 			for (const coloredPart of c.coloredParts) {
-				if (coloredPart.name === part && coloredPart.color && coloredPart.color.name !== color) {
+				if (coloredPart.name === part && coloredPart.color && coloredPart.color['Name'] !== color) {
 					return false
 				}
 			}
@@ -72,7 +72,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		for (const combination of combinations) {
 			let points = 0
 			for (const coloredPart of combination.coloredParts) {
-				if (coloredPart.color && state.selectedPartColors[coloredPart.name] === coloredPart.color.name) {
+				if (coloredPart.color && state.selectedPartColors[coloredPart.name] === coloredPart.color['Name']) {
 					points++
 				}
 			}
@@ -81,8 +81,8 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		const bestCombination = bestCombinations.pop()
 		if (bestCombination?.coloredParts) {
 			for (const coloredPart of bestCombination.coloredParts) {
-				if (coloredPart?.color?.name && coloredPart?.name) {
-					selection[coloredPart.name] = coloredPart?.color?.name
+				if (coloredPart?.color?.['Name'] && coloredPart?.name) {
+					selection[coloredPart.name] = coloredPart?.color?.['Name']
 				}
 			}
 		}
@@ -99,7 +99,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 					if (
 						selected[coloredPart.name] &&
 						coloredPart.color &&
-						selected[coloredPart.name] !== coloredPart.color.name
+						selected[coloredPart.name] !== coloredPart.color['Name']
 					) {
 						return false
 					}
@@ -113,8 +113,8 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 		return (
 			getCompatibleCombinationsFor(part)?.reduce<string[]>((arr, c) => {
 				c.coloredParts.forEach(p => {
-					if (p?.name === part && p?.color?.name) {
-						arr.push(p.color.name)
+					if (p?.name === part && p?.color?.['Name']) {
+						arr.push(p.color['Name'])
 					}
 				})
 				return arr
@@ -132,7 +132,7 @@ const makeContext = (_state: State, _setState: StateUpdater<State>) => {
 				for (const coloredPart of e.coloredParts) {
 					if (
 						!state.selectedPartColors[coloredPart.name] ||
-						state.selectedPartColors[coloredPart.name] !== coloredPart?.color?.name
+						state.selectedPartColors[coloredPart.name] !== coloredPart?.color?.['Name']
 					) {
 						return false
 					}
@@ -184,6 +184,5 @@ export const ContextProvider: FunctionalComponent = ({ children }) => {
 		colorsIndexedByPart: {},
 		selectedPartColors: {}
 	})
-
 	return <context.Provider value={makeContext(state, setState)}>{children}</context.Provider>
 }

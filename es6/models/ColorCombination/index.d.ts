@@ -1,6 +1,6 @@
 import { Color, ColorCombination } from 'gsg-airtable-sdk';
-declare type ColorCombination = ColorCombination.Type;
-export declare type Type = ColorCombination;
+type ColorCombination = ColorCombination.Type;
+export type Type = ColorCombination;
 export declare class Wrapper {
     data: ColorCombination;
     getID(): string;
@@ -11,7 +11,7 @@ export declare class Wrapper {
         image?: string;
     }[];
     combinedColor?: Color.Type | null;
-    get combinedImage(): string | undefined;
+    get combinedImage(): any;
 }
 export declare const getByProduct: (product: string) => Promise<Wrapper[]>;
 export {};
