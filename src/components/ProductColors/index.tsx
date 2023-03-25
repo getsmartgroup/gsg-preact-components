@@ -98,32 +98,45 @@ const ColorSelector = () => {
 			}
 		}, [])
 		const partColorsLists: preact.JSX.Element[] = []
-		if (compatibleColors.length > 0) {
-			partColorsLists.push(
-				<Box style={{ marginBottom: 20 }} mr={4}>
-					<Box sx={{ marginBottom: 7 }}>
-						<b>{capitalizeFirstLetter(part)} Colors</b>
-					</Box>
-					<Box>
-						<SimpleGrid columns={3} spacing={4}>
-							{compatibleColors}
-						</SimpleGrid>
-					</Box>
+		// if (compatibleColors.length > 0) {
+		// 	partColorsLists.push(
+		// 		<Box style={{ marginBottom: 20 }} mr={4}>
+		// 			<Box sx={{ marginBottom: 7 }}>
+		// 				<b>{capitalizeFirstLetter(part)} Colors</b>
+		// 			</Box>
+		// 			<Box>
+		// 				<SimpleGrid columns={3} spacing={4}>
+		// 					{compatibleColors}
+		// 				</SimpleGrid>
+		// 			</Box>
+		// 		</Box>
+		// 	)
+		// }
+		partColorsLists.push(
+			<Box style={{ marginBottom: 20 }} mr={4}>
+				<Box sx={{ marginBottom: 7 }}>
+					<b>{capitalizeFirstLetter(part)} Colors</b>
 				</Box>
-			)
-		}
-		if (incompatibleColors.length > 0) {
-			partColorsLists.push(
 				<Box>
-					<Box style={{ marginBottom: 7 }}>
-						<b>Other {capitalizeFirstLetter(part)} Colors</b>
-					</Box>
-					<SimpleGrid columns={4} spacing={4}>
-						{incompatibleColors}
+					<SimpleGrid columns={3} spacing={4}>
+						{part === 'shell' ? compatibleColors : [...compatibleColors, ...incompatibleColors]}
 					</SimpleGrid>
 				</Box>
-			)
-		}
+			</Box>
+		)
+
+		// if (incompatibleColors.length > 0) {
+		// 	partColorsLists.push(
+		// 		<Box>
+		// 			<Box style={{ marginBottom: 7 }}>
+		// 				<b>Other {capitalizeFirstLetter(part)} Colors</b>
+		// 			</Box>
+		// 			<SimpleGrid columns={4} spacing={4}>
+		// 				{incompatibleColors}
+		// 			</SimpleGrid>
+		// 		</Box>
+		// 	)
+		// }
 		acc.push(<div style={{ display: 'flex' }}>{partColorsLists}</div>)
 		return acc
 	}, [])
@@ -165,7 +178,7 @@ const ColorSelector = () => {
 			</div>
 		)
 	}
-	return <Fragment>{lists}</Fragment>
+	return <Fragment>{lists.reverse()}</Fragment>
 }
 
 const MainUI = () => {

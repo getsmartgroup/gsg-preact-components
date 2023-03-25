@@ -9,7 +9,7 @@
 	"unpkg": "umd/index.js",
 	"source": "src/index.tsx",
 	"scripts": {
-		"dev": "vite -p 3001",
+		"dev": "vite",
 		"es5": "tsc -p tsconfig.json --target es6 --outDir es6 --module es6",
 		"es6": "tsc -p tsconfig.json --target es5 --outDir es5 --module commonjs",
 		"tsc": "concurrently \"npm run es5\" \"npm run es6\"",
